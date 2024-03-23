@@ -75,11 +75,16 @@ public class MainView implements View {
         ViewHandler.activeViewProperty().addListener((obs, ov, nv) -> crumbs.setSelectedCrumb(BreadcrumbBuilder.buildBreadCrumbs(nv)));
         NodeUtils.bindVisibility(crumbs, ViewHandler.activeWindowProperty().isEqualTo(WindowType.MAIN_APP));
 
+        crumbs.onCrumbActionProperty().set(event -> {
+            var crumbText = event.getSelectedCrumb().getValue();
+            var viewType = ViewType.byName(crumbText);
+            if (viewType != null) ViewHandler.changeView(viewType);
+        });
+
         results.getChildren().add(crumbs);
 
         return results;
     }
-
 
     private Region sidebar() {
         var results = new VBox(StyleConfig.STANDARD_SPACING);

@@ -33,4 +33,12 @@ public enum ViewType {
     public ViewType parent() {
         return parent;
     }
+
+    public static ViewType byName(String name) {
+        for (var vt : ViewType.values()) {
+            if (vt.name().equals(name)) return vt;
+        }
+
+        return null;
+    }
 }
