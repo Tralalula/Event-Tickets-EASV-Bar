@@ -29,6 +29,10 @@ public class ViewHandler {
         return INSTANCE.activeView;
     }
 
+    public static ObjectProperty<WindowType> activeWindowProperty() {
+        return INSTANCE.activeWindow;
+    }
+
     public static Deque<ViewType> navigationStack() {
         return INSTANCE.navigationStack;
     }
