@@ -36,7 +36,7 @@ public enum ViewType {
 
     public static ViewType byName(String name) {
         for (var vt : ViewType.values()) {
-            if (vt.name().equals(name)) return vt;
+            if (vt.name().equals(name.toUpperCase())) return vt;
         }
 
         return null;
