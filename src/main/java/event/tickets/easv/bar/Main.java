@@ -1,6 +1,9 @@
 package event.tickets.easv.bar;
 
+import atlantafx.base.theme.PrimerLight;
+import event.tickets.easv.bar.gui.component.main.MainView;
 import javafx.application.Application;
+import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 public class Main extends Application {
@@ -9,7 +12,10 @@ public class Main extends Application {
     }
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
+    public void start(Stage stage) {
+        Application.setUserAgentStylesheet(new PrimerLight().getUserAgentStylesheet());
 
+        stage.setScene(new Scene(new MainView().getView(), 1200, 800));
+        stage.show();
     }
 }
