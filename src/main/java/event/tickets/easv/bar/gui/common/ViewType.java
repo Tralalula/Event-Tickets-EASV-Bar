@@ -1,4 +1,4 @@
-package event.tickets.easv.bar.gui.util;
+package event.tickets.easv.bar.gui.common;
 
 public enum ViewType {
     // Auth Views

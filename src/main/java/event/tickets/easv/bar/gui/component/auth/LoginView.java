@@ -1,8 +1,8 @@
 package event.tickets.easv.bar.gui.component.auth;
 
-import event.tickets.easv.bar.gui.component.common.View;
-import event.tickets.easv.bar.gui.util.ViewHandler;
-import event.tickets.easv.bar.gui.util.ViewType;
+import event.tickets.easv.bar.gui.common.View;
+import event.tickets.easv.bar.gui.common.ViewHandler;
+import event.tickets.easv.bar.gui.common.ViewType;
 import javafx.scene.control.Button;
 import javafx.scene.layout.Region;
 

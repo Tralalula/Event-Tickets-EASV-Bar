@@ -1,4 +1,4 @@
-package event.tickets.easv.bar.gui.theme;
+package event.tickets.easv.bar.gui.util;
 
 public class StyleConfig {
     public static final int STANDARD_SPACING = 8;

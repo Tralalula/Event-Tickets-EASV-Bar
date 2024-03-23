@@ -2,6 +2,7 @@ package event.tickets.easv.bar.gui.util;
 
 import atlantafx.base.controls.Breadcrumbs;
 import atlantafx.base.controls.Breadcrumbs.BreadCrumbItem;
+import event.tickets.easv.bar.gui.common.ViewType;
 import event.tickets.easv.bar.util.StringUtils;
 
 import java.util.LinkedList;

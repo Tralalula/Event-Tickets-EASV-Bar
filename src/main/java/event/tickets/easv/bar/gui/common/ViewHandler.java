@@ -1,4 +1,4 @@
-package event.tickets.easv.bar.gui.util;
+package event.tickets.easv.bar.gui.common;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;

@@ -1,4 +1,4 @@
-package event.tickets.easv.bar.gui.component.common;
+package event.tickets.easv.bar.gui.common;
 
 import javafx.scene.layout.Region;
 
