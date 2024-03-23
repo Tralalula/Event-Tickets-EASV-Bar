@@ -1,0 +1,15 @@
+.main {
+
+}
+
+.rounded-default {
+    -fx-background-radius: 8;
+}
+
+.padding-default {
+    -fx-padding: 8;
+}
+
+.actionable {
+    -fx-cursor: hand;
+}

@@ -12,7 +12,7 @@ public class Main extends Application {
     }
 
     @Override
-    public void start(Stage stage) {
+    public void start(Stage stage) throws Exception {
         Application.setUserAgentStylesheet(new PrimerLight().getUserAgentStylesheet());
 
         stage.setScene(new Scene(new MainView().getView(), 1200, 800));
