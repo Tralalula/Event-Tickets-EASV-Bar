@@ -40,7 +40,7 @@ public class MainView implements View {
 
         var top = topbar();
         var left = sidebar();
-        var center = content();
+        var center = center();
 
         NodeUtils.bindVisibility(top, ViewHandler.activeWindowProperty().isEqualTo(WindowType.MAIN_APP));
         NodeUtils.bindVisibility(left, ViewHandler.activeWindowProperty().isEqualTo(WindowType.MAIN_APP));
@@ -55,6 +55,15 @@ public class MainView implements View {
         return results;
     }
 
+    private Region center() {
+        var results = new VBox(StyleConfig.STANDARD_SPACING);
+        var content = content();
+        VBox.setVgrow(content, Priority.ALWAYS);
+
+        results.getChildren().addAll(createCrumbs(), content);
+        return results;
+    }
+
     private Region content() {
         NodeUtils.bindVisibility(loginView, ViewHandler.activeViewProperty().isEqualTo(ViewType.LOGIN));
         NodeUtils.bindVisibility(dashboardView, ViewHandler.activeViewProperty().isEqualTo(ViewType.DASHBOARD));
@@ -64,11 +73,8 @@ public class MainView implements View {
         return new StackPane(loginView, dashboardView, eventsView, showEventView);
     }
 
-    private Region topbar() {
-        var results = new HBox(StyleConfig.STANDARD_SPACING);
-        results.getStyleClass().addAll(Styles.BG_DEFAULT, StyleConfig.ROUNDING_DEFAULT, StyleConfig.PADDING_DEFAULT);
-        results.setMinHeight(50);
 
+    private Region createCrumbs() {
         crumbs = new Breadcrumbs<>();
         crumbs.setSelectedCrumb(BreadcrumbBuilder.buildBreadCrumbs(ViewHandler.activeViewProperty().get()));
 
@@ -81,7 +87,13 @@ public class MainView implements View {
             if (viewType != null) ViewHandler.changeView(viewType);
         });
 
-        results.getChildren().add(crumbs);
+        return crumbs;
+    }
+
+    private Region topbar() {
+        var results = new HBox(StyleConfig.STANDARD_SPACING);
+        results.getStyleClass().addAll(Styles.BG_DEFAULT, StyleConfig.ROUNDING_DEFAULT, StyleConfig.PADDING_DEFAULT);
+        results.setMinHeight(50);
 
         return results;
     }
