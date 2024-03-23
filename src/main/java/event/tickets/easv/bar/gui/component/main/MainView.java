@@ -2,18 +2,28 @@ package event.tickets.easv.bar.gui.component.main;
 
 import atlantafx.base.theme.Styles;
 import event.tickets.easv.bar.gui.component.common.View;
+import event.tickets.easv.bar.gui.component.dashboard.DashboardView;
+import event.tickets.easv.bar.gui.component.events.EventsView;
 import event.tickets.easv.bar.gui.theme.StyleConfig;
+import event.tickets.easv.bar.gui.util.NodeUtils;
+import event.tickets.easv.bar.gui.util.ViewHandler;
+import event.tickets.easv.bar.gui.util.ViewType;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 
 import java.util.Objects;
 
 public class MainView implements View {
+    private final Region dashboardView;
+    private final Region eventsView;
+
+    public MainView() {
+        this.dashboardView = new DashboardView().getView();
+        this.eventsView = new EventsView().getView();
+    }
+
     @Override
     public Region getView() {
         var results = new BorderPane();
@@ -21,17 +31,25 @@ public class MainView implements View {
         results.getStyleClass().add(Styles.BG_SUBTLE);
         results.getStyleClass().add("main");
 
-
         var top = topbar();
         var left = sidebar();
+        var center = content();
 
         BorderPane.setMargin(top, new Insets(StyleConfig.STANDARD_SPACING));
         BorderPane.setMargin(left, new Insets(0, StyleConfig.STANDARD_SPACING, StyleConfig.STANDARD_SPACING, StyleConfig.STANDARD_SPACING));
 
         results.setTop(top);
         results.setLeft(left);
+        results.setCenter(center);
 
         return results;
+    }
+
+    private Region content() {
+        NodeUtils.bindVisibility(dashboardView, ViewHandler.activeViewProperty().isEqualTo(ViewType.DASHBOARD));
+        NodeUtils.bindVisibility(eventsView, ViewHandler.activeViewProperty().isEqualTo(ViewType.EVENTS));
+
+        return new StackPane(dashboardView, eventsView);
     }
 
     private Region topbar() {
@@ -47,14 +65,23 @@ public class MainView implements View {
         results.getStyleClass().addAll(Styles.BG_DEFAULT, StyleConfig.ROUNDING_DEFAULT, StyleConfig.PADDING_DEFAULT);
         results.setMinWidth(250);
 
+        var dashboard = new Button("Dashboard");
+        var events = new Button("Events");
+        var tickets = new Button("Tickets");
+        var users = new Button("Users");
+        var verifyTicket = new Button("Verify Ticket");
+
         results.getChildren().addAll(
-                new Button("Dashboard"),
-                new Button("Events"),
-                new Button("Tickets"),
-                new Button("Users"),
-                new Button("Verify Ticket")
+                dashboard,
+                events,
+                tickets,
+                users,
+                verifyTicket
         );
         results.setAlignment(Pos.TOP_CENTER);
+
+        dashboard.setOnAction(e -> ViewHandler.changeView(ViewType.DASHBOARD));
+        events.setOnAction(e -> ViewHandler.changeView(ViewType.EVENTS));
 
         return results;
     }
