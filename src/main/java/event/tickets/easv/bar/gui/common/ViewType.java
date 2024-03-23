@@ -12,7 +12,8 @@ public enum ViewType {
     EVENTS(WindowType.MAIN_APP),
     TICKETS(WindowType.MAIN_APP),
     USERS(WindowType.MAIN_APP),
-    SHOW_EVENT(WindowType.MAIN_APP, EVENTS);
+    SHOW_EVENT(WindowType.MAIN_APP, EVENTS),
+    ASSIGN_TICKET(WindowType.MAIN_APP, SHOW_EVENT);
 
     private final WindowType windowType;
     private final ViewType parent;
