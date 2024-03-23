@@ -1,15 +1,14 @@
 package event.tickets.easv.bar.gui.component.main;
 
+import atlantafx.base.controls.Breadcrumbs;
 import atlantafx.base.theme.Styles;
 import event.tickets.easv.bar.gui.component.auth.LoginView;
 import event.tickets.easv.bar.gui.component.common.View;
 import event.tickets.easv.bar.gui.component.dashboard.DashboardView;
 import event.tickets.easv.bar.gui.component.events.EventsView;
+import event.tickets.easv.bar.gui.component.events.ShowEventView;
 import event.tickets.easv.bar.gui.theme.StyleConfig;
-import event.tickets.easv.bar.gui.util.NodeUtils;
-import event.tickets.easv.bar.gui.util.ViewHandler;
-import event.tickets.easv.bar.gui.util.ViewType;
-import event.tickets.easv.bar.gui.util.WindowType;
+import event.tickets.easv.bar.gui.util.*;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -21,11 +20,15 @@ public class MainView implements View {
     private final Region loginView;
     private final Region dashboardView;
     private final Region eventsView;
+    private final Region showEventView;
+
+    private Breadcrumbs<String> crumbs;
 
     public MainView() {
         this.loginView = new LoginView().getView();
         this.dashboardView = new DashboardView().getView();
         this.eventsView = new EventsView().getView();
+        this.showEventView = new ShowEventView().getView();
     }
 
     @Override
@@ -56,8 +59,9 @@ public class MainView implements View {
         NodeUtils.bindVisibility(loginView, ViewHandler.activeViewProperty().isEqualTo(ViewType.LOGIN));
         NodeUtils.bindVisibility(dashboardView, ViewHandler.activeViewProperty().isEqualTo(ViewType.DASHBOARD));
         NodeUtils.bindVisibility(eventsView, ViewHandler.activeViewProperty().isEqualTo(ViewType.EVENTS));
+        NodeUtils.bindVisibility(showEventView, ViewHandler.activeViewProperty().isEqualTo(ViewType.SHOW_EVENT));
 
-        return new StackPane(loginView, dashboardView, eventsView);
+        return new StackPane(loginView, dashboardView, eventsView, showEventView);
     }
 
     private Region topbar() {
@@ -65,8 +69,17 @@ public class MainView implements View {
         results.getStyleClass().addAll(Styles.BG_DEFAULT, StyleConfig.ROUNDING_DEFAULT, StyleConfig.PADDING_DEFAULT);
         results.setMinHeight(50);
 
+        crumbs = new Breadcrumbs<>();
+        crumbs.setSelectedCrumb(BreadcrumbBuilder.buildBreadCrumbs(ViewHandler.activeViewProperty().get()));
+
+        ViewHandler.activeViewProperty().addListener((obs, ov, nv) -> crumbs.setSelectedCrumb(BreadcrumbBuilder.buildBreadCrumbs(nv)));
+        NodeUtils.bindVisibility(crumbs, ViewHandler.activeWindowProperty().isEqualTo(WindowType.MAIN_APP));
+
+        results.getChildren().add(crumbs);
+
         return results;
     }
+
 
     private Region sidebar() {
         var results = new VBox(StyleConfig.STANDARD_SPACING);
