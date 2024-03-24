@@ -37,7 +37,7 @@ public class DBConnector {
     }
 
     // For testing connection
-    public static void main(String[] args) throws SQLException, IOException {
+    public static void main(String[] args) throws IOException {
         DBConnector dbConnector = new DBConnector();
         try (Connection conn = dbConnector.connection()) {
             System.out.println("Is it open? " + !conn.isClosed());
