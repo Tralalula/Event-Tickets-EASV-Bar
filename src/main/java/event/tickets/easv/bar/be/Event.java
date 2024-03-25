@@ -6,6 +6,12 @@ public class Event {
     private int id;
     private String title;
 
+    private void checkRep() {
+        assert title != null : "title must not be null";
+        assert !title.isEmpty() : "title must not be empty";
+        assert title.length() <= TITLE_MAX_LENGTH : "title must not exceed " + TITLE_MAX_LENGTH + " characters";
+    }
+
     public Event(String title) {
         this(-1, title);
     }
@@ -38,9 +44,10 @@ public class Event {
         checkRep();
     }
 
-    private void checkRep() {
-        assert title != null : "title must not be null";
-        assert !title.isEmpty() : "title must not be empty";
-        assert title.length() <= TITLE_MAX_LENGTH : "title must not exceed " + TITLE_MAX_LENGTH + " characters";
+    @Override
+    public String toString() {
+        return "Event{" +
+                "title='" + title + '\'' +
+                '}';
     }
 }

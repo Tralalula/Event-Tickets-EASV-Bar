@@ -25,7 +25,7 @@ public interface DAO<T> {
      *
      * @return a list containing all entities of type T found; the list can be empty.
      */
-    List<T> getAll() throws Exception;
+    List<T> all() throws Exception;
 
     /**
      * Adds a new entity to the data source.
