@@ -20,6 +20,9 @@ import javafx.scene.layout.*;
 import java.util.Objects;
 
 public class MainView implements View {
+    private final MainModel model;
+    private final MainController controller;
+
     private final Region loginView;
     private final Region dashboardView;
     private final Region eventsView;
@@ -28,9 +31,12 @@ public class MainView implements View {
     private Breadcrumbs<String> crumbs;
 
     public MainView() {
+        this.model = new MainModel();
+        this.controller = new MainController(model);
+
         this.loginView = new LoginView().getView();
         this.dashboardView = new DashboardView().getView();
-        this.eventsView = new EventsView().getView();
+        this.eventsView = new EventsView(model.eventModels()).getView();
         this.showEventView = new ShowEventView().getView();
     }
 
