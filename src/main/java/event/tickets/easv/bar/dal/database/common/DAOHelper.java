@@ -9,12 +9,19 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DAOHelper {
-    private static DBConnector dbConnector = null;
+public class DAOHelper<T> {
+    private DBConnector dbConnector = null;
+    private final SQLTemplate<T> sqlTemplate;
+    private final ResultSetMapper<T> resultSetMapper;
 
-    public static <T> Result<List<T>> all(SQLTemplate<T> sqlTemplate, ResultSetMapper<T> resultSetMapper) {
+    public DAOHelper(SQLTemplate<T> sqlTemplate, ResultSetMapper<T> resultSetMapper) {
+        this.sqlTemplate = sqlTemplate;
+        this.resultSetMapper = resultSetMapper;
+    }
+
+    public Result<List<T>> all() {
         try {
-            setDbConnector();
+            setupDBConnector();
         } catch (IOException e) {
             return new Failure<>(e);
         }
@@ -36,7 +43,7 @@ public class DAOHelper {
         return new Success<>(results);
     }
 
-    private static synchronized void setDbConnector() throws IOException {
+    private void setupDBConnector() throws IOException {
         if (dbConnector == null) {
             dbConnector = new DBConnector();
         }

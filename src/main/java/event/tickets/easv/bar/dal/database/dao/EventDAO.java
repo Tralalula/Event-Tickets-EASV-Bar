@@ -12,12 +12,10 @@ import java.util.List;
 import java.util.Optional;
 
 public class EventDAO implements DAO<Event> {
-    private final SQLTemplate<Event> sqlTemplate;
-    private final ResultSetMapper<Event> resultSetMapper;
+    private final DAOHelper<Event> daoHelper;
 
     public EventDAO() {
-        this.sqlTemplate = new EventSQLTemplate();
-        this.resultSetMapper = new EventResultSetMapper();
+        this.daoHelper = new DAOHelper<>(new EventSQLTemplate(), new EventResultSetMapper());
     }
 
     @Override
@@ -27,7 +25,7 @@ public class EventDAO implements DAO<Event> {
 
     @Override
     public Result<List<Event>> all() {
-        return DAOHelper.all(sqlTemplate, resultSetMapper);
+        return daoHelper.all();
     }
 
     @Override
