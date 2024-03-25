@@ -4,6 +4,9 @@ import event.tickets.easv.bar.be.Event;
 import event.tickets.easv.bar.bll.EntityManager;
 import event.tickets.easv.bar.gui.common.EventModel;
 import event.tickets.easv.bar.gui.util.BackgroundExecutor;
+import event.tickets.easv.bar.util.Result;
+import event.tickets.easv.bar.util.Result.Success;
+import event.tickets.easv.bar.util.Result.Failure;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -15,11 +18,7 @@ public class MainController {
 
     public MainController(MainModel model) {
         this.model = model;
-        try {
-            this.manager = new EntityManager();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        this.manager = new EntityManager();
 
         fetchEvents();
     }
@@ -27,9 +26,15 @@ public class MainController {
     public void fetchEvents() {
         BackgroundExecutor.performBackgroundTask(
                 () -> manager.all(Event.class),
-                events -> model.eventModels().setAll(convertToModels(events)),
-                error -> System.out.println("Fejl: " + error)
+                this::processResult
         );
+    }
+
+    private void processResult(Result<List<Event>> result) {
+        switch (result) {
+            case Success<List<Event>> s -> model.eventModels().setAll(convertToModels(s.result()));
+            case Failure<List<Event>> f -> System.out.println("Error: " + f.cause());
+        }
     }
 
     private List<EventModel> convertToModels(List<Event> events) {

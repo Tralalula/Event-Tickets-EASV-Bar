@@ -3,6 +3,7 @@ package event.tickets.easv.bar.dal.database.dao;
 import event.tickets.easv.bar.be.Event;
 import event.tickets.easv.bar.dal.database.common.*;
 import event.tickets.easv.bar.dal.database.common.ResultSetMapper;
+import event.tickets.easv.bar.util.Result;
 
 import java.io.IOException;
 import java.sql.ResultSet;
@@ -11,13 +12,12 @@ import java.util.List;
 import java.util.Optional;
 
 public class EventDAO implements DAO<Event> {
-    private final DAOHelper<Event> crudHelper;
+    private final SQLTemplate<Event> sqlTemplate;
+    private final ResultSetMapper<Event> resultSetMapper;
 
-    public EventDAO() throws IOException {
-        var sqlTemplateHelper = new EventSQLTemplate();
-        var resultSetMapper = new EventResultSetMapper();
-
-        this.crudHelper = new DAOHelper<>(sqlTemplateHelper, resultSetMapper);
+    public EventDAO() {
+        this.sqlTemplate = new EventSQLTemplate();
+        this.resultSetMapper = new EventResultSetMapper();
     }
 
     @Override
@@ -26,8 +26,8 @@ public class EventDAO implements DAO<Event> {
     }
 
     @Override
-    public List<Event> all() throws Exception {
-        return crudHelper.all();
+    public Result<List<Event>> all() {
+        return DAOHelper.all(sqlTemplate, resultSetMapper);
     }
 
     @Override

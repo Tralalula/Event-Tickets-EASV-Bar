@@ -1,5 +1,7 @@
 package event.tickets.easv.bar.dal.database.common;
 
+import event.tickets.easv.bar.util.Result;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -25,7 +27,7 @@ public interface DAO<T> {
      *
      * @return a list containing all entities of type T found; the list can be empty.
      */
-    List<T> all() throws Exception;
+    Result<List<T>> all();
 
     /**
      * Adds a new entity to the data source.
