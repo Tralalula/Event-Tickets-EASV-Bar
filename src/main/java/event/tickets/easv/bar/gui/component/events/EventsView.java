@@ -11,6 +11,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.TilePane;
+import javafx.util.Callback;
+import org.controlsfx.control.GridCell;
 import org.controlsfx.control.GridView;
 
 public class EventsView implements View {
@@ -30,8 +32,35 @@ public class EventsView implements View {
 
         gridview.setItems(model);
 
+        gridview.setCellWidth(326);
+        gridview.setCellHeight(370);
+
+        gridview.setCellFactory(cell -> eventCell());
         return gridview;
     }
 
+
+    private GridCell<EventModel> eventCell() {
+        return new GridCell<>() {
+            private final Card card = new Card();
+            private final Label title = new Label();
+
+            {
+                card.setHeader(title);
+            }
+
+            @Override
+            protected void updateItem(EventModel item, boolean empty) {
+                super.updateItem(item, empty);
+
+                if (empty || item == null) {
+                    setGraphic(null);
+                } else {
+                    title.textProperty().bind(item.title());
+                    setGraphic(card);
+                }
+            }
+        };
+    }
 
 }
