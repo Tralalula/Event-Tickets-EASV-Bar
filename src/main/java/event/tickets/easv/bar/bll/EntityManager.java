@@ -16,7 +16,18 @@ public class EntityManager {
     private final Map<Class<?>, DAO<?>> daos = new HashMap<>();
 
     public EntityManager() {
-        daos.put(Event.class, new EventDAO());
+        registerDao(Event.class, new EventDAO());
+    }
+
+    /**
+     * Registers an entity with its corresponding DAO
+     *
+     * @param entity the Class object representing the entity type
+     * @param dao the entity's corresponding DAO
+     * @param <T> the type of entity
+     */
+    public <T> void registerDao(Class<T> entity, DAO<T> dao) {
+        daos.put(entity, dao);
     }
 
     /**
