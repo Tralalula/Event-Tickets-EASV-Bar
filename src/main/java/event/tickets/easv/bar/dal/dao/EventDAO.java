@@ -20,7 +20,7 @@ public class EventDAO implements DAO<Event> {
 
     @Override
     public Result<Optional<Event>> get(int id) {
-        return new Result.Failure<>(null);
+        return null;
     }
 
     @Override
@@ -30,17 +30,17 @@ public class EventDAO implements DAO<Event> {
 
     @Override
     public Result<Event> add(Event event) {
-        return new Result.Failure<>(null);
+        return null;
     }
 
     @Override
     public Result<Boolean> update(Event original, Event updatedData) {
-        return new Result.Failure<>(null);
+        return null;
     }
 
     @Override
     public Result<Boolean> delete(Event event) {
-        return new Result.Failure<>(null);
+        return null;
     }
 
 

@@ -1,5 +1,6 @@
 package event.tickets.easv.bar.gui.util;
 
+import event.tickets.easv.bar.util.FailureType;
 import event.tickets.easv.bar.util.Result;
 import event.tickets.easv.bar.util.Result.Success;
 import event.tickets.easv.bar.util.Result.Failure;
@@ -16,7 +17,7 @@ public class BackgroundExecutor {
                 try {
                     return task.call();
                 } catch (Exception e) {
-                    return new Failure<>(e);
+                    return new Failure<>(FailureType.BACKGROUND_TASK_FAILURE, "An error occurred in a background task", e);
                 }
             }
         };

@@ -3,6 +3,7 @@ package event.tickets.easv.bar.dal.dao;
 import event.tickets.easv.bar.dal.database.DBConnector;
 import event.tickets.easv.bar.dal.database.ResultSetMapper;
 import event.tickets.easv.bar.dal.database.SQLTemplate;
+import event.tickets.easv.bar.util.FailureType;
 import event.tickets.easv.bar.util.Result;
 import event.tickets.easv.bar.util.Result.Success;
 import event.tickets.easv.bar.util.Result.Failure;
@@ -41,7 +42,7 @@ public class DBDaoHelper<T> {
         try {
             setupDBConnector();
         } catch (IOException e) {
-            return new Failure<>(e);
+            return new Failure<>(FailureType.IO_FAILURE, "Failed to read from the data source", e);
         }
 
         List<T> results = new ArrayList<>();
@@ -55,7 +56,7 @@ public class DBDaoHelper<T> {
                 results.add(resultSetMapper.map(rs));
             }
         } catch (SQLException e) {
-            return new Failure<>(e);
+            return new Failure<>(FailureType.DB_DATA_RETRIEVAL_FAILURE, "Failed to retrieve data from the database", e);
         }
 
         return new Success<>(results);
