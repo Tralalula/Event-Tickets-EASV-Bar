@@ -27,11 +27,6 @@ public class MainController {
                 () -> manager.all(Event.class),
                 this::processResult
         );
-/*
-        BackgroundExecutor.performBackgroundTask(
-                () -> manager.all(Event.class),
-                result -> process(result, events -> convertAndSetModels(events, EventModel::fromEntity, model.eventModels()::setAll))
-        );*/
     }
 
     private void processResult(Result<List<Event>> result) {
@@ -50,20 +45,4 @@ public class MainController {
 
         return eventModels;
     }
-
-/*    private <T> void process(Result<List<T>> result, Consumer<List<T>> onSuccess) {
-        switch (result) {
-            case Success<List<T>> s -> onSuccess.accept(s.result());
-            case Failure<List<T>> f -> System.out.println("Error: " + f.cause());
-        }
-    }
-
-    private <T, R> List<R> convert(List<T> entities, Function<T, R> converter) {
-        return entities.stream().map(converter).toList();
-    }
-
-    private <T, R> void convertAndSetModels(List<T> entities, Function<T, R> converter, Consumer<List<R>> modelSetter) {
-        List<R> models = convert(entities, converter);
-        modelSetter.accept(models);
-    }*/
 }
