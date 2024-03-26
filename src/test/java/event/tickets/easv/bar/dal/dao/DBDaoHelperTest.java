@@ -104,4 +104,40 @@ class DBDaoHelperTest {
         var success = (Success<List<Event>>) result;
         assertThat(success.result()).hasSize(20);
     }
+
+    @Test
+    void allEventDataIntegrity() {
+        // Setup
+        runScript(POPULATE_MULTIPLE);
+
+        // Call
+        Result<List<Event>> result = daoHelper.all();
+
+        // Check
+        assertThat(result).isInstanceOf(Success.class);
+        var success = (Success<List<Event>>) result;
+        var events = List.of(
+                new Event(1, "International Food Festival"),
+                new Event(2, "Vegan Cooking Workshop"),
+                new Event(3, "Farm to Table Dinner"),
+                new Event(4, "Wine and Cheese Night"),
+                new Event(5, "Italian Pasta Making Class"),
+                new Event(6, "French Cuisine Tasting"),
+                new Event(7, "Sushi Rolling Workshop"),
+                new Event(8, "Chocolate Making Class"),
+                new Event(9, "BBQ and Grill Cook-off"),
+                new Event(10, "Farmers Market Tour"),
+                new Event(11, "Pastry and Baking Workshop"),
+                new Event(12,"Coffee Tasting Experience"),
+                new Event(13, "Beer Brewing Demonstration"),
+                new Event(14, "Gourmet Burger Festival"),
+                new Event(15, "Mexican Fiesta Night"),
+                new Event(16, "Street Food Extravaganza"),
+                new Event(17, "Ice Cream Social"),
+                new Event(18, "Pizza Making Party"),
+                new Event(19, "Seafood Feast"),
+                new Event(20, "Culinary Arts Festival")
+        );
+        assertThat(success.result()).isEqualTo(events);
+    }
 }
