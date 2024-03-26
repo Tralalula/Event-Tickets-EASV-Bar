@@ -36,7 +36,7 @@ public class DBConnector {
         dataSource.setTrustServerCertificate(true);
     }
 
-    public Connection connection() throws SQLServerException {
+    public Connection connection() throws SQLException {
         return dataSource.getConnection();
     }
 

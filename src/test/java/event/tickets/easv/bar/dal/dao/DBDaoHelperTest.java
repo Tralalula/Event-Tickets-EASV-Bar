@@ -18,6 +18,8 @@ import java.util.List;
 
 import static com.google.common.truth.Truth.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class DBDaoHelperTest {
     private static final String PATH = "src/test/java/event/tickets/easv/bar/dal/database/";
@@ -173,13 +175,15 @@ class DBDaoHelperTest {
         assertThrows(IllegalArgumentException.class, () -> daoHelper.all());
     }
 
-    void allEventDBConnectionFailure() throws IOException {
-        dbConnector = new DBConnector(TEST_DB_FAULTY_CONFIG);
-        daoHelper.setDbConnector(dbConnector);
+    @Test
+    void allEventDBConnectionFailure() throws SQLException {
+        // Setup
+        var mockDbConnector = mock(DBConnector.class);
+        when(mockDbConnector.connection()).thenThrow(new SQLException("Connection failed"));
+        daoHelper.setDbConnector(mockDbConnector);
 
         // Call
         Result<List<Event>> result = daoHelper.all();
-        System.out.println(result);
 
         // Check
         assertThat(result).isInstanceOf(Failure.class);
