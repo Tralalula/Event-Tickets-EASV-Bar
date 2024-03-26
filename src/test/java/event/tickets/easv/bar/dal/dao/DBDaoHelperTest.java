@@ -25,7 +25,6 @@ class DBDaoHelperTest {
     private static final String PATH = "src/test/java/event/tickets/easv/bar/dal/database/";
 
     private static final String TEST_DB_CONFIG = PATH + "dbconfig.test.properties";
-    private static final String TEST_DB_FAULTY_CONFIG = PATH + "dbconfig.faulty.properties";
 
     private static final String EMPTY_DB_SETUP = PATH + "test_dbsetup.sql";
     private static final String POPULATE_SINGLE = PATH + "test_dbsetup_populate_single.sql";
