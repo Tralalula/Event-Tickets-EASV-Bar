@@ -1,5 +1,6 @@
 package event.tickets.easv.bar.gui.widgets;
 
+import event.tickets.easv.bar.util.AppConfig;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableStringValue;
 import javafx.scene.image.Image;
@@ -8,6 +9,8 @@ import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundImage;
 import javafx.scene.layout.BackgroundSize;
 import javafx.scene.shape.Rectangle;
+
+import java.nio.file.Paths;
 
 public class Images {
     public static ImageView scaledRoundedImage(String url, double fitWidth, double fitHeight, double rounding) {
@@ -22,7 +25,11 @@ public class Images {
     }
 
     public static ImageView scaledImage(String url, double fitWidth, double fitHeight) {
-        ImageView results = new ImageView(new Image(url, true));
+        Image image = new Image(url, true);
+        image.exceptionProperty().addListener((obs, ov, nv) -> {
+            if (nv != null) System.out.println("FEJL: " + nv.getMessage());
+        });
+        ImageView results = new ImageView();
         results.setFitWidth(fitWidth);
         results.setFitHeight(fitHeight);
         return results;
@@ -37,7 +44,10 @@ public class Images {
     }
 
     public static ImageView observableBoundRoundedImage(ObservableStringValue urlProperty, double fitWidth, double fitHeight, double rounding) {
-        ImageView results = scaledRoundedImage("file:" + urlProperty.get(), fitWidth, fitHeight, rounding);
+        String absolutePath = "file:///" + Paths.get("").toAbsolutePath() + AppConfig.IMAGE_DIR + urlProperty.get().replace("\\", "/");
+        System.out.println(absolutePath);
+
+        ImageView results = scaledRoundedImage(absolutePath, fitWidth, fitHeight, rounding);
 
         urlProperty.addListener((obs, ov, nv) -> {
             if (!nv.isEmpty() && nv != null) results.setImage(new Image(nv, true));
