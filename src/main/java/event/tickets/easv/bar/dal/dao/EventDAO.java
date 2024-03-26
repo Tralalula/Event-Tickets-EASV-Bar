@@ -1,7 +1,6 @@
 package event.tickets.easv.bar.dal.dao;
 
 import event.tickets.easv.bar.be.Event;
-import event.tickets.easv.bar.dal.database.DBDaoHelper;
 import event.tickets.easv.bar.dal.database.SQLTemplate;
 import event.tickets.easv.bar.dal.database.ResultSetMapper;
 import event.tickets.easv.bar.util.Result;

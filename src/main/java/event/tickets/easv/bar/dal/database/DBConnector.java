@@ -14,8 +14,12 @@ public class DBConnector {
     private final SQLServerDataSource dataSource;
 
     public DBConnector() throws IOException {
+        this(AppConfig.CONFIG_FILE);
+    }
+
+    public DBConnector(String propertiesFilePath) throws IOException {
         var properties = new Properties();
-        properties.load(new FileInputStream(AppConfig.CONFIG_FILE));
+        properties.load(new FileInputStream(propertiesFilePath));
 
         dataSource = new SQLServerDataSource();
         dataSource.setServerName(properties.getProperty(AppConfig.DB_SERVER));

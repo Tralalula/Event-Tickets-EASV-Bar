@@ -1,5 +1,8 @@
-package event.tickets.easv.bar.dal.database;
+package event.tickets.easv.bar.dal.dao;
 
+import event.tickets.easv.bar.dal.database.DBConnector;
+import event.tickets.easv.bar.dal.database.ResultSetMapper;
+import event.tickets.easv.bar.dal.database.SQLTemplate;
 import event.tickets.easv.bar.util.Result;
 import event.tickets.easv.bar.util.Result.Success;
 import event.tickets.easv.bar.util.Result.Failure;
@@ -47,5 +50,9 @@ public class DBDaoHelper<T> {
         if (dbConnector == null) {
             dbConnector = new DBConnector();
         }
+    }
+
+    void setDbConnector(DBConnector dbConnector) {
+        this.dbConnector = dbConnector;
     }
 }

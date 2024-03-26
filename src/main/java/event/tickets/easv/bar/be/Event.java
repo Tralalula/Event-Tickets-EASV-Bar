@@ -1,5 +1,7 @@
 package event.tickets.easv.bar.be;
 
+import java.util.Objects;
+
 public class Event {
     private static final int TITLE_MAX_LENGTH = 255;
 
@@ -49,5 +51,21 @@ public class Event {
         return "Event{" +
                 "title='" + title + '\'' +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Event event = (Event) o;
+
+        if (getId() != event.getId()) return false;
+        return getTitle().equals(event.getTitle());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.id, this.title);
     }
 }
