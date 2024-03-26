@@ -4,6 +4,7 @@ import event.tickets.easv.bar.be.Event;
 import event.tickets.easv.bar.dal.database.SQLTemplate;
 import event.tickets.easv.bar.dal.database.ResultSetMapper;
 import event.tickets.easv.bar.util.Result;
+import org.jetbrains.annotations.NotNull;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -57,7 +58,7 @@ class EventSQLTemplate implements SQLTemplate<Event> {
 
 class EventResultSetMapper implements ResultSetMapper<Event> {
     @Override
-    public Event map(ResultSet rs) throws SQLException {
+    public Event map(@NotNull ResultSet rs) throws SQLException {
         int id = rs.getInt("id");
         String title = rs.getString("title");
         return new Event(id, title);
