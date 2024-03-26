@@ -2,7 +2,7 @@ USE EventManager_TEST;
 GO
 
 INSERT INTO Event (title)
-VALUES
+VALUES -- 20 items
     ('International Food Festival'),
     ('Vegan Cooking Workshop'),
     ('Farm to Table Dinner'),
@@ -22,6 +22,5 @@ VALUES
     ('Ice Cream Social'),
     ('Pizza Making Party'),
     ('Seafood Feast'),
-    ('Culinary Arts Festival'),
-    ('Test');
+    ('Culinary Arts Festival');
 GO

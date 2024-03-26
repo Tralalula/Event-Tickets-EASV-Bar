@@ -24,6 +24,7 @@ class DBDaoHelperTest {
 
     private static final String EMPTY_DB_SETUP = PATH + "test_dbsetup.sql";
     private static final String POPULATE_SINGLE = PATH + "test_dbsetup_populate_single.sql";
+    private static final String POPULATE_MULTIPLE = PATH + "test_dbsetup_populate_multiple.sql";
 
     private DBConnector dbConnector;
     private DBDaoHelper<Event> daoHelper;
@@ -88,5 +89,19 @@ class DBDaoHelperTest {
         var success = (Success<List<Event>>) result;
         assertThat(success.result()).hasSize(1);
         assertThat(success.result().getFirst()).isEqualTo(new Event(1, "Single"));
+    }
+
+    @Test
+    void allEventMultipleEvents() {
+        // Setup
+        runScript(POPULATE_MULTIPLE);
+
+        // Call
+        Result<List<Event>> result = daoHelper.all();
+
+        // Check
+        assertThat(result).isInstanceOf(Success.class);
+        var success = (Success<List<Event>>) result;
+        assertThat(success.result()).hasSize(20);
     }
 }
