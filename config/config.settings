@@ -1,0 +1,4 @@
+db.server=localhost
+db.database=EASV
+db.user=admin
+db.password=admin1234
