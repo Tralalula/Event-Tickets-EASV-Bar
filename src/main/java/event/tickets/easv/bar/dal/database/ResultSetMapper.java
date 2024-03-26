@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import org.jetbrains.annotations.NotNull;
 
+@FunctionalInterface
 public interface ResultSetMapper<T> {
     /**
      * Consumes a result set and produces a corresponding entity
