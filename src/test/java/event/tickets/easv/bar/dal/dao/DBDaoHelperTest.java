@@ -17,6 +17,7 @@ import java.sql.Statement;
 import java.util.List;
 
 import static com.google.common.truth.Truth.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class DBDaoHelperTest {
     private static final String PATH = "src/test/java/event/tickets/easv/bar/dal/database/";
@@ -28,6 +29,7 @@ class DBDaoHelperTest {
     private static final String POPULATE_SINGLE = PATH + "test_dbsetup_populate_single.sql";
     private static final String POPULATE_MULTIPLE = PATH + "test_dbsetup_populate_multiple.sql";
     private static final String POPULATE_BOUNDARY_CONDITIONS = PATH + "test_dbsetup_populate_boundary_conditions.sql";
+    private static final String POPULATE_INVALID_DATA = PATH + "test_dbsetup_populate_invalid_data.sql";
 
     private DBConnector dbConnector;
     private DBDaoHelper<Event> daoHelper;
@@ -160,6 +162,15 @@ class DBDaoHelperTest {
                 new Event(2, "A".repeat(255))
         );
         assertThat(success.result()).isEqualTo(events);
+    }
+
+    @Test
+    void allEventInvalidData() {
+        // Setup
+        runScript(POPULATE_INVALID_DATA);
+
+        // Call & Check
+        assertThrows(IllegalArgumentException.class, () -> daoHelper.all());
     }
 
     void allEventDBConnectionFailure() throws IOException {
