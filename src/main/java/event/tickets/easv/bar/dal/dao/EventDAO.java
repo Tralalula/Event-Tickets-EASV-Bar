@@ -8,6 +8,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -61,6 +63,12 @@ class EventResultSetMapper implements ResultSetMapper<Event> {
     public Event map(@NotNull ResultSet rs) throws SQLException {
         int id = rs.getInt("id");
         String title = rs.getString("title");
-        return new Event(id, title);
+        LocalDate startDate = rs.getDate("startDate").toLocalDate();
+        LocalDate endDate = rs.getDate("endDate") != null ? rs.getDate("endDate").toLocalDate() : null;
+        LocalTime startTime = rs.getTime("startTime").toLocalTime();
+        LocalTime endTime = rs.getTime("endTime") != null ? rs.getTime("endTime").toLocalTime() : null;
+        String imageName = rs.getString("imageName");
+
+        return new Event(id, title, startDate, endDate, startTime, endTime, imageName);
     }
 }

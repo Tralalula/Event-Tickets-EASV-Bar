@@ -9,6 +9,8 @@ import event.tickets.easv.bar.util.Result.Failure;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 import static com.google.common.truth.Truth.assertThat;
@@ -33,7 +35,16 @@ class EntityManagerTest {
     @Test
     void allSuccess() {
         // Setup
-        List<Event> expected = List.of(new Event(1, "a"), new Event(2, "b"));
+        var startDate = LocalDate.now();
+        LocalDate endDate = null;
+        var startTime = LocalTime.now();
+        LocalTime endTime = null;
+        var imageName = "sample.png";
+
+        List<Event> expected = List.of(
+                new Event(1, "a", startDate, endDate, startTime, endTime, imageName),
+                new Event(2, "b", startDate, endDate, startTime, endTime, imageName)
+        );
         when(mockEventDAO.all()).thenReturn(new Success<>(expected));
 
         // Call
