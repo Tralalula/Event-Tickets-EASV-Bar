@@ -29,7 +29,6 @@ public class EventsView implements View {
 
         var gridview = new GridView<EventModel>();
 
-
         gridview.setItems(model);
 
         gridview.setCellWidth(326);
