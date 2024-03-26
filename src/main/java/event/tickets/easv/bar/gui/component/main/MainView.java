@@ -82,7 +82,6 @@ public class MainView implements View {
         return new StackPane(loginView, dashboardView, eventsView, showEventView);
     }
 
-
     private Region createCrumbs() {
         crumbs = new Breadcrumbs<>();
         crumbs.setSelectedCrumb(BreadcrumbBuilder.buildBreadCrumbs(ViewHandler.activeViewProperty().get()));

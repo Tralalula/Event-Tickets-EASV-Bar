@@ -1,5 +1,8 @@
 package event.tickets.easv.bar.util;
 
+/**
+ * Enumerates types of failures that can occur within the application.
+ */
 public enum FailureType {
     DB_CONNECTION_FAILURE,
     IO_FAILURE,
