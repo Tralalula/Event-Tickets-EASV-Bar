@@ -1,26 +1,26 @@
-package event.tickets.easv.bar.dal.database.dao;
+package event.tickets.easv.bar.dal.dao;
 
 import event.tickets.easv.bar.be.Event;
-import event.tickets.easv.bar.dal.database.common.*;
-import event.tickets.easv.bar.dal.database.common.ResultSetMapper;
+import event.tickets.easv.bar.dal.database.DBDaoHelper;
+import event.tickets.easv.bar.dal.database.SQLTemplate;
+import event.tickets.easv.bar.dal.database.ResultSetMapper;
 import event.tickets.easv.bar.util.Result;
 
-import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
 public class EventDAO implements DAO<Event> {
-    private final DAOHelper<Event> daoHelper;
+    private final DBDaoHelper<Event> daoHelper;
 
     public EventDAO() {
-        this.daoHelper = new DAOHelper<>(new EventSQLTemplate(), new EventResultSetMapper());
+        this.daoHelper = new DBDaoHelper<>(new EventSQLTemplate(), new EventResultSetMapper());
     }
 
     @Override
-    public Optional<Event> get(int id) throws Exception {
-        return Optional.empty();
+    public Result<Optional<Event>> get(int id) {
+        return new Result.Failure<>(null);
     }
 
     @Override
@@ -29,19 +29,20 @@ public class EventDAO implements DAO<Event> {
     }
 
     @Override
-    public Event add(Event event) throws Exception {
-        return null;
+    public Result<Event> add(Event event) {
+        return new Result.Failure<>(null);
     }
 
     @Override
-    public boolean update(Event original, Event updatedData) throws Exception {
-        return false;
+    public Result<Boolean> update(Event original, Event updatedData) {
+        return new Result.Failure<>(null);
     }
 
     @Override
-    public boolean delete(Event event) throws Exception {
-        return false;
+    public Result<Boolean> delete(Event event) {
+        return new Result.Failure<>(null);
     }
+
 
     public static void main(String[] args) throws Exception {
         System.out.println(new EventDAO().all());

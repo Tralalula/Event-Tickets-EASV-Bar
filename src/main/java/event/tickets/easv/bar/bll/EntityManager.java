@@ -1,11 +1,10 @@
 package event.tickets.easv.bar.bll;
 
 import event.tickets.easv.bar.be.Event;
-import event.tickets.easv.bar.dal.database.common.DAO;
-import event.tickets.easv.bar.dal.database.dao.EventDAO;
+import event.tickets.easv.bar.dal.dao.DAO;
+import event.tickets.easv.bar.dal.dao.EventDAO;
 import event.tickets.easv.bar.util.Result;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

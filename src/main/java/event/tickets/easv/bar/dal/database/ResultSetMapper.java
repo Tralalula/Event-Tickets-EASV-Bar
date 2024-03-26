@@ -1,4 +1,4 @@
-package event.tickets.easv.bar.dal.database.common;
+package event.tickets.easv.bar.dal.database;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

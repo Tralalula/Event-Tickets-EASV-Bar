@@ -1,4 +1,4 @@
-package event.tickets.easv.bar.dal.database.common;
+package event.tickets.easv.bar.dal.dao;
 
 import event.tickets.easv.bar.util.Result;
 
@@ -7,9 +7,7 @@ import java.util.Optional;
 
 /**
  * DAO (Data Access Object) represents a generic interface for performing CRUD (Create, Read, Update, Delete)
- * operations on a collection of entities of type T.<br>
- * <br>
- * All methods throw an Exception if a problem occurs during data access.
+ * operations on entities of type T.<br>
  *
  * @param <T> the type of the entity that the DAO will manage.
  */
@@ -18,14 +16,15 @@ public interface DAO<T> {
      * Retrieves an entity by its identifier.
      *
      * @param id the unique identifier of the entity to retrieve.
-     * @return an optional containing the retrieved entity; otherwise an empty Optional.
+     * @return a result containing an optional containing the retrieved entity; otherwise an empty Optional.
      */
-    Optional<T> get(int id) throws Exception;
+    Result<Optional<T>> get(int id);
 
     /**
      * Retrieves all entities of type T.
      *
-     * @return a list containing all entities of type T found; the list can be empty.
+     * @return a result containing a list of all entities of type T found.
+     *
      */
     Result<List<T>> all();
 
@@ -35,7 +34,7 @@ public interface DAO<T> {
      * @param t the entity to add.
      * @return the added entity.
      */
-    T add(T t) throws Exception;
+    Result<T> add(T t);
 
     /**
      * Updates an existing entity with new data.
@@ -44,7 +43,7 @@ public interface DAO<T> {
      * @param updatedData the entity containing the updated data.
      * @return true if the update was successful; false otherwise.
      */
-    boolean update(T original, T updatedData) throws Exception;
+    Result<Boolean> update(T original, T updatedData);
 
     /**
      * Deletes an entity from the data source.
@@ -52,5 +51,5 @@ public interface DAO<T> {
      * @param t the entity to delete.
      * @return true if the deletion was successful; false otherwise.
      */
-    boolean delete(T t) throws Exception;
+    Result<Boolean> delete(T t);
 }

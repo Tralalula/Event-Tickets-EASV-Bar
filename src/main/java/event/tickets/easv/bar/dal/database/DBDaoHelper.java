@@ -1,4 +1,4 @@
-package event.tickets.easv.bar.dal.database.common;
+package event.tickets.easv.bar.dal.database;
 
 import event.tickets.easv.bar.util.Result;
 import event.tickets.easv.bar.util.Result.Success;
@@ -9,12 +9,12 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DAOHelper<T> {
+public class DBDaoHelper<T> {
     private DBConnector dbConnector = null;
     private final SQLTemplate<T> sqlTemplate;
     private final ResultSetMapper<T> resultSetMapper;
 
-    public DAOHelper(SQLTemplate<T> sqlTemplate, ResultSetMapper<T> resultSetMapper) {
+    public DBDaoHelper(SQLTemplate<T> sqlTemplate, ResultSetMapper<T> resultSetMapper) {
         this.sqlTemplate = sqlTemplate;
         this.resultSetMapper = resultSetMapper;
     }
