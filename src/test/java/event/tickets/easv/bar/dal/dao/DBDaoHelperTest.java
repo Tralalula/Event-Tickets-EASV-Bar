@@ -74,4 +74,19 @@ class DBDaoHelperTest {
         var success = (Success<List<Event>>) result;
         assertThat(success.result()).isEmpty();
     }
+
+    @Test
+    void allEventSingleEvent() {
+        // Setup
+        runScript(POPULATE_SINGLE);
+
+        // Call
+        Result<List<Event>> result = daoHelper.all();
+
+        // Check
+        assertThat(result).isInstanceOf(Success.class);
+        var success = (Success<List<Event>>) result;
+        assertThat(success.result()).hasSize(1);
+        assertThat(success.result().getFirst()).isEqualTo(new Event(1, "Single"));
+    }
 }
