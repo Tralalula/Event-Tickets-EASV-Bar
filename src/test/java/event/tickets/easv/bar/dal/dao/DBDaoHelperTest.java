@@ -4,6 +4,7 @@ import event.tickets.easv.bar.be.Event;
 import event.tickets.easv.bar.dal.database.DBConnector;
 import event.tickets.easv.bar.util.Result;
 import event.tickets.easv.bar.util.Result.Success;
+import event.tickets.easv.bar.util.Result.Failure;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -20,11 +21,13 @@ import static com.google.common.truth.Truth.assertThat;
 class DBDaoHelperTest {
     private static final String PATH = "src/test/java/event/tickets/easv/bar/dal/database/";
 
-    private static final String TEST_DB_CONFIG_PATH = PATH + "dbconfig.test.properties";
+    private static final String TEST_DB_CONFIG = PATH + "dbconfig.test.properties";
+    private static final String TEST_DB_FAULTY_CONFIG = PATH + "dbconfig.faulty.properties";
 
     private static final String EMPTY_DB_SETUP = PATH + "test_dbsetup.sql";
     private static final String POPULATE_SINGLE = PATH + "test_dbsetup_populate_single.sql";
     private static final String POPULATE_MULTIPLE = PATH + "test_dbsetup_populate_multiple.sql";
+    private static final String POPULATE_BOUNDARY_CONDITIONS = PATH + "test_dbsetup_populate_boundary_conditions.sql";
 
     private DBConnector dbConnector;
     private DBDaoHelper<Event> daoHelper;
@@ -33,7 +36,7 @@ class DBDaoHelperTest {
     void setup() {
         dbConnector = null;
         try {
-            dbConnector = new DBConnector(TEST_DB_CONFIG_PATH);
+            dbConnector = new DBConnector(TEST_DB_CONFIG);
         } catch (IOException e) {
             throw new RuntimeException("Error trying to read TEST_DB_CONFIG_PATH in DBDaoHelperTest.setup().\n " + e);
         }
@@ -44,7 +47,7 @@ class DBDaoHelperTest {
     }
 
     private void runScript(String path) {
-        String script = null;
+        String script;
         try {
             script = new String(Files.readAllBytes(Paths.get(path)));
         } catch (IOException e) {
@@ -139,5 +142,35 @@ class DBDaoHelperTest {
                 new Event(20, "Culinary Arts Festival")
         );
         assertThat(success.result()).isEqualTo(events);
+    }
+
+    @Test
+    void allEventBoundaryConditions() {
+        // Setup
+        runScript(POPULATE_BOUNDARY_CONDITIONS);
+
+        // Call
+        Result<List<Event>> result = daoHelper.all();
+
+        // Check
+        assertThat(result).isInstanceOf(Success.class);
+        var success = (Success<List<Event>>) result;
+        var events = List.of(
+                new Event(1, "A"),
+                new Event(2, "A".repeat(255))
+        );
+        assertThat(success.result()).isEqualTo(events);
+    }
+
+    void allEventDBConnectionFailure() throws IOException {
+        dbConnector = new DBConnector(TEST_DB_FAULTY_CONFIG);
+        daoHelper.setDbConnector(dbConnector);
+
+        // Call
+        Result<List<Event>> result = daoHelper.all();
+        System.out.println(result);
+
+        // Check
+        assertThat(result).isInstanceOf(Failure.class);
     }
 }
