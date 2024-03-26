@@ -1,6 +1,9 @@
 package event.tickets.easv.bar.gui.common;
 
 public enum ViewType {
+    //Auth
+    AUTH(WindowType.AUTH),
+
     // Auth Views
     LOGIN(WindowType.AUTH),
     FORGOT_PASSWORD(WindowType.AUTH),

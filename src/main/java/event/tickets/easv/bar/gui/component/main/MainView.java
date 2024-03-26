@@ -5,7 +5,6 @@ import atlantafx.base.theme.Styles;
 import event.tickets.easv.bar.gui.common.ViewHandler;
 import event.tickets.easv.bar.gui.common.ViewType;
 import event.tickets.easv.bar.gui.common.WindowType;
-import event.tickets.easv.bar.gui.component.auth.LoginView;
 import event.tickets.easv.bar.gui.common.View;
 import event.tickets.easv.bar.gui.component.dashboard.DashboardView;
 import event.tickets.easv.bar.gui.component.events.EventsView;
@@ -23,7 +22,7 @@ public class MainView implements View {
     private final MainModel model;
     private final MainController controller;
 
-    private final Region loginView;
+    private final Region authView;
     private final Region dashboardView;
     private final Region eventsView;
     private final Region showEventView;
@@ -34,7 +33,13 @@ public class MainView implements View {
         this.model = new MainModel();
         this.controller = new MainController(model);
 
-        this.loginView = new LoginView().getView();
+
+        try {
+            this.authView = new AuthView().getView();
+        } catch (Exception e) {
+            throw new RuntimeException("Fejl opstået");
+        }
+
         this.dashboardView = new DashboardView().getView();
         this.eventsView = new EventsView(model.eventModels()).getView();
         this.showEventView = new ShowEventView().getView();
@@ -74,12 +79,13 @@ public class MainView implements View {
     }
 
     private Region content() {
-        NodeUtils.bindVisibility(loginView, ViewHandler.activeViewProperty().isEqualTo(ViewType.LOGIN));
+        NodeUtils.bindVisibility(authView, ViewHandler.activeWindowProperty().isEqualTo(WindowType.AUTH));
+
         NodeUtils.bindVisibility(dashboardView, ViewHandler.activeViewProperty().isEqualTo(ViewType.DASHBOARD));
         NodeUtils.bindVisibility(eventsView, ViewHandler.activeViewProperty().isEqualTo(ViewType.EVENTS));
         NodeUtils.bindVisibility(showEventView, ViewHandler.activeViewProperty().isEqualTo(ViewType.SHOW_EVENT));
 
-        return new StackPane(loginView, dashboardView, eventsView, showEventView);
+        return new StackPane(authView, dashboardView, eventsView, showEventView);
     }
 
     private Region createCrumbs() {

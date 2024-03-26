@@ -13,3 +13,7 @@
 .actionable {
     -fx-cursor: hand;
 }
+
+.underline_hover:hover {
+    -fx-underline: true;
+}
