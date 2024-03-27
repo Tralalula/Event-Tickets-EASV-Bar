@@ -48,6 +48,7 @@ public class MainView implements View {
     @Override
     public Region getView() {
         var results = new BorderPane();
+//        results.getStylesheets().add(Objects.requireNonNull(this.getClass().getResource("/css/debug.css")).toExternalForm());
         results.getStylesheets().add(Objects.requireNonNull(this.getClass().getResource("/css/style.css")).toExternalForm());
         results.getStyleClass().add(Styles.BG_SUBTLE);
         results.getStyleClass().add("main");

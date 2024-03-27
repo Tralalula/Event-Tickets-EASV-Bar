@@ -17,3 +17,11 @@
 .underline_hover:hover {
     -fx-underline: true;
 }
+
+.event-card .header {
+    -fx-padding: 0;
+}
+
+.event-card .container {
+    -fx-padding: 0 0 8 0;
+}

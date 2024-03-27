@@ -1,27 +1,23 @@
 package event.tickets.easv.bar.gui.component.events;
 
 import atlantafx.base.controls.Card;
+import atlantafx.base.theme.Styles;
 import event.tickets.easv.bar.gui.common.EventModel;
 import event.tickets.easv.bar.gui.common.View;
 import event.tickets.easv.bar.gui.common.ViewHandler;
 import event.tickets.easv.bar.gui.common.ViewType;
-import event.tickets.easv.bar.gui.widgets.Images;
+import event.tickets.easv.bar.gui.util.StyleConfig;
 import event.tickets.easv.bar.util.AppConfig;
-import javafx.application.Platform;
 import javafx.collections.ObservableList;
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.TilePane;
-import javafx.scene.layout.VBox;
-import javafx.util.Callback;
+import javafx.scene.layout.*;
 import org.controlsfx.control.GridCell;
 import org.controlsfx.control.GridView;
 
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
@@ -47,46 +43,6 @@ public class EventsView implements View {
 
         gridview.setCellFactory(cell -> eventCell());
 
-/*
-        Card c = new Card();
-        c.setPrefWidth(326);
-        c.setPrefHeight(370);
-*/
-/*        Image img = new Image("file:/../data/event_images/sample.png", true);
-        ImageView imgView = new ImageView();
-        img.progressProperty().addListener((obs, ov, nv) -> {
-            if (nv.doubleValue() == 1.0) {
-                Platform.runLater(() -> {
-                    imgView.setImage(img);
-                    imgView.setFitWidth(326);
-                    imgView.setFitHeight(160);
-                    imgView.setPreserveRatio(true);
-                    c.setHeader(imgView);
-                });
-            }
-        });*//*
-
-
-        Path currentRelativePath = Paths.get("");
-        String s = currentRelativePath.toAbsolutePath().toString();
-        String absolutePath = s + "/data/event_images/sample.png";
-
-        System.out.println("currentRelativePath: " + currentRelativePath);
-        System.out.println("s: " + s);
-        System.out.println("absolutePath: " + absolutePath);
-
-        var img = new Image("file:///" + absolutePath.replace("\\", "/"), true);
-        var imgView = new ImageView(img);
-        c.setHeader(Images);
-
-        img.exceptionProperty().addListener((observable, oldValue, exception) -> {
-            if (exception != null) {
-                System.out.println("FEJL: " + exception.getMessage());
-            }
-        });
-*/
-
-
         return gridview;
     }
 
@@ -98,16 +54,28 @@ public class EventsView implements View {
             private final Label title = new Label();
 
             {
+                title.getStyleClass().add(Styles.TITLE_3);
+
+                card.getStyleClass().add(StyleConfig.EVENT_CARD);
+
                 card.setMinWidth(336);
                 card.setMinHeight(370);
                 card.setMaxWidth(336);
                 card.setMaxHeight(370);
+                card.setPrefHeight(370);
+                card.setPrefWidth(336);
 
-                imageView.setFitWidth(314);
+                imageView.setFitWidth(335);
                 imageView.setFitHeight(160);
+                StackPane.setAlignment(imageView, Pos.TOP_CENTER);
+//                imageView.setPreserveRatio(true);
 
                 card.setHeader(imageView);
+
                 card.setSubHeader(title);
+//                card.setSubHeader(title);
+                card.setBody(new Label("asdasd"));
+                card.setFooter(new Label("283 tickets sold"));
             }
 
             @Override
@@ -120,8 +88,7 @@ public class EventsView implements View {
                     Image img = getImage(item.imageName().get()); // skal test hvis observable ikke bliver udfyldt med det samme.
                     imageView.setImage(img);
 
-
-                    title.textProperty().bind(item.imageName());
+                    title.textProperty().bind(item.title());
                     setGraphic(card);
                 }
             }

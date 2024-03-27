@@ -1,0 +1,23 @@
+.card {
+    -fx-border-color: blue;
+}
+
+.card .header {
+    -fx-border-color: red;
+}
+
+.card .sub-header {
+    -fx-border-color: green;
+}
+
+.card .body {
+    -fx-border-color: purple;
+}
+
+.card .footer {
+    -fx-border-color: brown;
+}
+
+.card .container {
+    -fx-border-color: darkorange;
+}
