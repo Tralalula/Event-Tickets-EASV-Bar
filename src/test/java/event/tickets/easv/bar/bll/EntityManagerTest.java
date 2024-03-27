@@ -35,15 +35,16 @@ class EntityManagerTest {
     @Test
     void allSuccess() {
         // Setup
+        var imageName = "sample.png";
+        var location = "6700, Esbjerg";
         var startDate = LocalDate.now();
         LocalDate endDate = null;
         var startTime = LocalTime.now();
         LocalTime endTime = null;
-        var imageName = "sample.png";
 
         List<Event> expected = List.of(
-                new Event(1, "a", startDate, endDate, startTime, endTime, imageName),
-                new Event(2, "b", startDate, endDate, startTime, endTime, imageName)
+                new Event(1, "a", imageName, location, startDate, endDate, startTime, endTime, "", ""),
+                new Event(2, "b", imageName, location, startDate, endDate, startTime, endTime, "", "")
         );
         when(mockEventDAO.all()).thenReturn(new Success<>(expected));
 

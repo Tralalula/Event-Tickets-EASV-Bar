@@ -96,7 +96,7 @@ class DBDaoHelperTest {
         assertThat(result).isInstanceOf(Success.class);
         var success = (Success<List<Event>>) result;
         assertThat(success.result()).hasSize(1);
-        assertThat(success.result().getFirst()).isEqualTo(new Event(1, "Single", LocalDate.now(), null, LocalTime.now(), null, ""));
+        assertThat(success.result().getFirst()).isEqualTo(new Event(1, "Single", "", "", LocalDate.now(), null, LocalTime.now(), null, "", ""));
     }
 
     @Test
@@ -125,33 +125,36 @@ class DBDaoHelperTest {
         assertThat(result).isInstanceOf(Success.class);
         var success = (Success<List<Event>>) result;
 
+        var imageName = "sample.png";
+        var location = "6700, Esbjerg";
         var startDate = LocalDate.now();
         LocalDate endDate = null;
         var startTime = LocalTime.now();
         LocalTime endTime = null;
-        var imageName = "sample.png";
+        var locationGuidance = "";
+        var extraInfo = "";
 
         var events = List.of(
-                new Event(1, "International Food Festival", startDate, endDate, startTime, endTime, imageName),
-                new Event(2, "Vegan Cooking Workshop", startDate, endDate, startTime, endTime, imageName),
-                new Event(3, "Farm to Table Dinner", startDate, endDate, startTime, endTime, imageName),
-                new Event(4, "Wine and Cheese Night", startDate, endDate, startTime, endTime, imageName),
-                new Event(5, "Italian Pasta Making Class", startDate, endDate, startTime, endTime, imageName),
-                new Event(6, "French Cuisine Tasting", startDate, endDate, startTime, endTime, imageName),
-                new Event(7, "Sushi Rolling Workshop", startDate, endDate, startTime, endTime, imageName),
-                new Event(8, "Chocolate Making Class", startDate, endDate, startTime, endTime, imageName),
-                new Event(9, "BBQ and Grill Cook-off", startDate, endDate, startTime, endTime, imageName),
-                new Event(10, "Farmers Market Tour", startDate, endDate, startTime, endTime, imageName),
-                new Event(11, "Pastry and Baking Workshop", startDate, endDate, startTime, endTime, imageName),
-                new Event(12,"Coffee Tasting Experience", startDate, endDate, startTime, endTime, imageName),
-                new Event(13, "Beer Brewing Demonstration", startDate, endDate, startTime, endTime, imageName),
-                new Event(14, "Gourmet Burger Festival", startDate, endDate, startTime, endTime, imageName),
-                new Event(15, "Mexican Fiesta Night", startDate, endDate, startTime, endTime, imageName),
-                new Event(16, "Street Food Extravaganza", startDate, endDate, startTime, endTime, imageName),
-                new Event(17, "Ice Cream Social", startDate, endDate, startTime, endTime, imageName),
-                new Event(18, "Pizza Making Party", startDate, endDate, startTime, endTime, imageName),
-                new Event(19, "Seafood Feast", startDate, endDate, startTime, endTime, imageName),
-                new Event(20, "Culinary Arts Festival", startDate, endDate, startTime, endTime, imageName)
+                new Event(1, "International Food Festival", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
+                new Event(2, "Vegan Cooking Workshop", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
+                new Event(3, "Farm to Table Dinner", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
+                new Event(4, "Wine and Cheese Night", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
+                new Event(5, "Italian Pasta Making Class", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
+                new Event(6, "French Cuisine Tasting", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
+                new Event(7, "Sushi Rolling Workshop", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
+                new Event(8, "Chocolate Making Class", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
+                new Event(9, "BBQ and Grill Cook-off", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
+                new Event(10, "Farmers Market Tour", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
+                new Event(11, "Pastry and Baking Workshop", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
+                new Event(12,"Coffee Tasting Experience", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
+                new Event(13, "Beer Brewing Demonstration", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
+                new Event(14, "Gourmet Burger Festival", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
+                new Event(15, "Mexican Fiesta Night", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
+                new Event(16, "Street Food Extravaganza", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
+                new Event(17, "Ice Cream Social", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
+                new Event(18, "Pizza Making Party", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
+                new Event(19, "Seafood Feast", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
+                new Event(20, "Culinary Arts Festival", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo)
         );
         assertThat(success.result()).isEqualTo(events);
     }
@@ -175,8 +178,8 @@ class DBDaoHelperTest {
         var imageName = "sample.png";
 
         var events = List.of(
-                new Event(1, "A", startDate, endDate, startTime, endTime, imageName),
-                new Event(2, "A".repeat(255), startDate, endDate, startTime, endTime, imageName)
+                new Event(1, "A", imageName, "", startDate, endDate, startTime, endTime, "", ""),
+                new Event(2, "A".repeat(255), imageName, "", startDate, endDate, startTime, endTime, "", "")
         );
         assertThat(success.result()).isEqualTo(events);
     }

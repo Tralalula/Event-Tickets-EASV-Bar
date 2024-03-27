@@ -9,21 +9,27 @@ import java.time.LocalTime;
 public record EventModel(
         IntegerProperty id,
         StringProperty title,
+        StringProperty imageName,
+        StringProperty location,
         ObjectProperty<LocalDate> startDate,
         ObjectProperty<LocalDate> endDate,
         ObjectProperty<LocalTime> startTime,
         ObjectProperty<LocalTime> endTime,
-        StringProperty imageName
+        StringProperty locationGuidance,
+        StringProperty extraInfo
 ) {
     public static EventModel fromEntity(Event event) {
         return new EventModel(
-                new SimpleIntegerProperty(event.getId()),
-                new SimpleStringProperty(event.getTitle()),
-                new SimpleObjectProperty<>(event.getStartDate()),
+                new SimpleIntegerProperty(event.id()),
+                new SimpleStringProperty(event.title()),
+                new SimpleStringProperty(event.imageName()),
+                new SimpleStringProperty(event.location()),
+                new SimpleObjectProperty<>(event.startDate()),
                 new SimpleObjectProperty<>(event.getEndDate()),
-                new SimpleObjectProperty<>(event.getStartTime()),
-                new SimpleObjectProperty<>(event.getEndTime()),
-                new SimpleStringProperty(event.getImageName())
+                new SimpleObjectProperty<>(event.startTime()),
+                new SimpleObjectProperty<>(event.endTime()),
+                new SimpleStringProperty(event.locationGuidance()),
+                new SimpleStringProperty(event.extraInfo())
         );
     }
 
@@ -31,11 +37,14 @@ public record EventModel(
         return new Event(
                 id.get(),
                 title.get(),
+                imageName.get(),
+                location.get(),
                 startDate.get(),
                 endDate.get(),
                 startTime.get(),
                 endTime.get(),
-                imageName.get()
+                locationGuidance.get(),
+                extraInfo.get()
         );
     }
 }

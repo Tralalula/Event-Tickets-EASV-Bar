@@ -75,6 +75,7 @@ public class EventsView implements View {
             private final Card card = new Card();
             private final ImageView imageView;
             private final Label title = new Label();
+            private final Label location = new Label();
             private final Label startDateTime = new Label();
             private final Label endDateTime = new Label();
             private final VBox content = new VBox(title, startDateTime, endDateTime);

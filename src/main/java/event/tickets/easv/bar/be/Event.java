@@ -9,51 +9,111 @@ public class Event {
 
     private int id;
     private String title;
+    private String imageName;
+    private String location;
     private LocalDate startDate;
     private LocalDate endDate;
     private LocalTime startTime;
     private LocalTime endTime;
-    private String imageName;
+    private String locationGuidance;
+    private String extraInfo;
 
     private void checkRep() {
         assert title != null : "title must not be null";
+        assert imageName != null : "imageName must not be null";
+        assert location != null : "location must not be null";
         assert startDate != null : "startDate must not be null";
         assert startTime != null : "startTime must not be null";
-        assert imageName != null : "imageName must not be null";
 
         assert !title.isEmpty() : "title must not be empty";
         assert title.length() <= TITLE_MAX_LENGTH : "title must not exceed " + TITLE_MAX_LENGTH + " characters";
     }
 
-    public Event(String title, LocalDate startDate, LocalDate endDate, LocalTime startTime, LocalTime endTime, String imageName) {
-        this(-1, title, startDate, endDate, startTime, endTime, imageName);
+    public Event(String title,
+                 String imageName,
+                 String location,
+                 LocalDate startDate,
+                 LocalDate endDate,
+                 LocalTime startTime,
+                 LocalTime endTime,
+                 String locationGuidance,
+                 String extraInfo) {
+        this(-1, title, imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo);
     }
 
-    public Event(int id, String title, LocalDate startDate, LocalDate endDate, LocalTime startTime, LocalTime endTime, String imageName) {
+    public Event(int id,
+                 String title,
+                 String imageName,
+                 String location,
+                 LocalDate startDate,
+                 LocalDate endDate,
+                 LocalTime startTime,
+                 LocalTime endTime,
+                 String locationGuidance,
+                 String extraInfo) {
         this.id = id;
         setTitle(title);
+        setImageName(imageName);
+        setLocation(location);
         setStartDate(startDate);
         setEndDate(endDate);
         setStartTime(startTime);
         setEndTime(endTime);
-        setImageName(imageName);
+        setLocationGuidance(locationGuidance);
+        setExtraInfo(extraInfo);
         checkRep();
     }
 
-    public int getId() {
+    public int id() {
         return id;
     }
 
-    public void setId(int id) {
-        this.id = id;
-        checkRep();
-    }
-
-    public String getTitle() {
+    public String title() {
         return title;
     }
 
-    public void setTitle(String title) {
+    public String imageName() {
+        return imageName;
+    }
+
+
+    public String location() {
+        return location;
+    }
+
+
+    public LocalDate startDate() {
+        return startDate;
+    }
+
+
+    public LocalDate getEndDate() {
+        return endDate;
+    }
+
+
+    public LocalTime startTime() {
+        return startTime;
+    }
+
+
+    public LocalTime endTime() {
+        return endTime;
+    }
+
+
+    public String locationGuidance() {
+        return locationGuidance;
+    }
+
+
+    public String extraInfo() {
+        return extraInfo;
+    }
+
+
+    // Setters
+    private void setTitle(String title) {
         if (title == null) throw new IllegalArgumentException("Title cannot be null");
         if (title.isEmpty()) throw new IllegalArgumentException("Title cannot be empty");
         if (title.length() > TITLE_MAX_LENGTH) throw new IllegalArgumentException("Title cannot be longer than " + TITLE_MAX_LENGTH + " characters");
@@ -61,44 +121,36 @@ public class Event {
         this.title = title;
     }
 
-    public LocalDate getStartDate() {
-        return startDate;
+    private void setImageName(String imageName) {
+        this.imageName = imageName;
     }
 
-    public void setStartDate(LocalDate startDate) {
+    private void setLocation(String location) {
+        this.location = location;
+    }
+
+    private void setStartDate(LocalDate startDate) {
         this.startDate = startDate;
     }
 
-    public LocalDate getEndDate() {
-        return endDate;
-    }
-
-    public void setEndDate(LocalDate endDate) {
+    private void setEndDate(LocalDate endDate) {
         this.endDate = endDate;
     }
 
-    public LocalTime getStartTime() {
-        return startTime;
-    }
-
-    public void setStartTime(LocalTime startTime) {
+    private void setStartTime(LocalTime startTime) {
         this.startTime = startTime;
     }
 
-    public LocalTime getEndTime() {
-        return endTime;
-    }
-
-    public void setEndTime(LocalTime endTime) {
+    private void setEndTime(LocalTime endTime) {
         this.endTime = endTime;
     }
 
-    public String getImageName() {
-        return imageName;
+    private void setLocationGuidance(String locationGuidance) {
+        this.locationGuidance = locationGuidance;
     }
 
-    public void setImageName(String imageName) {
-        this.imageName = imageName;
+    private void setExtraInfo(String extraInfo) {
+        this.extraInfo = extraInfo;
     }
 
     @Override
@@ -115,8 +167,8 @@ public class Event {
 
         Event event = (Event) o;
 
-        if (getId() != event.getId()) return false;
-        return getTitle().equals(event.getTitle());
+        if (id() != event.id()) return false;
+        return title().equals(event.title());
     }
 
     @Override

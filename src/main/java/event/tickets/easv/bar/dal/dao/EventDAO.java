@@ -68,12 +68,15 @@ class EventResultSetMapper implements ResultSetMapper<Event> {
     public Event map(@NotNull ResultSet rs) throws SQLException {
         int id = rs.getInt("id");
         String title = rs.getString("title");
+        String imageName = rs.getString("imageName");
+        String location = rs.getString("location");
         LocalDate startDate = rs.getDate("startDate").toLocalDate();
         LocalDate endDate = rs.getDate("endDate") != null ? rs.getDate("endDate").toLocalDate() : null;
         LocalTime startTime = rs.getTime("startTime").toLocalTime();
         LocalTime endTime = rs.getTime("endTime") != null ? rs.getTime("endTime").toLocalTime() : null;
-        String imageName = rs.getString("imageName");
+        String locationGuidance = rs.getString("locationGuidance");
+        String extraInfo = rs.getString("extraInfo");
 
-        return new Event(id, title, startDate, endDate, startTime, endTime, imageName);
+        return new Event(id, title, imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo);
     }
 }
