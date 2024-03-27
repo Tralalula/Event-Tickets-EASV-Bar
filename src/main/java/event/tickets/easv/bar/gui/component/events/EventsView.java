@@ -1,6 +1,7 @@
 package event.tickets.easv.bar.gui.component.events;
 
 import atlantafx.base.controls.Card;
+import atlantafx.base.controls.Tile;
 import atlantafx.base.theme.Styles;
 import event.tickets.easv.bar.gui.common.EventModel;
 import event.tickets.easv.bar.gui.common.View;
@@ -10,7 +11,10 @@ import event.tickets.easv.bar.gui.util.NodeUtils;
 import event.tickets.easv.bar.gui.util.StyleConfig;
 import event.tickets.easv.bar.gui.widgets.Images;
 import event.tickets.easv.bar.util.AppConfig;
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.StringBinding;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -22,7 +26,12 @@ import org.controlsfx.control.GridCell;
 import org.controlsfx.control.GridView;
 
 import java.nio.file.Paths;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 public class EventsView implements View {
@@ -61,12 +70,20 @@ public class EventsView implements View {
 
     private GridCell<EventModel> eventCell() {
         return new GridCell<>() {
+            private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE dd. MMMM HHmm", Locale.ENGLISH);
+
             private final Card card = new Card();
             private final ImageView imageView;
             private final Label title = new Label();
+            private final Label startDateTime = new Label();
+            private final Label endDateTime = new Label();
+            private final VBox content = new VBox(title, startDateTime, endDateTime);
+
 
             {
                 title.getStyleClass().add(Styles.TITLE_3);
+                startDateTime.getStyleClass().add(Styles.TEXT_NORMAL);
+                endDateTime.getStyleClass().add(Styles.TEXT_NORMAL);
                 card.getStyleClass().add(StyleConfig.EVENT_CARD);
                 card.getStyleClass().add(Styles.ELEVATED_4);
 
@@ -81,8 +98,9 @@ public class EventsView implements View {
                 imageView.setFitWidth(324);
                 imageView.setFitHeight(160);
 
+
                 card.setSubHeader(imageView);
-                card.setBody(title);
+                card.setBody(content);
                 card.setFooter(new Label("283 tickets sold"));
             }
 
@@ -95,12 +113,13 @@ public class EventsView implements View {
                 } else {
                     Image img = getImage(item.imageName().get());
 
-                    img.exceptionProperty().addListener((obs, ov, nv) -> {
-                        System.out.println("fejl: " + nv);
-                    });
                     imageView.setImage(img);
 
                     title.textProperty().bind(item.title());
+
+                    startDateTime.textProperty().bind(dateTimeBinding(item.startDate(), item.startTime(), "Starts", formatter));
+                    endDateTime.textProperty().bind(dateTimeBinding(item.endDate(), item.endTime(), "Ends", formatter));
+
                     setGraphic(card);
                 }
             }
@@ -120,4 +139,18 @@ public class EventsView implements View {
         return img;
     }
 
+    public static StringBinding dateTimeBinding(ObjectProperty<LocalDate> dateProperty,
+                                                ObjectProperty<LocalTime> timeProperty,
+                                                String prefix,
+                                                DateTimeFormatter formatter) {
+        return Bindings.createStringBinding(() -> {
+            LocalDate date = dateProperty.get();
+            LocalTime time = timeProperty.get();
+            if (date != null && time != null) {
+                return prefix + " " + LocalDateTime.of(date, time).format(formatter);
+            } else {
+                return "";
+            }
+        }, dateProperty, timeProperty);
+    }
 }
