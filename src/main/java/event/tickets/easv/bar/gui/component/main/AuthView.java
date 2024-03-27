@@ -155,7 +155,7 @@ public class AuthView implements View {
                 forgotPasswordLabel(),
                 continueBtn("Log in", () -> {
                     model.usernameProperty().set(username.getText());
-                    model.passwordProperty().set(password.getText());
+                    model.passwordProperty().set(password.getPassword());
                     try {
                         if (model.login())
                             ViewHandler.changeView(ViewType.DASHBOARD);
