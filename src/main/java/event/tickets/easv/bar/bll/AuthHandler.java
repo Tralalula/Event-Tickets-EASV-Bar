@@ -2,7 +2,7 @@ package event.tickets.easv.bar.bll;
 
 import event.tickets.easv.bar.be.User;
 import event.tickets.easv.bar.bll.cryptographic.BCrypt;
-import event.tickets.easv.bar.dal.objects.AuthDAO;
+import event.tickets.easv.bar.dal.dao.AuthDAO;
 
 import java.io.IOException;
 

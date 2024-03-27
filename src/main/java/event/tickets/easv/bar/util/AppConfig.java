@@ -11,4 +11,5 @@ public class AppConfig {
     public static final String DB_USE_INTEGRATED_SECURITY = "db.use_integrated_security";
 
     public static final String IMAGE_DIR = "/data/event_images/";
+    public static final String RESEND_API = "resend.api";
 }

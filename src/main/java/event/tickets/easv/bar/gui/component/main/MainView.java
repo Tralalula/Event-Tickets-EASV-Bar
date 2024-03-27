@@ -1,7 +1,10 @@
 package event.tickets.easv.bar.gui.component.main;
 
 import atlantafx.base.controls.Breadcrumbs;
+import atlantafx.base.controls.CustomTextField;
+import atlantafx.base.controls.ToggleSwitch;
 import atlantafx.base.theme.Styles;
+import event.tickets.easv.bar.be.User;
 import event.tickets.easv.bar.gui.common.ViewHandler;
 import event.tickets.easv.bar.gui.common.ViewType;
 import event.tickets.easv.bar.gui.common.WindowType;
@@ -9,13 +12,29 @@ import event.tickets.easv.bar.gui.common.View;
 import event.tickets.easv.bar.gui.component.dashboard.DashboardView;
 import event.tickets.easv.bar.gui.component.events.EventsView;
 import event.tickets.easv.bar.gui.component.events.ShowEventView;
+import event.tickets.easv.bar.gui.component.tickets.TicketsView;
 import event.tickets.easv.bar.gui.util.StyleConfig;
 import event.tickets.easv.bar.gui.util.*;
+import event.tickets.easv.bar.util.SessionManager;
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.StringBinding;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.MenuButton;
+import javafx.scene.control.MenuItem;
 import javafx.scene.layout.*;
+import org.kordamp.ikonli.feather.Feather;
+import org.kordamp.ikonli.javafx.FontIcon;
+import org.kordamp.ikonli.material2.Material2AL;
+import org.kordamp.ikonli.material2.Material2MZ;
+import org.kordamp.ikonli.material2.Material2OutlinedAL;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class MainView implements View {
@@ -26,13 +45,13 @@ public class MainView implements View {
     private final Region dashboardView;
     private final Region eventsView;
     private final Region showEventView;
+    private final Region ticketsView;
 
     private Breadcrumbs<String> crumbs;
 
     public MainView() {
         this.model = new MainModel();
         this.controller = new MainController(model);
-
 
         try {
             this.authView = new AuthView().getView();
@@ -43,6 +62,7 @@ public class MainView implements View {
         this.dashboardView = new DashboardView().getView();
         this.eventsView = new EventsView(model.eventModels(), model.fetchingDataProperty()).getView();
         this.showEventView = new ShowEventView().getView();
+        this.ticketsView = new TicketsView().getView();
     }
 
     @Override
@@ -86,7 +106,9 @@ public class MainView implements View {
         NodeUtils.bindVisibility(eventsView, ViewHandler.activeViewProperty().isEqualTo(ViewType.EVENTS));
         NodeUtils.bindVisibility(showEventView, ViewHandler.activeViewProperty().isEqualTo(ViewType.SHOW_EVENT));
 
-        return new StackPane(authView, dashboardView, eventsView, showEventView);
+        NodeUtils.bindVisibility(ticketsView, ViewHandler.activeViewProperty().isEqualTo(ViewType.TICKETS));
+
+        return new StackPane(authView, dashboardView, eventsView, showEventView, ticketsView);
     }
 
     private Region createCrumbs() {
@@ -109,6 +131,73 @@ public class MainView implements View {
         var results = new HBox(StyleConfig.STANDARD_SPACING);
         results.getStyleClass().addAll(Styles.BG_DEFAULT, StyleConfig.ROUNDING_DEFAULT, StyleConfig.PADDING_DEFAULT);
         results.setMinHeight(50);
+        results.setAlignment(Pos.CENTER_LEFT);
+
+        var minimizeMaximize = new FontIcon(Material2MZ.MENU);
+        minimizeMaximize.getStyleClass().add("outer-icon");
+
+        var title = new Label("Event Manager");
+        title.getStyleClass().addAll(Styles.ACCENT, Styles.TEXT_BOLD, Styles.TITLE_4);
+
+        HBox.setMargin(minimizeMaximize, new Insets(0, 0, 0, 20));
+        HBox.setMargin(title, new Insets(0, 85, 0, 0));
+
+        var search = new CustomTextField();
+        search.getStyleClass().add(Styles.SMALL); // Synes den er lidt stor? Fjern denne linje hvis den er for lille
+        search.setPromptText("Search");
+        search.setRight(new FontIcon(Feather.SEARCH));
+        search.setFocusTraversable(false);
+        search.setPrefWidth(450);
+
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+
+        List<MenuItem> languages = new ArrayList<>();
+        languages.add(new MenuItem("Danish"));
+        languages.add(new MenuItem("English"));
+        languages.add(new MenuItem("Deutsch"));
+
+        var languageSelect = new MenuButton();
+        languageSelect.setGraphic(new FontIcon(Feather.FLAG));
+        languageSelect.getItems().setAll(languages);
+        languageSelect.getStyleClass().addAll(
+                Styles.BUTTON_ICON, Styles.FLAT
+        );
+
+        var lightTheme = new FontIcon(Feather.SUN);
+        var darkTheme = new FontIcon(Feather.MOON);
+
+        var modeSwitch = new Button(null, lightTheme);
+        modeSwitch.getStyleClass().addAll(Styles.BUTTON_ICON, Styles.FLAT);
+        modeSwitch.setOnAction(new EventHandler<ActionEvent>() {
+            public void handle(ActionEvent event) {
+                modeSwitch.setGraphic(modeSwitch.getGraphic() == lightTheme ? darkTheme : lightTheme);
+            }
+        });
+
+        MenuItem logoutMenuItem = new MenuItem("Log out");
+        logoutMenuItem.setOnAction(new EventHandler<ActionEvent>() {
+            public void handle(ActionEvent event) {
+                if (SessionManager.getInstance().logout())
+                    ViewHandler.changeView(ViewType.LOGIN);
+            }
+        });
+
+        List<MenuItem> settingsItems = new ArrayList<>();
+        settingsItems.add(new MenuItem("Profile"));
+        settingsItems.add(new MenuItem("Settings"));
+        settingsItems.add(logoutMenuItem);
+
+        var settings = new MenuButton("Username");
+        settings.getItems().setAll(settingsItems);
+        settings.getStyleClass().addAll(
+                Styles.FLAT
+        );
+
+        settings.textProperty().bind(SessionManager.getInstance().loggedInUsernameProperty());
+
+
+        results.getChildren().addAll(minimizeMaximize, title, search, spacer, languageSelect, modeSwitch, settings);
 
         return results;
     }
@@ -137,6 +226,7 @@ public class MainView implements View {
 
         dashboard.setOnAction(e -> ViewHandler.changeView(ViewType.DASHBOARD));
         events.setOnAction(e -> ViewHandler.changeView(ViewType.EVENTS));
+        tickets.setOnAction(e -> ViewHandler.changeView(ViewType.TICKETS));
         login.setOnAction(e -> ViewHandler.changeView(ViewType.LOGIN));
 
         return results;
