@@ -1,5 +1,6 @@
 package event.tickets.easv.bar.gui.component.main;
 
+import atlantafx.base.controls.PasswordTextField;
 import atlantafx.base.theme.Styles;
 import event.tickets.easv.bar.gui.common.View;
 import event.tickets.easv.bar.gui.common.ViewHandler;
@@ -7,10 +8,15 @@ import event.tickets.easv.bar.gui.common.ViewType;
 import event.tickets.easv.bar.gui.util.NodeUtils;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Cursor;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.*;
+import org.kordamp.ikonli.feather.Feather;
+import org.kordamp.ikonli.javafx.FontIcon;
+import org.kordamp.ikonli.javafx.Icon;
 
 public class AuthView implements View {
     private AuthModel model;
@@ -105,11 +111,37 @@ public class AuthView implements View {
         return textfield;
     }
 
+    private PasswordTextField passTextField(String name) {
+        PasswordTextField tf = new PasswordTextField();
+        tf.setPrefWidth(250);
+        tf.setFocusTraversable(false);
+        tf.setPromptText(name);
+
+        var icon = new FontIcon(Feather.EYE_OFF);
+        icon.setCursor(Cursor.HAND);
+        icon.setVisible(false);
+        icon.setOnMouseClicked(e -> {
+            icon.setIconCode(tf.getRevealPassword()
+                    ? Feather.EYE_OFF : Feather.EYE
+            );
+            tf.setRevealPassword(!tf.getRevealPassword());
+        });
+
+        tf.textProperty().addListener((observable, oldValue, newValue) -> {
+           icon.setVisible(!newValue.isEmpty());
+        });
+
+        tf.setRight(icon);
+        VBox.setMargin(tf, new Insets(0, 0, 10, 0));
+
+        return tf;
+    }
+
     private Region loginView() {
         VBox main = mainBox();
 
         TextField username = textField("Username");
-        TextField password = textField("Password");
+        PasswordTextField password = passTextField("Password");
 
         Label err = errLabel();
 
@@ -187,8 +219,8 @@ public class AuthView implements View {
         HBox.setMargin(box, new Insets(0, 0, 5, 0));
 
         main.getChildren().addAll(title("Reset your password"),
-                textField("New Password"),
-                textField("Confirm new password"),
+                passTextField("New Password"),
+                passTextField("Confirm new password"),
                 continueBtn("Set password", () -> ViewHandler.changeView(ViewType.LOGIN)),
                 box
         );
