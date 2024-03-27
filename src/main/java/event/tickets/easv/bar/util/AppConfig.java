@@ -9,4 +9,6 @@ public class AppConfig {
     public static final String DB_USERNAME = "db.username";
     public static final String DB_PASSWORD = "db.password";
     public static final String DB_USE_INTEGRATED_SECURITY = "db.use_integrated_security";
+
+    public static final String RESEND_API = "resend.api";
 }

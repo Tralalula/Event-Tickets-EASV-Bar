@@ -2,6 +2,8 @@ package event.tickets.easv.bar.gui.component.main;
 
 import atlantafx.base.controls.PasswordTextField;
 import atlantafx.base.theme.Styles;
+import com.resend.core.exception.ResendException;
+import event.tickets.easv.bar.bll.EmailSender;
 import event.tickets.easv.bar.gui.common.View;
 import event.tickets.easv.bar.gui.common.ViewHandler;
 import event.tickets.easv.bar.gui.common.ViewType;
@@ -17,6 +19,8 @@ import javafx.scene.layout.*;
 import org.kordamp.ikonli.feather.Feather;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.kordamp.ikonli.javafx.Icon;
+
+import java.io.IOException;
 
 public class AuthView implements View {
     private AuthModel model;
