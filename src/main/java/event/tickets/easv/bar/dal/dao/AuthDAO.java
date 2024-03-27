@@ -1,24 +1,23 @@
-package event.tickets.easv.bar.dal.objects;
+package event.tickets.easv.bar.dal.dao;
 
 import event.tickets.easv.bar.be.User;
-import event.tickets.easv.bar.bll.cryptographic.BCrypt;
-import event.tickets.easv.bar.dal.DatabaseConnector;
+import event.tickets.easv.bar.dal.database.DBConnector;
 
 import java.io.IOException;
 import java.sql.*;
 
 public class AuthDAO {
 
-    private DatabaseConnector databaseConnector;
+    private DBConnector databaseConnector;
 
     public AuthDAO() throws IOException {
-        databaseConnector = new DatabaseConnector();
+        databaseConnector = new DBConnector();
     }
 
     public User getUser(User user) throws Exception {
         String sql = "SELECT id, username, password FROM dbo.users WHERE username = ?";
 
-        try (Connection conn = databaseConnector.getConnection();
+        try (Connection conn = databaseConnector.connection();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setString(1, user.getUsername());
             ResultSet rs = stmt.executeQuery();
@@ -37,7 +36,7 @@ public class AuthDAO {
     public boolean userExists(String username) throws Exception {
         String sql = "SELECT username FROM dbo.users WHERE username = ?";
 
-        try (Connection conn = databaseConnector.getConnection();
+        try (Connection conn = databaseConnector.connection();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setString(1, username);
 
@@ -56,7 +55,7 @@ public class AuthDAO {
         String sql = "INSERT INTO dbo.users (username,password) VALUES (?,?);";
 
         //
-        try (Connection conn = databaseConnector.getConnection();
+        try (Connection conn = databaseConnector.connection();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             // Bind parameters
             stmt.setString(1, user.getUsername());

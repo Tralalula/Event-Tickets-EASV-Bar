@@ -1,4 +1,4 @@
-package event.tickets.easv.bar.gui.component.auth;
+package event.tickets.easv.bar.gui.component.main;
 
 import event.tickets.easv.bar.be.User;
 import event.tickets.easv.bar.bll.AuthHandler;

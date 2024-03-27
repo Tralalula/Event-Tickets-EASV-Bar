@@ -1,16 +1,12 @@
 package event.tickets.easv.bar.gui.component.main;
 
 import atlantafx.base.theme.Styles;
-import event.tickets.easv.bar.be.User;
-import event.tickets.easv.bar.bll.EmailSender;
 import event.tickets.easv.bar.gui.common.View;
 import event.tickets.easv.bar.gui.common.ViewHandler;
 import event.tickets.easv.bar.gui.common.ViewType;
-import event.tickets.easv.bar.gui.component.auth.*;
 import event.tickets.easv.bar.gui.util.NodeUtils;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;

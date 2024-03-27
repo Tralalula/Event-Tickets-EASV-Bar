@@ -39,3 +39,19 @@ VALUES
     ('Seafood Feast', '2024-10-06', '2024-10-06', '18:00', '21:00', 'sample.png'),
     ('Culinary Arts Festival', '2024-11-11', NULL, '10:00', NULL, 'sample.png');
 GO
+
+IF OBJECT_ID('dbo.Users', 'U') IS NOT NULL
+    DROP TABLE dbo.Users;
+GO
+
+create table dbo.Users
+(
+    id       int identity (0, 1),
+    username varchar(50),
+    password varchar(200)
+);
+
+-- Password: test
+INSERT INTO dbo.Users (username, password)
+VALUES
+    ('test', '$2a$10$CLYpJK6QyzLKEvKzgnYd4OgBDAhhI0tmlYb02HgWAmfo1icjo0nMy')
