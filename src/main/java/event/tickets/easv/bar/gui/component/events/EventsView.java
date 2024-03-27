@@ -15,6 +15,7 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
+import javafx.scene.text.Font;
 import org.controlsfx.control.GridCell;
 import org.controlsfx.control.GridView;
 
@@ -38,7 +39,7 @@ public class EventsView implements View {
 
         gridview.setItems(model);
 
-        gridview.setCellWidth(336);
+        gridview.setCellWidth(326);
         gridview.setCellHeight(370);
 
         gridview.setCellFactory(cell -> eventCell());
@@ -58,14 +59,14 @@ public class EventsView implements View {
 
                 card.getStyleClass().add(StyleConfig.EVENT_CARD);
 
-                card.setMinWidth(336);
+                card.setMinWidth(326);
                 card.setMinHeight(370);
-                card.setMaxWidth(336);
+                card.setMaxWidth(326);
                 card.setMaxHeight(370);
                 card.setPrefHeight(370);
-                card.setPrefWidth(336);
+                card.setPrefWidth(326);
 
-                imageView.setFitWidth(335);
+                imageView.setFitWidth(325);
                 imageView.setFitHeight(160);
                 StackPane.setAlignment(imageView, Pos.TOP_CENTER);
 //                imageView.setPreserveRatio(true);
@@ -86,6 +87,10 @@ public class EventsView implements View {
                     setGraphic(null);
                 } else {
                     Image img = getImage(item.imageName().get()); // skal test hvis observable ikke bliver udfyldt med det samme.
+
+                    img.exceptionProperty().addListener((obs, ov, nv) -> {
+                        System.out.println("fejl: " + nv);
+                    });
                     imageView.setImage(img);
 
                     title.textProperty().bind(item.title());
