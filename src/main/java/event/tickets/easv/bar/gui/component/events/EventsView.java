@@ -89,11 +89,10 @@ public class EventsView implements View {
 
             {
                 title.getStyleClass().add(Styles.TITLE_3);
-                location.getStyleClass().add(Styles.TEXT_BOLD);
-                startDateTime.getStyleClass().add(Styles.TEXT_NORMAL);
-                endDateTime.getStyleClass().add(Styles.TEXT_NORMAL);
-                card.getStyleClass().add(StyleConfig.EVENT_CARD);
-                card.getStyleClass().add(Styles.ELEVATED_4);
+                location.getStyleClass().addAll(Styles.TEXT_MUTED, Styles.TEXT_BOLD);
+                startDateTime.getStyleClass().addAll(Styles.TEXT_MUTED, Styles.TEXT_NORMAL);
+                endDateTime.getStyleClass().addAll(Styles.TEXT_MUTED, Styles.TEXT_NORMAL);
+                card.getStyleClass().addAll(Styles.ELEVATED_4, StyleConfig.EVENT_CARD);
 
                 card.setMinWidth(CARD_WIDTH);
                 card.setMinHeight(CARD_HEIGHT);
@@ -109,6 +108,10 @@ public class EventsView implements View {
                 imageView.setFitHeight(CARD_EVENT_IMAGE_HEIGHT);
 
                 ticketsSold.getStyleClass().addAll(Styles.TEXT_SUBTLE, Styles.TEXT_BOLD);
+
+                circle1.getStyleClass().add(Styles.ELEVATED_3);
+                circle2.getStyleClass().add(Styles.ELEVATED_3);
+                circle3.getStyleClass().add(Styles.ELEVATED_3);
 
                 footer.setLeft(profileImages);
                 footer.setRight(new StackPane(ticketsSold));
