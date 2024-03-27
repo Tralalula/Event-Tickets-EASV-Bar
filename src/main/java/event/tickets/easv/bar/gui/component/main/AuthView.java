@@ -157,8 +157,11 @@ public class AuthView implements View {
                     model.usernameProperty().set(username.getText());
                     model.passwordProperty().set(password.getPassword());
                     try {
-                        if (model.login())
+                        if (model.login()) {
                             ViewHandler.changeView(ViewType.DASHBOARD);
+                            username.setText("");
+                            password.setText("");
+                        }
                     } catch (Exception e) {
                         err.setText("Forkert login");
                     }
@@ -181,8 +184,10 @@ public class AuthView implements View {
                 continueBtn("Continue", () -> {
                     model.usernameProperty().set(username.getText());
                     try {
-                        if (model.userExists())
+                        if (model.userExists()) {
                             ViewHandler.changeView(ViewType.VERIFY);
+                            username.setText("");
+                        }
                     } catch (Exception e) {
                         err.setText("Bruger eksisterer ikke");
                     }
@@ -204,9 +209,14 @@ public class AuthView implements View {
         box.setAlignment(Pos.CENTER_LEFT);
         VBox.setMargin(box, new Insets(0, 0, 10, 0));
 
+        TextField code = textField("Code");
+
         main.getChildren().addAll(title("Let us know it's you"),
-                textField("Code"),
-                continueBtn("Continue", () -> ViewHandler.changeView(ViewType.RESET_PASSWORD)),
+                code,
+                continueBtn("Continue", () -> {
+                    ViewHandler.changeView(ViewType.RESET_PASSWORD);
+                    code.setText("");
+                }),
                 box
         );
         return main;
@@ -222,10 +232,17 @@ public class AuthView implements View {
         box.setAlignment(Pos.CENTER_LEFT);
         HBox.setMargin(box, new Insets(0, 0, 5, 0));
 
+        PasswordTextField password = passTextField("New Password");
+        PasswordTextField repeat = passTextField("Confirm new password");
+
         main.getChildren().addAll(title("Reset your password"),
-                passTextField("New Password"),
-                passTextField("Confirm new password"),
-                continueBtn("Set password", () -> ViewHandler.changeView(ViewType.LOGIN)),
+                password,
+                repeat,
+                continueBtn("Set password", () -> {
+                    ViewHandler.changeView(ViewType.LOGIN);
+                    password.setText("");
+                    repeat.setText("");
+                }),
                 box
         );
         return main;
