@@ -18,10 +18,16 @@
     -fx-underline: true;
 }
 
-.event-card .header {
-    -fx-padding: 0;
+.event-card {
+}
+
+.event-card .sub-header {
+    /*-fx-padding: 0; !* move 1 to the left and 1 up *!*/
+    /*-fx-background-color: firebrick; !* remove bg color since sometimes, not all cards, there is a very small amount of visible bg color on the right *!*/
 }
 
 .event-card .container {
     -fx-padding: 0 0 8 0;
+    -fx-border-color: transparent;
+    -fx-background-radius: 5;
 }

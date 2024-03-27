@@ -9,4 +9,8 @@ public class StyleConfig {
     public static final String ACTIONABLE = "actionable";
 
     public static final String EVENT_CARD = "event-card";
+
+    public static final String EASV_BLUE = "#019EE3";
+    public static final String EASV_YELLOW = "#FABB2D";
+    public static final String EASV_RED = "#CD383A";
 }

@@ -8,19 +8,16 @@ import event.tickets.easv.bar.gui.common.ViewHandler;
 import event.tickets.easv.bar.gui.common.ViewType;
 import event.tickets.easv.bar.gui.util.NodeUtils;
 import event.tickets.easv.bar.gui.util.StyleConfig;
+import event.tickets.easv.bar.gui.widgets.Images;
 import event.tickets.easv.bar.util.AppConfig;
 import javafx.beans.property.BooleanProperty;
-import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
-import javafx.geometry.Point2D;
-import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
-import javafx.scene.text.Font;
 import org.controlsfx.control.GridCell;
 import org.controlsfx.control.GridView;
 
@@ -31,7 +28,6 @@ import java.util.Map;
 public class EventsView implements View {
     private final ObservableList<EventModel> model;
     private final BooleanProperty fetchingData;
-    private ProgressIndicator progressIndicator;
 
     public EventsView(ObservableList<EventModel> model, BooleanProperty fetchingData) {
         this.model = model;
@@ -40,7 +36,7 @@ public class EventsView implements View {
 
     @Override
     public Region getView() {
-        progressIndicator = new ProgressIndicator();
+        ProgressIndicator progressIndicator = new ProgressIndicator();
         NodeUtils.bindVisibility(progressIndicator, fetchingData);
 
         var btn = new Button("events");
@@ -66,13 +62,13 @@ public class EventsView implements View {
     private GridCell<EventModel> eventCell() {
         return new GridCell<>() {
             private final Card card = new Card();
-            private final ImageView imageView = new ImageView();
+            private final ImageView imageView;
             private final Label title = new Label();
 
             {
                 title.getStyleClass().add(Styles.TITLE_3);
-
                 card.getStyleClass().add(StyleConfig.EVENT_CARD);
+                card.getStyleClass().add(Styles.ELEVATED_4);
 
                 card.setMinWidth(326);
                 card.setMinHeight(370);
@@ -81,16 +77,12 @@ public class EventsView implements View {
                 card.setPrefHeight(370);
                 card.setPrefWidth(326);
 
-                imageView.setFitWidth(325);
+                imageView = Images.topRoundImage(324, 160, 5);
+                imageView.setFitWidth(324);
                 imageView.setFitHeight(160);
-                StackPane.setAlignment(imageView, Pos.TOP_CENTER);
-//                imageView.setPreserveRatio(true);
 
-                card.setHeader(imageView);
-
-                card.setSubHeader(title);
-//                card.setSubHeader(title);
-                card.setBody(new Label("asdasd"));
+                card.setSubHeader(imageView);
+                card.setBody(title);
                 card.setFooter(new Label("283 tickets sold"));
             }
 
@@ -101,7 +93,7 @@ public class EventsView implements View {
                 if (empty || item == null) {
                     setGraphic(null);
                 } else {
-                    Image img = getImage(item.imageName().get()); // skal test hvis observable ikke bliver udfyldt med det samme.
+                    Image img = getImage(item.imageName().get());
 
                     img.exceptionProperty().addListener((obs, ov, nv) -> {
                         System.out.println("fejl: " + nv);
