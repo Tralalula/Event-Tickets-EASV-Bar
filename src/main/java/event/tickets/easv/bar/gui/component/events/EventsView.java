@@ -48,22 +48,11 @@ public class EventsView implements View {
         ProgressIndicator progressIndicator = new ProgressIndicator();
         NodeUtils.bindVisibility(progressIndicator, fetchingData);
 
-        var btn = new Button("events");
-        btn.setOnAction(e -> ViewHandler.changeView(ViewType.SHOW_EVENT));
-
         var gridview = new GridView<EventModel>();
-
         gridview.setItems(model);
-
         gridview.setCellWidth(326);
         gridview.setCellHeight(370);
-
         gridview.setCellFactory(cell -> eventCell());
-
-        System.out.println(model.size());
-
-
-
 
         return new StackPane(gridview, progressIndicator);
     }
