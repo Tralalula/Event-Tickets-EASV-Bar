@@ -78,11 +78,12 @@ public class EventsView implements View {
             private final Label location = new Label();
             private final Label startDateTime = new Label();
             private final Label endDateTime = new Label();
-            private final VBox content = new VBox(title, startDateTime, endDateTime);
+            private final VBox content = new VBox(title, location, startDateTime, endDateTime);
 
 
             {
                 title.getStyleClass().add(Styles.TITLE_3);
+                location.getStyleClass().add(Styles.TEXT_BOLD);
                 startDateTime.getStyleClass().add(Styles.TEXT_NORMAL);
                 endDateTime.getStyleClass().add(Styles.TEXT_NORMAL);
                 card.getStyleClass().add(StyleConfig.EVENT_CARD);
@@ -117,7 +118,7 @@ public class EventsView implements View {
                     imageView.setImage(img);
 
                     title.textProperty().bind(item.title());
-
+                    location.textProperty().bind(item.location());
                     startDateTime.textProperty().bind(dateTimeBinding(item.startDate(), item.startTime(), "Starts", formatter));
                     endDateTime.textProperty().bind(dateTimeBinding(item.endDate(), item.endTime(), "Ends", formatter));
 
