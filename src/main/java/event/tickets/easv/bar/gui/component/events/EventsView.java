@@ -6,12 +6,17 @@ import event.tickets.easv.bar.gui.common.EventModel;
 import event.tickets.easv.bar.gui.common.View;
 import event.tickets.easv.bar.gui.common.ViewHandler;
 import event.tickets.easv.bar.gui.common.ViewType;
+import event.tickets.easv.bar.gui.util.NodeUtils;
 import event.tickets.easv.bar.gui.util.StyleConfig;
 import event.tickets.easv.bar.util.AppConfig;
+import javafx.beans.property.BooleanProperty;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
@@ -25,13 +30,19 @@ import java.util.Map;
 
 public class EventsView implements View {
     private final ObservableList<EventModel> model;
+    private final BooleanProperty fetchingData;
+    private ProgressIndicator progressIndicator;
 
-    public EventsView(ObservableList<EventModel> model) {
+    public EventsView(ObservableList<EventModel> model, BooleanProperty fetchingData) {
         this.model = model;
+        this.fetchingData = fetchingData;
     }
 
     @Override
     public Region getView() {
+        progressIndicator = new ProgressIndicator();
+        NodeUtils.bindVisibility(progressIndicator, fetchingData);
+
         var btn = new Button("events");
         btn.setOnAction(e -> ViewHandler.changeView(ViewType.SHOW_EVENT));
 
@@ -44,9 +55,13 @@ public class EventsView implements View {
 
         gridview.setCellFactory(cell -> eventCell());
 
-        return gridview;
-    }
+        System.out.println(model.size());
 
+
+
+
+        return new StackPane(gridview, progressIndicator);
+    }
 
     private GridCell<EventModel> eventCell() {
         return new GridCell<>() {

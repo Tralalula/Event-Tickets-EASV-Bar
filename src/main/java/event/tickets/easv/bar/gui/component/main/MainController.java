@@ -23,6 +23,7 @@ public class MainController {
     }
 
     public void fetchEvents() {
+        model.fetchingDataProperty().set(true);
         BackgroundExecutor.performBackgroundTask(
                 () -> manager.all(Event.class),
                 this::processResult
@@ -30,6 +31,7 @@ public class MainController {
     }
 
     private void processResult(Result<List<Event>> result) {
+        model.fetchingDataProperty().set(false);
         switch (result) {
             case Success<List<Event>> s -> model.eventModels().setAll(convertToModels(s.result()));
             case Failure<List<Event>> f -> System.out.println("Error: " + f.cause());
