@@ -130,6 +130,12 @@ public class DBDaoHelper<T extends Entity<T>> implements DAO<T> {
 
     @Override
     public Result<Boolean> update(T original, T updatedData) {
+        try {
+            setupDBConnector();
+        } catch (IOException e) {
+            return Failure.of(FailureType.IO_FAILURE, "Failed to read from the data source", e);
+        }
+
         String sql = sqlTemplate.updateSQL();
         try (Connection conn = dbConnector.connection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
