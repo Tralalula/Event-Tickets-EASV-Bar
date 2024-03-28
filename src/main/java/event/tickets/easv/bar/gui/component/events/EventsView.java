@@ -1,12 +1,9 @@
 package event.tickets.easv.bar.gui.component.events;
 
 import atlantafx.base.controls.Card;
-import atlantafx.base.controls.Tile;
 import atlantafx.base.theme.Styles;
 import event.tickets.easv.bar.gui.common.EventModel;
 import event.tickets.easv.bar.gui.common.View;
-import event.tickets.easv.bar.gui.common.ViewHandler;
-import event.tickets.easv.bar.gui.common.ViewType;
 import event.tickets.easv.bar.gui.util.NodeUtils;
 import event.tickets.easv.bar.gui.util.StyleConfig;
 import event.tickets.easv.bar.gui.widgets.Images;
@@ -17,7 +14,6 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.image.Image;
@@ -155,7 +151,7 @@ public class EventsView implements View {
     public static Image getImage(String imagePath) {
         Image img = cache.get(imagePath);
         if (img == null) {
-            String absolutePath = "file:///" + Paths.get("").toAbsolutePath() + AppConfig.IMAGE_DIR + imagePath.replace("\\", "/");
+            String absolutePath = "file:///" + Paths.get("").toAbsolutePath() + AppConfig.EVENT_IMAGES_DIR + imagePath.replace("\\", "/");
             img = new Image(absolutePath, true);
             cache.put(imagePath, img);
         }
@@ -166,7 +162,7 @@ public class EventsView implements View {
     public static Image getProfileImage(String imagePath) {
         Image img = profileCache.get(imagePath);
         if (img == null) {
-            String absolutePath = "file:///" + Paths.get("").toAbsolutePath() + "/data/profile_images/" + imagePath.replace("\\", "/");
+            String absolutePath = "file:///" + Paths.get("").toAbsolutePath() + AppConfig.PROFILE_IMAGES_DIR + imagePath.replace("\\", "/");
             img = new Image(absolutePath, true);
             profileCache.put(imagePath, img);
         }
