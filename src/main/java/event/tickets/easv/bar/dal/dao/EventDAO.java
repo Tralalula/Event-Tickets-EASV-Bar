@@ -87,6 +87,11 @@ class EventSQLTemplate implements SQLTemplate<Event> {
                WHERE id = ?;
                """;
     }
+
+    @Override
+    public String deleteSQL() {
+        return "DELETE FROM dbo.Event WHERE id = ?;";
+    }
 }
 
 class EventResultSetMapper implements ResultSetMapper<Event> {

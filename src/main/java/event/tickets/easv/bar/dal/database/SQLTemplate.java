@@ -16,4 +16,6 @@ public interface SQLTemplate<T> {
     String insertSQL();
 
     String updateSQL();
+
+    String deleteSQL();
 }
