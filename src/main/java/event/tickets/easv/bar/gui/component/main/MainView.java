@@ -47,11 +47,7 @@ public class MainView implements View {
 
     public MainView() {
         this.model = new MainModel();
-        try {
-            this.controller = new MainController(model);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        this.controller = new MainController(model);
 
         try {
             this.authView = new AuthView().getView();

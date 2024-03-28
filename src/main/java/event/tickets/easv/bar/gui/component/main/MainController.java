@@ -20,7 +20,7 @@ public class MainController {
     private final MainModel model;
     private TicketManager ticketManager;
 
-    public MainController(MainModel model) throws SQLException {
+    public MainController(MainModel model) {
         this.model = model;
         this.manager = new EntityManager();
 
@@ -30,14 +30,12 @@ public class MainController {
         fetchTickets();
     }
 
-    public void fetchTickets() throws SQLException {
+    public void fetchTickets() {
         model.fetchingDataProperty().set(true);
         BackgroundExecutor.performBackgroundTask(
                 () -> manager.all(Ticket.class),
                 this::processTicketResult
         );
-       // model.fetchingDataProperty().set(true);
-       // model.ticketModels().setAll(convertToTicketModels(ticketManager.getAllTickets()));
     }
 
     public void fetchEvents() {
