@@ -26,11 +26,11 @@ public class TicketsView implements View {
         HBox top = topBar();
         TableView<Ticket> table = createTicketTableView(
                 List.of(
-                        new Ticket(Ticket.TicketType.EVENT, "VIP", 50),
-                        new Ticket(Ticket.TicketType.EVENT, "Normal", 20),
-                        new Ticket(Ticket.TicketType.PROMOTIONAL, "1 Free beer", 0),
-                        new Ticket(Ticket.TicketType.PROMOTIONAL, "Earpods", 25),
-                        new Ticket(Ticket.TicketType.EVENT, "hello", 65)
+                        new Ticket("VIP", "Paid", 1),
+                        new Ticket("1st row", "Paid", 1),
+                        new Ticket("Normal", "Paid", 1),
+                        new Ticket("1 free beer", "Promotional", 3),
+                        new Ticket("1 free cocio", "Promotional", 3)
                 ));
 
         VBox box = new VBox(top, table);
@@ -66,11 +66,11 @@ public class TicketsView implements View {
     }
 
     public TableView<Ticket> createTicketTableView(List<Ticket> tickets) {
-        TableColumn<Ticket, String> col1 = new TableColumn<>("Type");
-        col1.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getType().name()));
+        TableColumn<Ticket, String> col1 = new TableColumn<>("Title");
+        col1.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getTitle()));
 
-        TableColumn<Ticket, String> col2 = new TableColumn<>("Title");
-        col2.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getTitle()));
+        TableColumn<Ticket, String> col2 = new TableColumn<>("Type");
+        col2.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getType()));
 
         TableColumn<Ticket, String> col3 = new TableColumn<>("Price");
         col3.setCellValueFactory(c -> new SimpleStringProperty(String.valueOf(c.getValue().getPrice())));
