@@ -4,6 +4,8 @@ import atlantafx.base.controls.Card;
 import atlantafx.base.theme.Styles;
 import event.tickets.easv.bar.gui.common.EventModel;
 import event.tickets.easv.bar.gui.common.View;
+import event.tickets.easv.bar.gui.common.ViewHandler;
+import event.tickets.easv.bar.gui.common.ViewType;
 import event.tickets.easv.bar.gui.util.NodeUtils;
 import event.tickets.easv.bar.gui.util.StyleConfig;
 import event.tickets.easv.bar.gui.widgets.Images;
@@ -117,6 +119,8 @@ public class EventsView implements View {
                 card.setSubHeader(imageView);
                 card.setBody(content);
                 card.setFooter(footer);
+
+                card.setOnMouseClicked(e -> ViewHandler.changeView(ViewType.SHOW_EVENT));
             }
 
             @Override

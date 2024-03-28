@@ -1,6 +1,24 @@
 USE EventManager;
 GO
 
+-- Drop
+
+IF OBJECT_ID('dbo.Ticket', 'U') IS NOT NULL
+    DROP TABLE dbo.Ticket;
+GO
+
+IF OBJECT_ID('dbo.TicketCategory', 'U') IS NOT NULL
+    DROP TABLE dbo.TicketCategory;
+GO
+
+IF OBJECT_ID('dbo.GeneratedTicket', 'U') IS NOT NULL
+    DROP TABLE dbo.GeneratedTicket;
+GO
+
+IF OBJECT_ID('dbo.TicketEventAssociation', 'U') IS NOT NULL
+    DROP TABLE dbo.TicketEventAssociation;
+GO
+
 IF OBJECT_ID('dbo.Event', 'U') IS NOT NULL
     DROP TABLE dbo.Event;
 GO
@@ -59,3 +77,50 @@ INSERT INTO dbo.Users (username, password)
 VALUES
     ('test', '$2a$10$CLYpJK6QyzLKEvKzgnYd4OgBDAhhI0tmlYb02HgWAmfo1icjo0nMy')
 GO
+
+CREATE TABLE TicketCategory (
+    id INT IDENTITY(1,1) PRIMARY KEY,
+    name NVARCHAR(255)
+);
+
+CREATE TABLE Ticket (
+    id INT IDENTITY(1,1) PRIMARY KEY,
+    title NVARCHAR(255),
+    classification NVARCHAR(50) CHECK (classification IN ('PAID', 'PROMOTIONAL')),
+    categoryId INT,
+    FOREIGN KEY (categoryId) REFERENCES TicketCategory(id)
+);
+
+CREATE TABLE TicketEventAssociation (
+    id INT IDENTITY(1,1) PRIMARY KEY,
+    ticketId INT,
+    eventId INT NULL,
+    price DECIMAL(10, 2) NULL,
+    quantity INT,
+    FOREIGN KEY (ticketId) REFERENCES Ticket(id),
+    FOREIGN KEY (eventId) REFERENCES Event(id)
+);
+
+CREATE TABLE GeneratedTicket (
+     id INT IDENTITY(1,1) PRIMARY KEY,
+     ticketEventAssociationId INT,
+     customerId INT NULL,
+     assigned BIT DEFAULT 0,
+     used BIT DEFAULT 0,
+     barcode NVARCHAR(255),
+     qrcode NVARCHAR(255),
+     FOREIGN KEY (ticketEventAssociationId) REFERENCES TicketEventAssociation(id),
+     -- FOREIGN KEY (customerId) REFERENCES Customer(id)
+);
+
+INSERT INTO TicketCategory (name) VALUES ('Concert');
+INSERT INTO TicketCategory (name) VALUES ('Theater');
+INSERT INTO TicketCategory (name) VALUES ('Sports');
+INSERT INTO TicketCategory (name) VALUES ('Conference');
+
+INSERT INTO Ticket (title, classification, categoryId) VALUES ('Rock Band Live', 'PAID', 1);
+INSERT INTO Ticket (title, classification, categoryId) VALUES ('Shakespeare Play', 'PAID', 2);
+INSERT INTO Ticket (title, classification, categoryId) VALUES ('Football Match', 'PAID', 3);
+INSERT INTO Ticket (title, classification, categoryId) VALUES ('Tech Conference 2024', 'PROMOTIONAL', 4);
+INSERT INTO Ticket (title, classification, categoryId) VALUES ('Jazz Night', 'PAID', 1);
+INSERT INTO Ticket (title, classification, categoryId) VALUES ('Broadway Musical', 'PAID', 2);
