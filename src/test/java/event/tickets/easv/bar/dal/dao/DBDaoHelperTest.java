@@ -319,7 +319,7 @@ class DBDaoHelperTest {
         }
 
         @Test
-        void updateEventEntityDoesntExist() {
+        void updateEventDoesntExist() {
             // Setup
             runScript(POPULATE_SINGLE);
             var event = new Event(2, "Kakao", "", "", LocalDate.now(), null, LocalTime.now(), null, "", "");
@@ -335,7 +335,7 @@ class DBDaoHelperTest {
         }
 
         @Test
-        void updateEventEntityExists() {
+        void updateEventExists() {
             // Setup
             runScript(POPULATE_SINGLE);
             var event = new Event(1, "Single", "", "", LocalDate.now(), null, LocalTime.now(), null, "", "");
@@ -352,7 +352,7 @@ class DBDaoHelperTest {
         }
 
         @Test
-        void deleteEntityDoesntExist() {
+        void deleteEventDoesntExist() {
             // Setup
             runScript(POPULATE_SINGLE);
             var event = new Event(2, "Kakao", "", "", LocalDate.now(), null, LocalTime.now(), null, "", "");
@@ -367,7 +367,7 @@ class DBDaoHelperTest {
         }
 
         @Test
-        void deleteEntityExists() {
+        void deleteEventExists() {
             // Setup
             runScript(POPULATE_SINGLE);
             var event = new Event(1, "Single", "", "", LocalDate.now(), null, LocalTime.now(), null, "", "");
@@ -523,5 +523,37 @@ class DBDaoHelperTest {
             assertThat(result).isInstanceOf(Failure.class);
         }
 
+        @Test
+        void updateUserDoesntExist() {
+            // Setup
+            runScript(POPULATE_SINGLE);
+            var user = new User(2, "Kakao");
+            var updated = new User("Sodavand", "");
+
+            // Call
+            Result<Boolean> result = userDaoHelper.update(user, updated);
+
+            // Check
+            assertThat(result).isInstanceOf(Success.class);
+            var success = (Success<Boolean>) result;
+            assertThat(success.result()).isEqualTo(false);
+        }
+
+        @Test
+        void updateUserExists() {
+            // Setup
+            runScript(POPULATE_SINGLE);
+            var user = new User(1, "test");
+            var updated = new User("Sodavand", "");
+
+            // Call
+            Result<Boolean> result = userDaoHelper.update(user, updated);
+
+            // Check
+            assertThat(result).isInstanceOf(Success.class);
+            var success = (Success<Boolean>) result;
+            assertThat(success.result()).isEqualTo(true);
+            assertThat(user.getUsername()).isEqualTo("Sodavand");
+        }
     }
 }
