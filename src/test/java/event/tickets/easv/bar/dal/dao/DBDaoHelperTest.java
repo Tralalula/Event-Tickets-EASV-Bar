@@ -47,7 +47,12 @@ class DBDaoHelperTest {
             throw new RuntimeException("Error trying to read TEST_DB_CONFIG_PATH in DBDaoHelperTest.setup().\n " + e);
         }
 
-        daoHelper = new DBDaoHelper<>(new EventSQLTemplate(), new EventResultSetMapper());
+        daoHelper = new DBDaoHelper<>(
+                new EventSQLTemplate(),
+                new EventResultSetMapper(),
+                new EventPreparedStatementSetter(),
+                new EventIdSetter()
+        );
         daoHelper.setDbConnector(dbConnector);
         runScript(EMPTY_DB_SETUP);
     }

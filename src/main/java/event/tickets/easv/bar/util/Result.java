@@ -32,5 +32,9 @@ public sealed interface Result<T> {
         public static <T> Failure<T> of(FailureType type, String message, Throwable cause) {
             return new Failure<>(type, message, cause);
         }
+
+        public static <T> Failure<T> of(FailureType type, String message) {
+            return new Failure<>(type, message, null);
+        }
     }
 }

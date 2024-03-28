@@ -1,13 +1,14 @@
 package event.tickets.easv.bar.dal.dao;
 
 import event.tickets.easv.bar.be.Event;
+import event.tickets.easv.bar.dal.database.IdSetter;
+import event.tickets.easv.bar.dal.database.PreparedStatementSetter;
 import event.tickets.easv.bar.dal.database.SQLTemplate;
 import event.tickets.easv.bar.dal.database.ResultSetMapper;
 import event.tickets.easv.bar.util.Result;
 import org.jetbrains.annotations.NotNull;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -17,7 +18,12 @@ public class EventDAO implements DAO<Event> {
     private final DBDaoHelper<Event> daoHelper;
 
     public EventDAO() {
-        this.daoHelper = new DBDaoHelper<>(new EventSQLTemplate(), new EventResultSetMapper());
+        this.daoHelper = new DBDaoHelper<>(
+                new EventSQLTemplate(),
+                new EventResultSetMapper(),
+                new EventPreparedStatementSetter(),
+                new EventIdSetter()
+        );
     }
 
     @Override
@@ -36,7 +42,7 @@ public class EventDAO implements DAO<Event> {
     }
 
     @Override
-    public Result<Event> add(Event event) {
+    public Result<Event> add(Event entity) {
         return null;
     }
 
@@ -46,7 +52,7 @@ public class EventDAO implements DAO<Event> {
     }
 
     @Override
-    public Result<Boolean> delete(Event event) {
+    public Result<Boolean> delete(Event entity) {
         return null;
     }
 
@@ -66,6 +72,14 @@ class EventSQLTemplate implements SQLTemplate<Event> {
     public String allSelectSQL() {
         return "SELECT * FROM dbo.Event";
     }
+
+    @Override
+    public String insertSQL() {
+        return """
+    INSERT INTO dbo.Event (title, imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
+    """;
+    }
 }
 
 class EventResultSetMapper implements ResultSetMapper<Event> {
@@ -83,5 +97,39 @@ class EventResultSetMapper implements ResultSetMapper<Event> {
         String extraInfo = rs.getString("extraInfo");
 
         return new Event(id, title, imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo);
+    }
+}
+
+class EventPreparedStatementSetter implements PreparedStatementSetter<Event> {
+    @Override
+    public void setParameters(PreparedStatement stmt, Event entity) throws SQLException {
+        stmt.setString(1, entity.title());
+        stmt.setString(2, entity.imageName());
+        stmt.setString(3, entity.location());
+
+        stmt.setDate(4, Date.valueOf(entity.startDate()));
+        if (entity.endDate() != null) {
+            stmt.setDate(5, Date.valueOf(entity.endDate()));
+        } else {
+            stmt.setNull(5, Types.DATE);
+        }
+
+        stmt.setTime(6, Time.valueOf(entity.startTime()));
+        if (entity.endTime() != null) {
+            stmt.setTime(7, Time.valueOf(entity.endTime()));
+        } else {
+            stmt.setNull(7, Types.TIME);
+        }
+
+        stmt.setString(8, entity.locationGuidance());
+        stmt.setString(9, entity.extraInfo());
+    }
+}
+
+class EventIdSetter implements IdSetter<Event> {
+    @Override
+    public Event setId(Event entity, int id) {
+        entity.setId(id);
+        return entity;
     }
 }

@@ -87,7 +87,7 @@ public class Event {
     }
 
 
-    public LocalDate getEndDate() {
+    public LocalDate endDate() {
         return endDate;
     }
 
@@ -113,6 +113,10 @@ public class Event {
 
 
     // Setters
+    public void setId(int id) {
+        this.id = id;
+    }
+
     private void setTitle(String title) {
         if (title == null) throw new IllegalArgumentException("Title cannot be null");
         if (title.isEmpty()) throw new IllegalArgumentException("Title cannot be empty");

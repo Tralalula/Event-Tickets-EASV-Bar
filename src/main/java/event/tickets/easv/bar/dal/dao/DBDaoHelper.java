@@ -1,8 +1,6 @@
 package event.tickets.easv.bar.dal.dao;
 
-import event.tickets.easv.bar.dal.database.DBConnector;
-import event.tickets.easv.bar.dal.database.ResultSetMapper;
-import event.tickets.easv.bar.dal.database.SQLTemplate;
+import event.tickets.easv.bar.dal.database.*;
 import event.tickets.easv.bar.util.FailureType;
 import event.tickets.easv.bar.util.Result;
 import event.tickets.easv.bar.util.Result.Success;
@@ -21,6 +19,8 @@ public class DBDaoHelper<T> implements DAO<T> {
     private DBConnector dbConnector = null;
     private final SQLTemplate<T> sqlTemplate;
     private final ResultSetMapper<T> resultSetMapper;
+    private final PreparedStatementSetter<T> preparedStatementSetter;
+    private final IdSetter<T> idSetter;
 
     /**
      * Constructs a new DBDaoHelper that provides helper methods for data access operations against a database.
@@ -28,9 +28,14 @@ public class DBDaoHelper<T> implements DAO<T> {
      * @param sqlTemplate the template for generic SQL queries.
      * @param resultSetMapper the mapper for converting ResultSet rows into entities of type T.
      */
-    public DBDaoHelper(SQLTemplate<T> sqlTemplate, ResultSetMapper<T> resultSetMapper) {
+    public DBDaoHelper(SQLTemplate<T> sqlTemplate,
+                       ResultSetMapper<T> resultSetMapper,
+                       PreparedStatementSetter<T> preparedStatementSetter,
+                       IdSetter<T> idSetter) {
         this.sqlTemplate = sqlTemplate;
         this.resultSetMapper = resultSetMapper;
+        this.preparedStatementSetter = preparedStatementSetter;
+        this.idSetter = idSetter;
     }
 
     /**
@@ -48,7 +53,6 @@ public class DBDaoHelper<T> implements DAO<T> {
         }
 
         String sql = sqlTemplate.getSelectSQL();
-
         try (Connection conn = dbConnector.connection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, id);
@@ -95,8 +99,31 @@ public class DBDaoHelper<T> implements DAO<T> {
     }
 
     @Override
-    public Result<T> add(T t) {
-        return null;
+    public Result<T> add(T entity) {
+        try {
+            setupDBConnector();
+        } catch (IOException e) {
+            return Failure.of(FailureType.IO_FAILURE, "Failed to read from the data source", e);
+        }
+
+        String sql = sqlTemplate.insertSQL();
+        try (Connection conn = dbConnector.connection();
+             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            preparedStatementSetter.setParameters(stmt, entity);
+            stmt.executeUpdate();
+
+            ResultSet rs = stmt.getGeneratedKeys();
+            if (rs.next()) {
+                int id = rs.getInt(1);
+                return Success.of(idSetter.setId(entity, id));
+            } else {
+                return Failure.of(FailureType.DB_DATA_RETRIEVAL_FAILURE, "No ID generated for entity");
+            }
+
+
+        } catch (SQLException e) {
+            return Failure.of(FailureType.DB_DATA_RETRIEVAL_FAILURE, "Failed to retrieve data from the database", e);
+        }
     }
 
     @Override
@@ -105,7 +132,7 @@ public class DBDaoHelper<T> implements DAO<T> {
     }
 
     @Override
-    public Result<Boolean> delete(T t) {
+    public Result<Boolean> delete(T entity) {
         return null;
     }
 

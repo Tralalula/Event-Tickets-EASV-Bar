@@ -25,7 +25,7 @@ public record EventModel(
                 new SimpleStringProperty(event.imageName()),
                 new SimpleStringProperty(event.location()),
                 new SimpleObjectProperty<>(event.startDate()),
-                new SimpleObjectProperty<>(event.getEndDate()),
+                new SimpleObjectProperty<>(event.endDate()),
                 new SimpleObjectProperty<>(event.startTime()),
                 new SimpleObjectProperty<>(event.endTime()),
                 new SimpleStringProperty(event.locationGuidance()),

@@ -31,10 +31,10 @@ public interface DAO<T> {
     /**
      * Adds a new entity to the data source.
      *
-     * @param t the entity to add.
+     * @param entity the entity to add.
      * @return the added entity.
      */
-    Result<T> add(T t);
+    Result<T> add(T entity);
 
     /**
      * Updates an existing entity with new data.
@@ -48,8 +48,8 @@ public interface DAO<T> {
     /**
      * Deletes an entity from the data source.
      *
-     * @param t the entity to delete.
+     * @param entity the entity to delete.
      * @return true if the deletion was successful; false otherwise.
      */
-    Result<Boolean> delete(T t);
+    Result<Boolean> delete(T entity);
 }
