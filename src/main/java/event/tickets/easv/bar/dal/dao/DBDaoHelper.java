@@ -23,6 +23,7 @@ public class DBDaoHelper<T extends Entity<T>> implements DAO<T> {
     private final InsertParameterSetter<T> insertParameterSetter;
     private final UpdateParameterSetter<T> updateParameterSetter;
     private final IdSetter<T> idSetter;
+    private final List<EntityAssociation<?, ?>> associations;
 
     /**
      * Constructs a new DBDaoHelper that provides helper methods for data access operations against a database.
@@ -34,12 +35,14 @@ public class DBDaoHelper<T extends Entity<T>> implements DAO<T> {
                        ResultSetMapper<T> resultSetMapper,
                        InsertParameterSetter<T> insertParameterSetter,
                        UpdateParameterSetter<T> updateParameterSetter,
-                       IdSetter<T> idSetter) {
+                       IdSetter<T> idSetter,
+                       List<EntityAssociation<?, ?>> associations) {
         this.sqlTemplate = sqlTemplate;
         this.resultSetMapper = resultSetMapper;
         this.insertParameterSetter = insertParameterSetter;
         this.updateParameterSetter = updateParameterSetter;
         this.idSetter = idSetter;
+        this.associations = associations;
     }
 
     /**
@@ -151,7 +154,33 @@ public class DBDaoHelper<T extends Entity<T>> implements DAO<T> {
 
     @Override
     public Result<Boolean> delete(T entity) {
-        return null;
+        try {
+            setupDBConnector();
+        } catch (IOException e) {
+            return Failure.of(FailureType.IO_FAILURE, "Failed to read from the data source", e);
+        }
+
+        String sql = sqlTemplate.deleteSQL();
+        try (Connection conn = dbConnector.connection()) {
+            conn.setAutoCommit(false); // start transaction
+
+            for (EntityAssociation<?, ?> association : associations) {
+                association.deleteAssociationsFor(entity);
+            }
+
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setInt(1, entity.id());
+                int rowsAffected = stmt.executeUpdate();
+
+                conn.commit(); // commit transactions
+                return Success.of(rowsAffected > 0);
+            } catch (SQLException e) {
+                conn.rollback(); // Rollback transaction if an error happens
+                return Failure.of(FailureType.DB_DATA_RETRIEVAL_FAILURE, "Failed to delete entity", e);
+            }
+        } catch (SQLException e) {
+            return Failure.of(FailureType.DB_DATA_RETRIEVAL_FAILURE, "Failed to access the database", e);
+        }
     }
 
     /**

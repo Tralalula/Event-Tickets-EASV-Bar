@@ -20,7 +20,8 @@ public class EventDAO implements DAO<Event> {
                 new EventResultSetMapper(),
                 new EventInsertParameterSetter(),
                 new EventUpdateParameterSetter(),
-                new EventIdSetter()
+                new EventIdSetter(),
+                List.of()
         );
     }
 

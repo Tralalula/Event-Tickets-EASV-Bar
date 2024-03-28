@@ -52,7 +52,8 @@ class DBDaoHelperTest {
                 new EventResultSetMapper(),
                 new EventInsertParameterSetter(),
                 new EventUpdateParameterSetter(),
-                new EventIdSetter()
+                new EventIdSetter(),
+                List.of()
         );
         daoHelper.setDbConnector(dbConnector);
         runScript(EMPTY_DB_SETUP);
