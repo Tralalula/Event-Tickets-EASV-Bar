@@ -41,6 +41,10 @@ public class Event {
         this(-1, title, imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo);
     }
 
+    public Event(int id, Event event) {
+        this(id, event.title(), event.imageName(), event.location(), event.startDate, event.endDate, event.startTime, event.endTime, event.locationGuidance(), event.extraInfo());
+    }
+
     public Event(int id,
                  String title,
                  String imageName,

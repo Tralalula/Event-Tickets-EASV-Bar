@@ -273,15 +273,16 @@ class DBDaoHelperTest {
     void addEvent() {
         // Setup
         runScript(POPULATE_SINGLE);
-        var event = new Event("Kakao", "", "", LocalDate.now(), null, LocalTime.now(), null, "", "");
+        var eventToAdd = new Event("Kakao", "", "", LocalDate.now(), null, LocalTime.now(), null, "", "");
+        var eventAdded = new Event(2, "Kakao", "", "", LocalDate.now(), null, LocalTime.now(), null, "", "");
 
         // Call
-        Result<Event> result = daoHelper.add(event);
+        Result<Event> result = daoHelper.add(eventToAdd);
 
         // Check
         assertThat(result).isInstanceOf(Success.class);
         var success = (Success<Event>) result;
-        assertThat(success.result()).isEqualTo(event);
+        assertThat(success.result()).isEqualTo(eventAdded);
     }
 
     @Test

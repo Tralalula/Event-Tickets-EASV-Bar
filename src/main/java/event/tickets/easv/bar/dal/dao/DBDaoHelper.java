@@ -119,8 +119,6 @@ public class DBDaoHelper<T> implements DAO<T> {
             } else {
                 return Failure.of(FailureType.DB_DATA_RETRIEVAL_FAILURE, "No ID generated for entity");
             }
-
-
         } catch (SQLException e) {
             return Failure.of(FailureType.DB_DATA_RETRIEVAL_FAILURE, "Failed to retrieve data from the database", e);
         }

@@ -129,7 +129,6 @@ class EventPreparedStatementSetter implements PreparedStatementSetter<Event> {
 class EventIdSetter implements IdSetter<Event> {
     @Override
     public Event setId(Event entity, int id) {
-        entity.setId(id);
-        return entity;
+        return new Event(id, entity);
     }
 }
