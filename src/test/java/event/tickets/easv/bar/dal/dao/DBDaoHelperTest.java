@@ -555,5 +555,35 @@ class DBDaoHelperTest {
             assertThat(success.result()).isEqualTo(true);
             assertThat(user.getUsername()).isEqualTo("Sodavand");
         }
+
+        @Test
+        void deleteUserDoesntExist() {
+            // Setup
+            runScript(POPULATE_SINGLE);
+            var user = new User(2, "Kakao");
+
+            // Call
+            Result<Boolean> result = userDaoHelper.delete(user);
+
+            // Check
+            assertThat(result).isInstanceOf(Success.class);
+            var success = (Success<Boolean>) result;
+            assertThat(success.result()).isEqualTo(false);
+        }
+
+        @Test
+        void deleteUserExists() {
+            // Setup
+            runScript(POPULATE_SINGLE);
+            var user = new User(1, "test");
+
+            // Call
+            Result<Boolean> result = userDaoHelper.delete(user);
+
+            // Check
+            assertThat(result).isInstanceOf(Success.class);
+            var success = (Success<Boolean>) result;
+            assertThat(success.result()).isEqualTo(true);
+        }
     }
 }
