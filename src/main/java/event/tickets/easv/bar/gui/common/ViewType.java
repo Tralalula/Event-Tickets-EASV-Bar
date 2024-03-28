@@ -17,6 +17,7 @@ public enum ViewType {
     RESET_PASSWORD(WindowType.AUTH),
 
     /* ------ Main App Views ------ */
+    // Dashboard
     DASHBOARD(WindowType.MAIN_APP),
 
     // Events
@@ -42,19 +43,17 @@ public enum ViewType {
         this.parent = parent;
     }
 
+    /**
+     * @return the associated window type of this view type.
+     */
     public WindowType windowType() {
         return windowType;
     }
 
+    /**
+     * @return the parent view type of this view type.
+     */
     public ViewType parent() {
         return parent;
-    }
-
-    public static ViewType byName(String name) {
-        for (var vt : ViewType.values()) {
-            if (vt.name().equals(name.toUpperCase())) return vt;
-        }
-
-        return null;
     }
 }

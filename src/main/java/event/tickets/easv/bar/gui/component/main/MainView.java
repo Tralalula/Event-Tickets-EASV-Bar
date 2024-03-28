@@ -2,13 +2,8 @@ package event.tickets.easv.bar.gui.component.main;
 
 import atlantafx.base.controls.Breadcrumbs;
 import atlantafx.base.controls.CustomTextField;
-import atlantafx.base.controls.ToggleSwitch;
 import atlantafx.base.theme.Styles;
-import event.tickets.easv.bar.be.User;
-import event.tickets.easv.bar.gui.common.ViewHandler;
-import event.tickets.easv.bar.gui.common.ViewType;
-import event.tickets.easv.bar.gui.common.WindowType;
-import event.tickets.easv.bar.gui.common.View;
+import event.tickets.easv.bar.gui.common.*;
 import event.tickets.easv.bar.gui.component.dashboard.DashboardView;
 import event.tickets.easv.bar.gui.component.events.EventsView;
 import event.tickets.easv.bar.gui.component.events.ShowEventView;
@@ -16,8 +11,6 @@ import event.tickets.easv.bar.gui.component.tickets.TicketsView;
 import event.tickets.easv.bar.gui.util.StyleConfig;
 import event.tickets.easv.bar.gui.util.*;
 import event.tickets.easv.bar.util.SessionManager;
-import javafx.beans.binding.Bindings;
-import javafx.beans.binding.StringBinding;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -29,9 +22,7 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.layout.*;
 import org.kordamp.ikonli.feather.Feather;
 import org.kordamp.ikonli.javafx.FontIcon;
-import org.kordamp.ikonli.material2.Material2AL;
 import org.kordamp.ikonli.material2.Material2MZ;
-import org.kordamp.ikonli.material2.Material2OutlinedAL;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -113,14 +104,14 @@ public class MainView implements View {
 
     private Region createCrumbs() {
         crumbs = new Breadcrumbs<>();
-        crumbs.setSelectedCrumb(BreadcrumbBuilder.buildBreadCrumbs(ViewHandler.activeViewProperty().get()));
+        crumbs.setSelectedCrumb(BreadcrumbUtils.buildBreadCrumbs(ViewHandler.activeViewProperty().get()));
 
-        ViewHandler.activeViewProperty().addListener((obs, ov, nv) -> crumbs.setSelectedCrumb(BreadcrumbBuilder.buildBreadCrumbs(nv)));
+        ViewHandler.activeViewProperty().addListener((obs, ov, nv) -> crumbs.setSelectedCrumb(BreadcrumbUtils.buildBreadCrumbs(nv)));
         NodeUtils.bindVisibility(crumbs, ViewHandler.activeWindowProperty().isEqualTo(WindowType.MAIN_APP));
 
         crumbs.onCrumbActionProperty().set(event -> {
             var crumbText = event.getSelectedCrumb().getValue();
-            var viewType = ViewType.byName(crumbText);
+            var viewType = ViewTypeHelper.byName(crumbText);
             if (viewType != null) ViewHandler.changeView(viewType);
         });
 
