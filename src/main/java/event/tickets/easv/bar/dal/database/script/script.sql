@@ -1,21 +1,96 @@
 USE EventManager;
 GO
 
+-- Drop order
+-- 1. 'GeneratedTicket' because it references 'TicketEventAssociation'
+-- 2. 'TicketEventAssociation' because it references 'Ticket' and 'Event'
+-- 3. 'Ticket' because it references 'TicketCategory'
+-- 4. 'Event' can be dropped now, all references removed.
+-- 5. 'TicketCategory' can be dropped now (after Ticket is dropped)
+-- 6. 'User' can be dropped at any time (no references to it)
+
+IF OBJECT_ID('dbo.GeneratedTicket', 'U') IS NOT NULL
+    DROP TABLE dbo.GeneratedTicket;
+GO
+
+IF OBJECT_ID('dbo.TicketEventAssociation', 'U') IS NOT NULL
+    DROP TABLE dbo.TicketEventAssociation;
+GO
+
+IF OBJECT_ID('dbo.Ticket', 'U') IS NOT NULL
+    DROP TABLE dbo.Ticket;
+GO
+
 IF OBJECT_ID('dbo.Event', 'U') IS NOT NULL
     DROP TABLE dbo.Event;
 GO
 
+IF OBJECT_ID('dbo.TicketCategory', 'U') IS NOT NULL
+    DROP TABLE dbo.TicketCategory;
+GO
+
+IF OBJECT_ID('dbo.Users', 'U') IS NOT NULL
+    DROP TABLE dbo.Users;
+GO
+
+-- Create table order (reverse of drop order)
+CREATE TABLE dbo.Users (
+   id       INT PRIMARY KEY IDENTITY(1,1),
+   username NVARCHAR(50),
+   password NVARCHAR(200)
+);
+GO
+
+CREATE TABLE TicketCategory (
+    id   INT PRIMARY KEY IDENTITY(1,1),
+    name NVARCHAR(255)
+);
+GO
+
 CREATE TABLE Event (
-    id INT PRIMARY KEY IDENTITY(1,1),
-    title NVARCHAR(255) NOT NULL,
-    imageName NVARCHAR(255),
-    location NVARCHAR(255),
-    startDate DATE NOT NULL,
-    endDate DATE,
-    startTime TIME NOT NULL,
-    endTime TIME,
+    id               INT PRIMARY KEY IDENTITY(1,1),
+    title            NVARCHAR(255) NOT NULL,
+    imageName        NVARCHAR(255),
+    location         NVARCHAR(255),
+    startDate        DATE NOT NULL,
+    endDate          DATE,
+    startTime        TIME NOT NULL,
+    endTime          TIME,
     locationGuidance NVARCHAR(255),
-    extraInfo NVARCHAR(255)
+    extraInfo        NVARCHAR(255)
+);
+GO
+
+CREATE TABLE Ticket (
+    id             INT PRIMARY KEY IDENTITY(1,1),
+    title          NVARCHAR(255),
+    classification NVARCHAR(50) CHECK (classification IN ('PAID', 'PROMOTIONAL')),
+    categoryId     INT,
+    FOREIGN KEY (categoryId) REFERENCES TicketCategory(id)
+);
+GO
+
+CREATE TABLE TicketEventAssociation (
+    id       INT PRIMARY KEY IDENTITY(1,1),
+    ticketId INT,
+    eventId  INT NULL,
+    price    DECIMAL(10, 2) NULL,
+    quantity INT,
+    FOREIGN KEY (ticketId) REFERENCES Ticket(id),
+    FOREIGN KEY (eventId) REFERENCES Event(id)
+);
+GO
+
+CREATE TABLE GeneratedTicket (
+    id                       INT PRIMARY KEY IDENTITY(1,1),
+    ticketEventAssociationId INT,
+    customerId               INT NULL,
+    assigned                 BIT DEFAULT 0,
+    used                     BIT DEFAULT 0,
+    barcode                  NVARCHAR(255),
+    qrcode                   NVARCHAR(255),
+    FOREIGN KEY (ticketEventAssociationId) REFERENCES TicketEventAssociation(id),
+    -- FOREIGN KEY (customerId) REFERENCES Customer(id)
 );
 GO
 
@@ -43,19 +118,21 @@ VALUES
     ('Culinary Arts Festival', 'card20.jpg', '6700, Esbjerg', '2024-11-11', NULL, '10:00', NULL, '', '');
 GO
 
-IF OBJECT_ID('dbo.Users', 'U') IS NOT NULL
-    DROP TABLE dbo.Users;
-GO
-
-create table dbo.Users
-(
-    id       int identity (0, 1),
-    username varchar(50),
-    password varchar(200)
-);
 
 -- Password: test
 INSERT INTO dbo.Users (username, password)
 VALUES
     ('test', '$2a$10$CLYpJK6QyzLKEvKzgnYd4OgBDAhhI0tmlYb02HgWAmfo1icjo0nMy')
 GO
+
+INSERT INTO TicketCategory (name) VALUES ('Concert');
+INSERT INTO TicketCategory (name) VALUES ('Theater');
+INSERT INTO TicketCategory (name) VALUES ('Sports');
+INSERT INTO TicketCategory (name) VALUES ('Conference');
+
+INSERT INTO Ticket (title, classification, categoryId) VALUES ('Rock Band Live', 'PAID', 1);
+INSERT INTO Ticket (title, classification, categoryId) VALUES ('Shakespeare Play', 'PAID', 2);
+INSERT INTO Ticket (title, classification, categoryId) VALUES ('Football Match', 'PAID', 3);
+INSERT INTO Ticket (title, classification, categoryId) VALUES ('Tech Conference 2024', 'PROMOTIONAL', 4);
+INSERT INTO Ticket (title, classification, categoryId) VALUES ('Jazz Night', 'PAID', 1);
+INSERT INTO Ticket (title, classification, categoryId) VALUES ('Broadway Musical', 'PAID', 2);

@@ -27,7 +27,7 @@ public class EventDAO implements DAO<Event> {
 
     @Override
     public Result<Optional<Event>> get(int id) {
-        return null;
+        return daoHelper.get(id);
     }
 
     @Override
@@ -42,17 +42,17 @@ public class EventDAO implements DAO<Event> {
 
     @Override
     public Result<Event> add(Event entity) {
-        return null;
+        return daoHelper.add(entity);
     }
 
     @Override
     public Result<Boolean> update(Event original, Event updatedData) {
-        return null;
+        return daoHelper.update(original, updatedData);
     }
 
     @Override
     public Result<Boolean> delete(Event entity) {
-        return null;
+        return daoHelper.delete(entity);
     }
 
 

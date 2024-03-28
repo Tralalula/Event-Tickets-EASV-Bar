@@ -2,9 +2,14 @@ package event.tickets.easv.bar.be;
 
 import event.tickets.easv.bar.bll.cryptographic.BCrypt;
 
-public class User {
+public class User implements Entity<User> {
     private int id;
     private String username, password;
+
+    public User(int id, String username) {
+        this.id = id;
+        this.username = username;
+    }
 
     public User(int id, String username, String password) {
         this.id = id;
@@ -31,6 +36,16 @@ public class User {
     }
 
     public int getID() {
+        return id;
+    }
+
+    @Override
+    public void update(User updatedDate) {
+
+    }
+
+    @Override
+    public int id() {
         return id;
     }
 }
