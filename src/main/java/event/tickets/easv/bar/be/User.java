@@ -2,6 +2,8 @@ package event.tickets.easv.bar.be;
 
 import event.tickets.easv.bar.bll.cryptographic.BCrypt;
 
+import java.util.Objects;
+
 public class User implements Entity<User> {
     private int id;
     private String username, password;
@@ -47,5 +49,21 @@ public class User implements Entity<User> {
     @Override
     public int id() {
         return id;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        User user = (User) o;
+
+        if (id() != user.id()) return false;
+        return getUsername().equals(user.getUsername());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.id, this.username);
     }
 }

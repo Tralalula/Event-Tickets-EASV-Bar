@@ -1,11 +1,13 @@
 package event.tickets.easv.bar.dal.dao;
 
 import event.tickets.easv.bar.be.Event;
+import event.tickets.easv.bar.be.User;
 import event.tickets.easv.bar.dal.database.DBConnector;
 import event.tickets.easv.bar.util.Result;
 import event.tickets.easv.bar.util.Result.Success;
 import event.tickets.easv.bar.util.Result.Failure;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -36,7 +38,8 @@ class DBDaoHelperTest {
     private static final String POPULATE_INVALID_DATA = PATH + "test_dbsetup_populate_invalid_data.sql";
 
     private DBConnector dbConnector;
-    private DBDaoHelper<Event> daoHelper;
+    private DBDaoHelper<Event> eventDaoHelper;
+    private DBDaoHelper<User> userDaoHelper;
 
     @BeforeEach
     void setup() {
@@ -47,7 +50,7 @@ class DBDaoHelperTest {
             throw new RuntimeException("Error trying to read TEST_DB_CONFIG_PATH in DBDaoHelperTest.setup().\n " + e);
         }
 
-        daoHelper = new DBDaoHelper<>(
+        eventDaoHelper = new DBDaoHelper<>(
                 new EventSQLTemplate(),
                 new EventResultSetMapper(),
                 new EventInsertParameterSetter(),
@@ -55,7 +58,18 @@ class DBDaoHelperTest {
                 new EventIdSetter(),
                 List.of()
         );
-        daoHelper.setDbConnector(dbConnector);
+        eventDaoHelper.setDbConnector(dbConnector);
+
+        userDaoHelper = new DBDaoHelper<>(
+                new UserSQLTemplate(),
+                new UserResultSetMapper(),
+                new UserInsertParameterSetter(),
+                new UserUpdateParameterSetter(),
+                new UserIdSetter(),
+                List.of()
+        );
+        userDaoHelper.setDbConnector(dbConnector);
+
         runScript(EMPTY_DB_SETUP);
     }
 
@@ -81,287 +95,347 @@ class DBDaoHelperTest {
         }
     }
 
-    @Test
-    void getEventEmptyTable() {
-        // Call
-        Result<Optional<Event>> result = daoHelper.get(1);
+    @Nested
+    class EventTest {
+        @Test
+        void getEventEmptyTable() {
+            // Call
+            Result<Optional<Event>> result = eventDaoHelper.get(1);
 
-        // Check
-        assertThat(result).isInstanceOf(Success.class);
-        var success = (Success<Optional<Event>>) result;
-        assertThat(success.result()).isEmpty();
+            // Check
+            assertThat(result).isInstanceOf(Success.class);
+            var success = (Success<Optional<Event>>) result;
+            assertThat(success.result()).isEmpty();
+        }
+
+        @Test
+        void getEventNotExists() {
+            // Setup
+            runScript(POPULATE_SINGLE);
+
+            // Call
+            Result<Optional<Event>> result = eventDaoHelper.get(2);
+
+            // Check
+            assertThat(result).isInstanceOf(Success.class);
+            var success = (Success<Optional<Event>>) result;
+            assertThat(success.result()).isEmpty();
+        }
+
+        @Test
+        void getEventExists() {
+            // Setup
+            runScript(POPULATE_SINGLE);
+
+            // Call
+            Result<Optional<Event>> result = eventDaoHelper.get(1);
+
+            // Check
+            assertThat(result).isInstanceOf(Success.class);
+            var success = (Success<Optional<Event>>) result;
+            assertThat(success.result()).isPresent();
+            assertThat(success.result()).isEqualTo(Optional.of(new Event(1, "Single", "", "", LocalDate.now(), null, LocalTime.now(), null, "", "")));
+        }
+
+        @Test
+        void getEventFailure() throws SQLException {
+            // Setup
+            var mockDbConnector = mock(DBConnector.class);
+            when(mockDbConnector.connection()).thenThrow(new SQLException("Connection failed"));
+            eventDaoHelper.setDbConnector(mockDbConnector);
+
+            // Call
+            Result<Optional<Event>> result = eventDaoHelper.get(1);
+
+            // Check
+            assertThat(result).isInstanceOf(Failure.class);
+        }
+
+        @Test
+        void allEventEmptyTable() {
+            // Call
+            Result<List<Event>> result = eventDaoHelper.all();
+
+            // Check
+            assertThat(result).isInstanceOf(Success.class);
+            var success = (Success<List<Event>>) result;
+            assertThat(success.result()).isEmpty();
+        }
+
+        @Test
+        void allEventSingleEvent() {
+            // Setup
+            runScript(POPULATE_SINGLE);
+
+            // Call
+            Result<List<Event>> result = eventDaoHelper.all();
+
+            // Check
+            assertThat(result).isInstanceOf(Success.class);
+            var success = (Success<List<Event>>) result;
+            assertThat(success.result()).hasSize(1);
+            assertThat(success.result().getFirst()).isEqualTo(new Event(1, "Single", "", "", LocalDate.now(), null, LocalTime.now(), null, "", ""));
+        }
+
+        @Test
+        void allEventMultipleEvents() {
+            // Setup
+            runScript(POPULATE_MULTIPLE);
+
+            // Call
+            Result<List<Event>> result = eventDaoHelper.all();
+
+            // Check
+            assertThat(result).isInstanceOf(Success.class);
+            var success = (Success<List<Event>>) result;
+            assertThat(success.result()).hasSize(20);
+        }
+
+        @Test
+        void allEventDataIntegrity() {
+            // Setup
+            runScript(POPULATE_MULTIPLE);
+
+            // Call
+            Result<List<Event>> result = eventDaoHelper.all();
+
+            // Check
+            assertThat(result).isInstanceOf(Success.class);
+            var success = (Success<List<Event>>) result;
+
+            var imageName = "sample.png";
+            var location = "6700, Esbjerg";
+            var startDate = LocalDate.now();
+            LocalDate endDate = null;
+            var startTime = LocalTime.now();
+            LocalTime endTime = null;
+            var locationGuidance = "";
+            var extraInfo = "";
+
+            var events = List.of(
+                    new Event(1, "International Food Festival", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
+                    new Event(2, "Vegan Cooking Workshop", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
+                    new Event(3, "Farm to Table Dinner", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
+                    new Event(4, "Wine and Cheese Night", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
+                    new Event(5, "Italian Pasta Making Class", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
+                    new Event(6, "French Cuisine Tasting", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
+                    new Event(7, "Sushi Rolling Workshop", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
+                    new Event(8, "Chocolate Making Class", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
+                    new Event(9, "BBQ and Grill Cook-off", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
+                    new Event(10, "Farmers Market Tour", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
+                    new Event(11, "Pastry and Baking Workshop", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
+                    new Event(12, "Coffee Tasting Experience", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
+                    new Event(13, "Beer Brewing Demonstration", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
+                    new Event(14, "Gourmet Burger Festival", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
+                    new Event(15, "Mexican Fiesta Night", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
+                    new Event(16, "Street Food Extravaganza", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
+                    new Event(17, "Ice Cream Social", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
+                    new Event(18, "Pizza Making Party", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
+                    new Event(19, "Seafood Feast", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
+                    new Event(20, "Culinary Arts Festival", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo)
+            );
+            assertThat(success.result()).isEqualTo(events);
+        }
+
+        @Test
+        void allEventBoundaryConditions() {
+            // Setup
+            runScript(POPULATE_BOUNDARY_CONDITIONS);
+
+            // Call
+            Result<List<Event>> result = eventDaoHelper.all();
+
+            // Check
+            assertThat(result).isInstanceOf(Success.class);
+            var success = (Success<List<Event>>) result;
+
+            var startDate = LocalDate.now();
+            LocalDate endDate = null;
+            var startTime = LocalTime.now();
+            LocalTime endTime = null;
+            var imageName = "sample.png";
+
+            var events = List.of(
+                    new Event(1, "A", imageName, "", startDate, endDate, startTime, endTime, "", ""),
+                    new Event(2, "A".repeat(255), imageName, "", startDate, endDate, startTime, endTime, "", "")
+            );
+            assertThat(success.result()).isEqualTo(events);
+        }
+
+        @Test
+        void allEventInvalidData() {
+            // todo: this test should be moved to Event BE test not here...
+
+            // Setup
+            runScript(POPULATE_INVALID_DATA);
+
+            // Call & Check
+            assertThrows(IllegalArgumentException.class, () -> eventDaoHelper.all());
+        }
+
+        @Test
+        void allEventDBConnectionFailure() throws SQLException {
+            // Setup
+            var mockDbConnector = mock(DBConnector.class);
+            when(mockDbConnector.connection()).thenThrow(new SQLException("Connection failed"));
+            eventDaoHelper.setDbConnector(mockDbConnector);
+
+            // Call
+            Result<List<Event>> result = eventDaoHelper.all();
+
+            // Check
+            assertThat(result).isInstanceOf(Failure.class);
+        }
+
+        @Test
+        void addEvent() {
+            // Setup
+            runScript(POPULATE_SINGLE);
+            var eventToAdd = new Event("Kakao", "", "", LocalDate.now(), null, LocalTime.now(), null, "", "");
+            var eventAdded = new Event(2, "Kakao", "", "", LocalDate.now(), null, LocalTime.now(), null, "", "");
+
+            // Call
+            Result<Event> result = eventDaoHelper.add(eventToAdd);
+
+            // Check
+            assertThat(result).isInstanceOf(Success.class);
+            var success = (Success<Event>) result;
+            assertThat(success.result()).isEqualTo(eventAdded);
+        }
+
+        @Test
+        void addEventDBConnectionFailure() throws SQLException {
+            // Setup
+            var mockDbConnector = mock(DBConnector.class);
+            when(mockDbConnector.connection()).thenThrow(new SQLException("Connection failed"));
+            eventDaoHelper.setDbConnector(mockDbConnector);
+            var event = new Event("Kakao", "", "", LocalDate.now(), null, LocalTime.now(), null, "", "");
+
+            // Call
+            Result<Event> result = eventDaoHelper.add(event);
+
+            // Check
+            assertThat(result).isInstanceOf(Failure.class);
+        }
+
+        @Test
+        void updateEventEntityDoesntExist() {
+            // Setup
+            runScript(POPULATE_SINGLE);
+            var event = new Event(2, "Kakao", "", "", LocalDate.now(), null, LocalTime.now(), null, "", "");
+            var updated = new Event("Sodavand", "", "", LocalDate.now(), null, LocalTime.now(), null, "", "");
+
+            // Call
+            Result<Boolean> result = eventDaoHelper.update(event, updated);
+
+            // Check
+            assertThat(result).isInstanceOf(Success.class);
+            var success = (Success<Boolean>) result;
+            assertThat(success.result()).isEqualTo(false);
+        }
+
+        @Test
+        void updateEventEntityExists() {
+            // Setup
+            runScript(POPULATE_SINGLE);
+            var event = new Event(1, "Single", "", "", LocalDate.now(), null, LocalTime.now(), null, "", "");
+            var updated = new Event("Sodavand", "", "", LocalDate.now(), null, LocalTime.now(), null, "", "");
+
+            // Call
+            Result<Boolean> result = eventDaoHelper.update(event, updated);
+
+            // Check
+            assertThat(result).isInstanceOf(Success.class);
+            var success = (Success<Boolean>) result;
+            assertThat(success.result()).isEqualTo(true);
+            assertThat(event.title()).isEqualTo("Sodavand");
+        }
+
+        @Test
+        void deleteEntityDoesntExist() {
+            // Setup
+            runScript(POPULATE_SINGLE);
+            var event = new Event(2, "Kakao", "", "", LocalDate.now(), null, LocalTime.now(), null, "", "");
+
+            // Call
+            Result<Boolean> result = eventDaoHelper.delete(event);
+
+            // Check
+            assertThat(result).isInstanceOf(Success.class);
+            var success = (Success<Boolean>) result;
+            assertThat(success.result()).isEqualTo(false);
+        }
+
+        @Test
+        void deleteEntityExists() {
+            // Setup
+            runScript(POPULATE_SINGLE);
+            var event = new Event(1, "Single", "", "", LocalDate.now(), null, LocalTime.now(), null, "", "");
+
+            // Call
+            Result<Boolean> result = eventDaoHelper.delete(event);
+
+            // Check
+            assertThat(result).isInstanceOf(Success.class);
+            var success = (Success<Boolean>) result;
+            assertThat(success.result()).isEqualTo(true);
+        }
     }
 
-    @Test
-    void getEventNotExists() {
-        // Setup
-        runScript(POPULATE_SINGLE);
+    @Nested
+    class UserTest {
+        @Test
+        void getUserEmptyTable() {
+            // Call
+            Result<Optional<User>> result = userDaoHelper.get(1);
 
-        // Call
-        Result<Optional<Event>> result = daoHelper.get(2);
+            // Check
+            assertThat(result).isInstanceOf(Success.class);
+            var success = (Success<Optional<User>>) result;
+            assertThat(success.result()).isEmpty();
+        }
 
-        // Check
-        assertThat(result).isInstanceOf(Success.class);
-        var success = (Success<Optional<Event>>) result;
-        assertThat(success.result()).isEmpty();
-    }
+        @Test
+        void getUserNotExists() {
+            // Setup
+            runScript(POPULATE_SINGLE);
 
-    @Test
-    void getEventExists() {
-        // Setup
-        runScript(POPULATE_SINGLE);
+            // Call
+            Result<Optional<User>> result = userDaoHelper.get(2);
 
-        // Call
-        Result<Optional<Event>> result = daoHelper.get(1);
+            // Check
+            assertThat(result).isInstanceOf(Success.class);
+            var success = (Success<Optional<User>>) result;
+            assertThat(success.result()).isEmpty();
+        }
 
-        // Check
-        assertThat(result).isInstanceOf(Success.class);
-        var success = (Success<Optional<Event>>) result;
-        assertThat(success.result()).isPresent();
-        assertThat(success.result()).isEqualTo(Optional.of(new Event(1, "Single", "", "", LocalDate.now(), null, LocalTime.now(), null, "", "")));
-    }
+        @Test
+        void getUserExists() {
+            // Setup
+            runScript(POPULATE_SINGLE);
 
-    @Test
-    void getEventFailure() throws SQLException {
-        // Setup
-        var mockDbConnector = mock(DBConnector.class);
-        when(mockDbConnector.connection()).thenThrow(new SQLException("Connection failed"));
-        daoHelper.setDbConnector(mockDbConnector);
+            // Call
+            Result<Optional<User>> result = userDaoHelper.get(1);
 
-        // Call
-        Result<Optional<Event>> result = daoHelper.get(1);
+            // Check
+            assertThat(result).isInstanceOf(Success.class);
+            var success = (Success<Optional<User>>) result;
+            assertThat(success.result()).isPresent();
+            assertThat(success.result()).isEqualTo(Optional.of(new User(1, "test")));
+        }
 
-        // Check
-        assertThat(result).isInstanceOf(Failure.class);
-    }
+        @Test
+        void getUserFailure() throws SQLException {
+            // Setup
+            var mockDbConnector = mock(DBConnector.class);
+            when(mockDbConnector.connection()).thenThrow(new SQLException("Connection failed"));
+            userDaoHelper.setDbConnector(mockDbConnector);
 
-    @Test
-    void allEventEmptyTable() {
-        // Call
-        Result<List<Event>> result = daoHelper.all();
+            // Call
+            Result<Optional<User>> result = userDaoHelper.get(1);
 
-        // Check
-        assertThat(result).isInstanceOf(Success.class);
-        var success = (Success<List<Event>>) result;
-        assertThat(success.result()).isEmpty();
-    }
-
-    @Test
-    void allEventSingleEvent() {
-        // Setup
-        runScript(POPULATE_SINGLE);
-
-        // Call
-        Result<List<Event>> result = daoHelper.all();
-
-        // Check
-        assertThat(result).isInstanceOf(Success.class);
-        var success = (Success<List<Event>>) result;
-        assertThat(success.result()).hasSize(1);
-        assertThat(success.result().getFirst()).isEqualTo(new Event(1, "Single", "", "", LocalDate.now(), null, LocalTime.now(), null, "", ""));
-    }
-
-    @Test
-    void allEventMultipleEvents() {
-        // Setup
-        runScript(POPULATE_MULTIPLE);
-
-        // Call
-        Result<List<Event>> result = daoHelper.all();
-
-        // Check
-        assertThat(result).isInstanceOf(Success.class);
-        var success = (Success<List<Event>>) result;
-        assertThat(success.result()).hasSize(20);
-    }
-
-    @Test
-    void allEventDataIntegrity() {
-        // Setup
-        runScript(POPULATE_MULTIPLE);
-
-        // Call
-        Result<List<Event>> result = daoHelper.all();
-
-        // Check
-        assertThat(result).isInstanceOf(Success.class);
-        var success = (Success<List<Event>>) result;
-
-        var imageName = "sample.png";
-        var location = "6700, Esbjerg";
-        var startDate = LocalDate.now();
-        LocalDate endDate = null;
-        var startTime = LocalTime.now();
-        LocalTime endTime = null;
-        var locationGuidance = "";
-        var extraInfo = "";
-
-        var events = List.of(
-                new Event(1, "International Food Festival", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
-                new Event(2, "Vegan Cooking Workshop", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
-                new Event(3, "Farm to Table Dinner", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
-                new Event(4, "Wine and Cheese Night", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
-                new Event(5, "Italian Pasta Making Class", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
-                new Event(6, "French Cuisine Tasting", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
-                new Event(7, "Sushi Rolling Workshop", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
-                new Event(8, "Chocolate Making Class", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
-                new Event(9, "BBQ and Grill Cook-off", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
-                new Event(10, "Farmers Market Tour", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
-                new Event(11, "Pastry and Baking Workshop", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
-                new Event(12,"Coffee Tasting Experience", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
-                new Event(13, "Beer Brewing Demonstration", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
-                new Event(14, "Gourmet Burger Festival", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
-                new Event(15, "Mexican Fiesta Night", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
-                new Event(16, "Street Food Extravaganza", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
-                new Event(17, "Ice Cream Social", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
-                new Event(18, "Pizza Making Party", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
-                new Event(19, "Seafood Feast", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
-                new Event(20, "Culinary Arts Festival", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo)
-        );
-        assertThat(success.result()).isEqualTo(events);
-    }
-
-    @Test
-    void allEventBoundaryConditions() {
-        // Setup
-        runScript(POPULATE_BOUNDARY_CONDITIONS);
-
-        // Call
-        Result<List<Event>> result = daoHelper.all();
-
-        // Check
-        assertThat(result).isInstanceOf(Success.class);
-        var success = (Success<List<Event>>) result;
-
-        var startDate = LocalDate.now();
-        LocalDate endDate = null;
-        var startTime = LocalTime.now();
-        LocalTime endTime = null;
-        var imageName = "sample.png";
-
-        var events = List.of(
-                new Event(1, "A", imageName, "", startDate, endDate, startTime, endTime, "", ""),
-                new Event(2, "A".repeat(255), imageName, "", startDate, endDate, startTime, endTime, "", "")
-        );
-        assertThat(success.result()).isEqualTo(events);
-    }
-
-    @Test
-    void allEventInvalidData() {
-        // todo: this test should be moved to Event BE test not here...
-
-        // Setup
-        runScript(POPULATE_INVALID_DATA);
-
-        // Call & Check
-        assertThrows(IllegalArgumentException.class, () -> daoHelper.all());
-    }
-
-    @Test
-    void allEventDBConnectionFailure() throws SQLException {
-        // Setup
-        var mockDbConnector = mock(DBConnector.class);
-        when(mockDbConnector.connection()).thenThrow(new SQLException("Connection failed"));
-        daoHelper.setDbConnector(mockDbConnector);
-
-        // Call
-        Result<List<Event>> result = daoHelper.all();
-
-        // Check
-        assertThat(result).isInstanceOf(Failure.class);
-    }
-
-    @Test
-    void addEvent() {
-        // Setup
-        runScript(POPULATE_SINGLE);
-        var eventToAdd = new Event("Kakao", "", "", LocalDate.now(), null, LocalTime.now(), null, "", "");
-        var eventAdded = new Event(2, "Kakao", "", "", LocalDate.now(), null, LocalTime.now(), null, "", "");
-
-        // Call
-        Result<Event> result = daoHelper.add(eventToAdd);
-
-        // Check
-        assertThat(result).isInstanceOf(Success.class);
-        var success = (Success<Event>) result;
-        assertThat(success.result()).isEqualTo(eventAdded);
-    }
-
-    @Test
-    void addEventDBConnectionFailure() throws SQLException {
-        // Setup
-        var mockDbConnector = mock(DBConnector.class);
-        when(mockDbConnector.connection()).thenThrow(new SQLException("Connection failed"));
-        daoHelper.setDbConnector(mockDbConnector);
-        var event = new Event("Kakao", "", "", LocalDate.now(), null, LocalTime.now(), null, "", "");
-
-        // Call
-        Result<Event> result = daoHelper.add(event);
-
-        // Check
-        assertThat(result).isInstanceOf(Failure.class);
-    }
-
-    @Test
-    void updateEventEntityDoesntExist() {
-        // Setup
-        runScript(POPULATE_SINGLE);
-        var event = new Event(2, "Kakao", "", "", LocalDate.now(), null, LocalTime.now(), null, "", "");
-        var updated = new Event("Sodavand", "", "", LocalDate.now(), null, LocalTime.now(), null, "", "");
-
-        // Call
-        Result<Boolean> result = daoHelper.update(event, updated);
-
-        // Check
-        assertThat(result).isInstanceOf(Success.class);
-        var success = (Success<Boolean>) result;
-        assertThat(success.result()).isEqualTo(false);
-    }
-
-    @Test
-    void updateEventEntityExists() {
-        // Setup
-        runScript(POPULATE_SINGLE);
-        var event = new Event(1, "Single", "", "", LocalDate.now(), null, LocalTime.now(), null, "", "");
-        var updated = new Event("Sodavand", "", "", LocalDate.now(), null, LocalTime.now(), null, "", "");
-
-        // Call
-        Result<Boolean> result = daoHelper.update(event, updated);
-
-        // Check
-        assertThat(result).isInstanceOf(Success.class);
-        var success = (Success<Boolean>) result;
-        assertThat(success.result()).isEqualTo(true);
-        assertThat(event.title()).isEqualTo("Sodavand");
-    }
-
-    @Test
-    void deleteEntityDoesntExist() {
-        // Setup
-        runScript(POPULATE_SINGLE);
-        var event = new Event(2, "Kakao", "", "", LocalDate.now(), null, LocalTime.now(), null, "", "");
-
-        // Call
-        Result<Boolean> result = daoHelper.delete(event);
-
-        // Check
-        assertThat(result).isInstanceOf(Success.class);
-        var success = (Success<Boolean>) result;
-        assertThat(success.result()).isEqualTo(false);
-    }
-
-    @Test
-    void deleteEntityExists() {
-        // Setup
-        runScript(POPULATE_SINGLE);
-        var event = new Event(1, "Single", "", "", LocalDate.now(), null, LocalTime.now(), null, "", "");
-
-        // Call
-        Result<Boolean> result = daoHelper.delete(event);
-
-        // Check
-        assertThat(result).isInstanceOf(Success.class);
-        var success = (Success<Boolean>) result;
-        assertThat(success.result()).isEqualTo(true);
+            // Check
+            assertThat(result).isInstanceOf(Failure.class);
+        }
     }
 }

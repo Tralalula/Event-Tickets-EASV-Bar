@@ -52,18 +52,18 @@ public class UserDAO implements DAO<User> {
 class UserSQLTemplate implements SQLTemplate<User> {
     @Override
     public String getSelectSQL() {
-        return "SELECT * FROM dbo.User WHERE id = ?";
+        return "SELECT * FROM dbo.Users WHERE id = ?";
     }
 
     @Override
     public String allSelectSQL() {
-        return "SELECT * FROM dbo.User";
+        return "SELECT * FROM dbo.Users";
     }
 
     @Override
     public String insertSQL() {
         return """
-               INSERT INTO dbo.User (username, password)
+               INSERT INTO dbo.Users (username, password)
                VALUES (?, ?);
                """;
     }
@@ -71,7 +71,7 @@ class UserSQLTemplate implements SQLTemplate<User> {
     @Override
     public String updateSQL() {
         return """
-               UPDATE dbo.User
+               UPDATE dbo.Users
                SET username = ?, password = ?
                WHERE id = ?;
                """;
@@ -79,7 +79,7 @@ class UserSQLTemplate implements SQLTemplate<User> {
 
     @Override
     public String deleteSQL() {
-        return "DELETE FROM dbo.User WHERE id = ?;";
+        return "DELETE FROM dbo.Users WHERE id = ?;";
     }
 }
 
