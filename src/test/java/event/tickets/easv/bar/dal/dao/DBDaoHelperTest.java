@@ -263,4 +263,34 @@ class DBDaoHelperTest {
         // Check
         assertThat(result).isInstanceOf(Failure.class);
     }
+
+    @Test
+    void addEvent() {
+        // Setup
+        runScript(POPULATE_SINGLE);
+        var event = new Event("Kakao", "", "", LocalDate.now(), null, LocalTime.now(), null, "", "");
+
+        // Call
+        Result<Event> result = daoHelper.add(event);
+
+        // Check
+        assertThat(result).isInstanceOf(Success.class);
+        var success = (Success<Event>) result;
+        assertThat(success.result()).isEqualTo(event);
+    }
+
+    @Test
+    void addEventDBConnectionFailure() throws SQLException {
+        // Setup
+        var mockDbConnector = mock(DBConnector.class);
+        when(mockDbConnector.connection()).thenThrow(new SQLException("Connection failed"));
+        daoHelper.setDbConnector(mockDbConnector);
+        var event = new Event("Kakao", "", "", LocalDate.now(), null, LocalTime.now(), null, "", "");
+
+        // Call
+        Result<Event> result = daoHelper.add(event);
+
+        // Check
+        assertThat(result).isInstanceOf(Failure.class);
+    }
 }

@@ -17,7 +17,7 @@ import java.util.Optional;
 /**
  * Helper class providing generic data access operations against a database.
  */
-public class DBDaoHelper<T> {
+public class DBDaoHelper<T> implements DAO<T> {
     private DBConnector dbConnector = null;
     private final SQLTemplate<T> sqlTemplate;
     private final ResultSetMapper<T> resultSetMapper;
@@ -92,6 +92,21 @@ public class DBDaoHelper<T> {
         }
 
         return Success.of(results);
+    }
+
+    @Override
+    public Result<T> add(T t) {
+        return null;
+    }
+
+    @Override
+    public Result<Boolean> update(T original, T updatedData) {
+        return null;
+    }
+
+    @Override
+    public Result<Boolean> delete(T t) {
+        return null;
     }
 
     /**
