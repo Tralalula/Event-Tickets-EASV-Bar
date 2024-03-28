@@ -1,22 +1,34 @@
 package event.tickets.easv.bar.gui.common;
 
+/**
+ * The different views available within the application,
+ * associating each view with a specific WindowType to denote its context<br>
+ * <br>
+ * Additionally, it supports a tree-like structure among views,
+ * giving parent-child relationships for navigation and organizational purposes.
+ */
 public enum ViewType {
-    //Auth
-    AUTH(WindowType.AUTH),
+    NO_VIEW(WindowType.NONE),
 
-    // Auth Views
+    /* ------ Auth Views ------ */
     LOGIN(WindowType.AUTH),
     FORGOT_PASSWORD(WindowType.AUTH),
     VERIFY(WindowType.AUTH),
     RESET_PASSWORD(WindowType.AUTH),
 
-    // Main App Views
+    /* ------ Main App Views ------ */
     DASHBOARD(WindowType.MAIN_APP),
+
+    // Events
     EVENTS(WindowType.MAIN_APP),
-    TICKETS(WindowType.MAIN_APP),
-    USERS(WindowType.MAIN_APP),
     SHOW_EVENT(WindowType.MAIN_APP, EVENTS),
-    ASSIGN_TICKET(WindowType.MAIN_APP, SHOW_EVENT);
+    ASSIGN_TICKET(WindowType.MAIN_APP, SHOW_EVENT),
+
+    // Tickets
+    TICKETS(WindowType.MAIN_APP),
+
+    // Users
+    USERS(WindowType.MAIN_APP);
 
     private final WindowType windowType;
     private final ViewType parent;

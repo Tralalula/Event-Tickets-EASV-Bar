@@ -5,7 +5,7 @@ package event.tickets.easv.bar.gui.common;
  * which allows for the organization and association of ViewType instances.
  */
 public enum WindowType {
-    None,
+    NONE,
     MAIN_APP,
     AUTH
 }
