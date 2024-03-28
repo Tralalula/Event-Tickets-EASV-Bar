@@ -83,7 +83,7 @@ class EventSQLTemplate implements SQLTemplate<Event> {
     public String updateSQL() {
         return """
                UPDATE dbo.Event
-               SET imageName = ?, location = ?, startDate = ?, endDate = ?, startTime = ?, endTime = ?, locationGuidance = ?, extraInfo = ?
+               SET title = ?, imageName = ?, location = ?, startDate = ?, endDate = ?, startTime = ?, endTime = ?, locationGuidance = ?, extraInfo = ?
                WHERE id = ?;
                """;
     }

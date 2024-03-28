@@ -300,4 +300,37 @@ class DBDaoHelperTest {
         // Check
         assertThat(result).isInstanceOf(Failure.class);
     }
+
+    @Test
+    void updateEventEntityDoesntExist() {
+        // Setup
+        runScript(POPULATE_SINGLE);
+        var event = new Event(2, "Kakao", "", "", LocalDate.now(), null, LocalTime.now(), null, "", "");
+        var updated = new Event("Sodavand", "", "", LocalDate.now(), null, LocalTime.now(), null, "", "");
+
+        // Call
+        Result<Boolean> result = daoHelper.update(event, updated);
+
+        // Check
+        assertThat(result).isInstanceOf(Success.class);
+        var success = (Success<Boolean>) result;
+        assertThat(success.result()).isEqualTo(false);
+    }
+
+    @Test
+    void updateEventEntityExists() {
+        // Setup
+        runScript(POPULATE_SINGLE);
+        var event = new Event(1, "Single", "", "", LocalDate.now(), null, LocalTime.now(), null, "", "");
+        var updated = new Event("Sodavand", "", "", LocalDate.now(), null, LocalTime.now(), null, "", "");
+
+        // Call
+        Result<Boolean> result = daoHelper.update(event, updated);
+
+        // Check
+        assertThat(result).isInstanceOf(Success.class);
+        var success = (Success<Boolean>) result;
+        assertThat(success.result()).isEqualTo(true);
+        assertThat(event.title()).isEqualTo("Sodavand");
+    }
 }

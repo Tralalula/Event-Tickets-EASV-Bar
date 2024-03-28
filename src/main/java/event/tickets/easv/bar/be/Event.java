@@ -4,7 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Objects;
 
-public class Event {
+public class Event implements Entity<Event> {
     private static final int TITLE_MAX_LENGTH = 255;
 
     private int id;
@@ -66,6 +66,19 @@ public class Event {
         setLocationGuidance(locationGuidance);
         setExtraInfo(extraInfo);
         checkRep();
+    }
+
+    @Override
+    public void update(Event updatedDate) {
+        setTitle(updatedDate.title());
+        setImageName(updatedDate.imageName());
+        setLocation(updatedDate.location());
+        setStartDate(updatedDate.startDate());
+        setEndDate(updatedDate.endDate());
+        setStartTime(updatedDate.startTime());
+        setEndTime(updatedDate.endTime());
+        setLocationGuidance(updatedDate.locationGuidance());
+        setExtraInfo(updatedDate.extraInfo());
     }
 
     public int id() {

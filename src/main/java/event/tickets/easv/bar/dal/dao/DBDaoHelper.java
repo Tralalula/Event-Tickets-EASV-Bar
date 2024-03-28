@@ -1,5 +1,6 @@
 package event.tickets.easv.bar.dal.dao;
 
+import event.tickets.easv.bar.be.Entity;
 import event.tickets.easv.bar.dal.database.*;
 import event.tickets.easv.bar.util.FailureType;
 import event.tickets.easv.bar.util.Result;
@@ -15,7 +16,7 @@ import java.util.Optional;
 /**
  * Helper class providing generic data access operations against a database.
  */
-public class DBDaoHelper<T> implements DAO<T> {
+public class DBDaoHelper<T extends Entity<T>> implements DAO<T> {
     private DBConnector dbConnector = null;
     private final SQLTemplate<T> sqlTemplate;
     private final ResultSetMapper<T> resultSetMapper;
@@ -134,6 +135,7 @@ public class DBDaoHelper<T> implements DAO<T> {
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             updateParameterSetter.setParameters(stmt, original, updatedData);
 
+            original.update(updatedData);
             int rowsAffected = stmt.executeUpdate();
             return Success.of(rowsAffected > 0);
         } catch (SQLException e) {
