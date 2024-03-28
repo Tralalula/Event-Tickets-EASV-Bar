@@ -492,5 +492,36 @@ class DBDaoHelperTest {
             assertThat(result).isInstanceOf(Failure.class);
         }
 
+        @Test
+        void addUser() {
+            // Setup
+            runScript(POPULATE_SINGLE);
+            var userToAdd = new User("Kakao", "");
+            var userAdded = new User(2, "Kakao");
+
+            // Call
+            Result<User> result = userDaoHelper.add(userToAdd);
+
+            // Check
+            assertThat(result).isInstanceOf(Success.class);
+            var success = (Success<User>) result;
+            assertThat(success.result()).isEqualTo(userAdded);
+        }
+
+        @Test
+        void addUserDBConnectionFailure() throws SQLException {
+            // Setup
+            var mockDbConnector = mock(DBConnector.class);
+            when(mockDbConnector.connection()).thenThrow(new SQLException("Connection failed"));
+            userDaoHelper.setDbConnector(mockDbConnector);
+            var user = new User("Kakao", "");
+
+            // Call
+            Result<User> result = userDaoHelper.add(user);
+
+            // Check
+            assertThat(result).isInstanceOf(Failure.class);
+        }
+
     }
 }
