@@ -32,7 +32,12 @@ public class MainController {
 
     public void fetchTickets() throws SQLException {
         model.fetchingDataProperty().set(true);
-        model.ticketModels().setAll(convertToTicketModels(ticketManager.getAllTickets()));
+        BackgroundExecutor.performBackgroundTask(
+                () -> manager.all(Ticket.class),
+                this::processTicketResult
+        );
+       // model.fetchingDataProperty().set(true);
+       // model.ticketModels().setAll(convertToTicketModels(ticketManager.getAllTickets()));
     }
 
     public void fetchEvents() {
@@ -41,6 +46,14 @@ public class MainController {
                 () -> manager.all(Event.class),
                 this::processResult
         );
+    }
+
+    private void processTicketResult(Result<List<Ticket>> result) {
+        model.fetchingDataProperty().set(false);
+        switch (result) {
+            case Success<List<Ticket>> s -> model.ticketModels().setAll(convertToTicketModels(s.result()));
+            case Failure<List<Ticket>> f -> System.out.println("Error: " + f.cause());
+        }
     }
 
     private void processResult(Result<List<Event>> result) {

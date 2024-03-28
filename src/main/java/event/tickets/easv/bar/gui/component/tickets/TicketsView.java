@@ -6,15 +6,14 @@ import atlantafx.base.theme.Tweaks;
 import event.tickets.easv.bar.be.Ticket;
 import event.tickets.easv.bar.gui.common.*;
 import event.tickets.easv.bar.gui.component.main.MainModel;
+import event.tickets.easv.bar.gui.util.StyleConfig;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
-import javafx.scene.control.Button;
-import javafx.scene.control.TableCell;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.*;
 import org.kordamp.ikonli.feather.Feather;
 import org.kordamp.ikonli.javafx.FontIcon;
@@ -89,7 +88,6 @@ public class TicketsView implements View {
 
                 editButton.setOnAction(event -> {
                     TicketModel rowData = getTableView().getItems().get(getIndex());
-//                    mainModel.changeTicketView(rowData);
                     ViewHandler.changeView(ViewType.SHOW_TICKET, rowData);
                 });
             }
@@ -101,6 +99,7 @@ public class TicketsView implements View {
             }
         });
 
+
         TableView<TicketModel> table = new TableView<>();
 
         table.setTableMenuButtonVisible(false);
@@ -111,6 +110,22 @@ public class TicketsView implements View {
         table.setItems(model);
         table.getColumns().addAll(col1, col2, col3, col4);
 
+        table.getStyleClass().add(StyleConfig.ACTIONABLE);
+        handleRowClick(table);
+
         return table;
+    }
+
+    private void handleRowClick(TableView<TicketModel> table) {
+        table.setRowFactory(tv -> {
+            TableRow<TicketModel> row = new TableRow<>();
+            row.setOnMouseClicked(event -> {
+                if (!row.isEmpty() && event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 1) {
+                    TicketModel rowData = row.getItem();
+                    ViewHandler.changeView(ViewType.SHOW_TICKET, rowData);
+                }
+            });
+            return row;
+        });
     }
 }

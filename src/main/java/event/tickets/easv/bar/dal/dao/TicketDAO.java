@@ -1,72 +1,114 @@
 package event.tickets.easv.bar.dal.dao;
 
 import event.tickets.easv.bar.be.Ticket;
-import event.tickets.easv.bar.be.User;
-import event.tickets.easv.bar.dal.database.DBConnector;
+import event.tickets.easv.bar.dal.database.IdSetter;
+import event.tickets.easv.bar.dal.database.PreparedStatementSetter;
+import event.tickets.easv.bar.dal.database.ResultSetMapper;
+import event.tickets.easv.bar.dal.database.SQLTemplate;
+import event.tickets.easv.bar.util.Result;
+import org.jetbrains.annotations.NotNull;
 
-import java.io.IOException;
-import java.sql.*;
-import java.util.ArrayList;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
+import java.util.Optional;
 
-public class TicketDAO {
-    private DBConnector databaseConnector;
+public class TicketDAO implements DAO<Ticket> {
+    private final DBDaoHelper<Ticket> daoHelper;
 
-    public TicketDAO() throws IOException {
-        this.databaseConnector = new DBConnector();
+    public TicketDAO() {
+        this.daoHelper = new DBDaoHelper<>(
+                new TicketSQLTemplate(),
+                new TicketResultSetMapper(),
+                new TicketPreparedStatementSetter(),
+                new TicketIdSetter()
+        );
+    }
+    @Override
+    public Result<Optional<Ticket>> get(int id) {
+        return null;
     }
 
-    public Ticket getTicket(int id) throws SQLException {
-        String sql = """
+    @Override
+    public Result<List<Ticket>> all() {
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        return daoHelper.all();
+    }
+
+    @Override
+    public Result<Ticket> add(Ticket entity) {
+        return null;
+    }
+
+    @Override
+    public Result<Boolean> update(Ticket original, Ticket updatedData) {
+        return null;
+    }
+
+    @Override
+    public Result<Boolean> delete(Ticket entity) {
+        return null;
+    }
+}
+
+class TicketSQLTemplate implements SQLTemplate<Ticket> {
+    @Override
+    public String getSelectSQL() {
+        return """
                 SELECT T.*, TC.name AS categoryName
                 FROM Ticket AS T
                 INNER JOIN TicketCategory AS TC ON T.categoryId = TC.id
                 INNER JOIN TicketCategory AS TC2 ON T.id = TC2.id
-                WHERE T.id = ?;
-            """;
-
-        try (Connection conn = databaseConnector.connection();
-             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            stmt.setInt(1, id);
-            ResultSet rs = stmt.executeQuery();
-
-            while (rs.next()) {
-                int ticketId = rs.getInt("id");
-                String title = rs.getString("title");
-                String classification = rs.getString("classification");
-                int categoryId = rs.getInt("categoryId");
-                String categoryName = rs.getString("categoryName");
-
-                return new Ticket(ticketId, title, classification, categoryId, categoryName);
-            }
-        }
-        throw new SQLException("Error occurred");
+                WHERE id = ?
+                """;
     }
 
-    public List<Ticket> getAllTickets() throws SQLException {
-        List<Ticket> tickets = new ArrayList<>();
-
-        String sql = """
+    @Override
+    public String allSelectSQL() {
+        return """
                 SELECT T.*, TC.name AS categoryName
                 FROM Ticket AS T
                 INNER JOIN TicketCategory AS TC ON T.categoryId = TC.id
-                INNER JOIN TicketCategory AS TC2 ON T.id = TC2.id;
-            """;
+                INNER JOIN TicketCategory AS TC2 ON T.id = TC2.id
+                """;
+    }
 
-        try (Connection conn = databaseConnector.connection();
-             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            ResultSet rs = stmt.executeQuery();
+    @Override
+    public String insertSQL() {
+        return """
+        INSERT INTO dbo.Ticket (id, title, classification, categoryId)
+        VALUES (?, ?, ?, ?);
+        """;
+    }
+}
 
-            while (rs.next()) {
-                int id = rs.getInt("id");
-                String title = rs.getString("title");
-                String classification = rs.getString("classification");
-                int categoryId = rs.getInt("categoryId");
-                String categoryName = rs.getString("categoryName");
+class TicketResultSetMapper implements ResultSetMapper<Ticket> {
+    @Override
+    public Ticket map(@NotNull ResultSet rs) throws SQLException {
+        int id = rs.getInt("id");
+        String title = rs.getString("title");
+        String classification = rs.getString("classification");
+        int categoryId = rs.getInt("categoryId");
 
-                tickets.add(new Ticket(id, title, classification, categoryId, categoryName));
-            }
-        }
-        return tickets;
+        return new Ticket(id, title, classification, categoryId);
+    }
+}
+
+class TicketPreparedStatementSetter implements PreparedStatementSetter<Ticket> {
+    @Override
+    public void setParameters(PreparedStatement stmt, Ticket entity) throws SQLException {
+
+    }
+}
+
+class TicketIdSetter implements IdSetter<Ticket> {
+    @Override
+    public Ticket setId(Ticket entity, int id) {
+        return new Ticket(id, entity);
     }
 }
