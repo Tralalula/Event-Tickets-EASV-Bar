@@ -19,9 +19,9 @@ public class BreadcrumbUtils {
      * @return BreadCrumbItem representing the root of the breadcrumb tree.
      */
     public static BreadCrumbItem<String> buildBreadCrumbs(ViewType viewType) {
-        var crumbNames = ViewTypeHelper.pathOf(viewType).stream()
-                .map(Enum::name)
-                .toArray(String[]::new);
+        String[] crumbNames = ViewTypeHelper.pathOf(viewType).stream()
+                                                        .map(Enum::name)
+                                                        .toArray(String[]::new);
         formatBreadcrumbs(crumbNames);
         return Breadcrumbs.buildTreeModel(crumbNames);
     }
@@ -33,7 +33,7 @@ public class BreadcrumbUtils {
         crumbNames[0] = StringUtils.capitalize(crumbNames[0]);
 
         // lowercase rest
-        for (var i = 1; i < crumbNames.length; i++) {
+        for (int i = 1; i < crumbNames.length; i++) {
             crumbNames[i] = crumbNames[i].toLowerCase();
         }
     }
