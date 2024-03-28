@@ -19,7 +19,8 @@ public class DBDaoHelper<T> implements DAO<T> {
     private DBConnector dbConnector = null;
     private final SQLTemplate<T> sqlTemplate;
     private final ResultSetMapper<T> resultSetMapper;
-    private final PreparedStatementSetter<T> preparedStatementSetter;
+    private final InsertParameterSetter<T> insertParameterSetter;
+    private final UpdateParameterSetter<T> updateParameterSetter;
     private final IdSetter<T> idSetter;
 
     /**
@@ -30,11 +31,13 @@ public class DBDaoHelper<T> implements DAO<T> {
      */
     public DBDaoHelper(SQLTemplate<T> sqlTemplate,
                        ResultSetMapper<T> resultSetMapper,
-                       PreparedStatementSetter<T> preparedStatementSetter,
+                       InsertParameterSetter<T> insertParameterSetter,
+                       UpdateParameterSetter<T> updateParameterSetter,
                        IdSetter<T> idSetter) {
         this.sqlTemplate = sqlTemplate;
         this.resultSetMapper = resultSetMapper;
-        this.preparedStatementSetter = preparedStatementSetter;
+        this.insertParameterSetter = insertParameterSetter;
+        this.updateParameterSetter = updateParameterSetter;
         this.idSetter = idSetter;
     }
 
@@ -109,7 +112,7 @@ public class DBDaoHelper<T> implements DAO<T> {
         String sql = sqlTemplate.insertSQL();
         try (Connection conn = dbConnector.connection();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            preparedStatementSetter.setParameters(stmt, entity);
+            insertParameterSetter.setParameters(stmt, entity);
             stmt.executeUpdate();
 
             ResultSet rs = stmt.getGeneratedKeys();
@@ -126,7 +129,16 @@ public class DBDaoHelper<T> implements DAO<T> {
 
     @Override
     public Result<Boolean> update(T original, T updatedData) {
-        return null;
+        String sql = sqlTemplate.updateSQL();
+        try (Connection conn = dbConnector.connection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            updateParameterSetter.setParameters(stmt, original, updatedData);
+
+            int rowsAffected = stmt.executeUpdate();
+            return Success.of(rowsAffected > 0);
+        } catch (SQLException e) {
+            return Failure.of(FailureType.DB_DATA_RETRIEVAL_FAILURE, "Failed to retrieve data from the database", e);
+        }
     }
 
     @Override

@@ -14,4 +14,6 @@ public interface SQLTemplate<T> {
     String allSelectSQL();
 
     String insertSQL();
+
+    String updateSQL();
 }

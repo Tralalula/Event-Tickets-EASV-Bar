@@ -1,10 +1,7 @@
 package event.tickets.easv.bar.dal.dao;
 
 import event.tickets.easv.bar.be.Event;
-import event.tickets.easv.bar.dal.database.IdSetter;
-import event.tickets.easv.bar.dal.database.PreparedStatementSetter;
-import event.tickets.easv.bar.dal.database.SQLTemplate;
-import event.tickets.easv.bar.dal.database.ResultSetMapper;
+import event.tickets.easv.bar.dal.database.*;
 import event.tickets.easv.bar.util.Result;
 import org.jetbrains.annotations.NotNull;
 
@@ -21,7 +18,8 @@ public class EventDAO implements DAO<Event> {
         this.daoHelper = new DBDaoHelper<>(
                 new EventSQLTemplate(),
                 new EventResultSetMapper(),
-                new EventPreparedStatementSetter(),
+                new EventInsertParameterSetter(),
+                new EventUpdateParameterSetter(),
                 new EventIdSetter()
         );
     }
@@ -76,9 +74,18 @@ class EventSQLTemplate implements SQLTemplate<Event> {
     @Override
     public String insertSQL() {
         return """
-    INSERT INTO dbo.Event (title, imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
-    """;
+               INSERT INTO dbo.Event (title, imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
+               """;
+    }
+
+    @Override
+    public String updateSQL() {
+        return """
+               UPDATE dbo.Event
+               SET imageName = ?, location = ?, startDate = ?, endDate = ?, startTime = ?, endTime = ?, locationGuidance = ?, extraInfo = ?
+               WHERE id = ?;
+               """;
     }
 }
 
@@ -100,7 +107,7 @@ class EventResultSetMapper implements ResultSetMapper<Event> {
     }
 }
 
-class EventPreparedStatementSetter implements PreparedStatementSetter<Event> {
+class EventInsertParameterSetter implements InsertParameterSetter<Event> {
     @Override
     public void setParameters(PreparedStatement stmt, Event entity) throws SQLException {
         stmt.setString(1, entity.title());
@@ -123,6 +130,33 @@ class EventPreparedStatementSetter implements PreparedStatementSetter<Event> {
 
         stmt.setString(8, entity.locationGuidance());
         stmt.setString(9, entity.extraInfo());
+    }
+}
+
+class EventUpdateParameterSetter implements UpdateParameterSetter<Event> {
+    @Override
+    public void setParameters(PreparedStatement stmt, Event original, Event updatedData) throws SQLException {
+        stmt.setString(1, updatedData.title());
+        stmt.setString(2, updatedData.imageName());
+        stmt.setString(3, updatedData.location());
+
+        stmt.setDate(4, Date.valueOf(updatedData.startDate()));
+        if (updatedData.endDate() != null) {
+            stmt.setDate(5, Date.valueOf(updatedData.endDate()));
+        } else {
+            stmt.setNull(5, Types.DATE);
+        }
+
+        stmt.setTime(6, Time.valueOf(updatedData.startTime()));
+        if (updatedData.endTime() != null) {
+            stmt.setTime(7, Time.valueOf(updatedData.endTime()));
+        } else {
+            stmt.setNull(7, Types.TIME);
+        }
+
+        stmt.setString(8, updatedData.locationGuidance());
+        stmt.setString(9, updatedData.extraInfo());
+        stmt.setInt(10, original.id());
     }
 }
 

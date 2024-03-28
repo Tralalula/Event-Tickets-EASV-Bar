@@ -50,7 +50,8 @@ class DBDaoHelperTest {
         daoHelper = new DBDaoHelper<>(
                 new EventSQLTemplate(),
                 new EventResultSetMapper(),
-                new EventPreparedStatementSetter(),
+                new EventInsertParameterSetter(),
+                new EventUpdateParameterSetter(),
                 new EventIdSetter()
         );
         daoHelper.setDbConnector(dbConnector);
