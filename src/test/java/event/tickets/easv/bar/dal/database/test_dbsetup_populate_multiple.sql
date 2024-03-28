@@ -1,7 +1,7 @@
 USE EventManager_TEST;
 GO
 
-INSERT INTO Event (title, imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo)
+INSERT INTO dbo.Event (title, imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo)
 VALUES
     ('International Food Festival', 'card1.jpg', '6700, Esbjerg', '2024-04-05', '2024-04-05',' 10:00', '20:00', '', ''),
     ('Vegan Cooking Workshop', 'card2.jpg', '6700, Esbjerg', '2024-05-10', '2024-05-10', '09:00', '12:00', '', ''),
@@ -25,3 +25,19 @@ VALUES
     ('Culinary Arts Festival', 'card20.jpg', '6700, Esbjerg', '2024-11-11', NULL, '10:00', NULL, '', '');
 GO
 
+-- Password: test
+INSERT INTO dbo.Users (username, password)
+VALUES
+    ('test', '$2a$10$CLYpJK6QyzLKEvKzgnYd4OgBDAhhI0tmlYb02HgWAmfo1icjo0nMy'),
+    ('test1', '$2a$10$CLYpJK6QyzLKEvKzgnYd4OgBDAhhI0tmlYb02HgWAmfo1icjo0nMy'),
+    ('test2', '$2a$10$CLYpJK6QyzLKEvKzgnYd4OgBDAhhI0tmlYb02HgWAmfo1icjo0nMy'),
+    ('test3', '$2a$10$CLYpJK6QyzLKEvKzgnYd4OgBDAhhI0tmlYb02HgWAmfo1icjo0nMy'),
+    ('test4', '$2a$10$CLYpJK6QyzLKEvKzgnYd4OgBDAhhI0tmlYb02HgWAmfo1icjo0nMy'),
+    ('test5', '$2a$10$CLYpJK6QyzLKEvKzgnYd4OgBDAhhI0tmlYb02HgWAmfo1icjo0nMy'),
+    ('test6', '$2a$10$CLYpJK6QyzLKEvKzgnYd4OgBDAhhI0tmlYb02HgWAmfo1icjo0nMy'),
+    ('test7', '$2a$10$CLYpJK6QyzLKEvKzgnYd4OgBDAhhI0tmlYb02HgWAmfo1icjo0nMy'),
+    ('test8', '$2a$10$CLYpJK6QyzLKEvKzgnYd4OgBDAhhI0tmlYb02HgWAmfo1icjo0nMy'),
+    ('test9', '$2a$10$CLYpJK6QyzLKEvKzgnYd4OgBDAhhI0tmlYb02HgWAmfo1icjo0nMy'),
+    ('test10', '$2a$10$CLYpJK6QyzLKEvKzgnYd4OgBDAhhI0tmlYb02HgWAmfo1icjo0nMy'),
+    ('kakao', '$2a$10$CLYpJK6QyzLKEvKzgnYd4OgBDAhhI0tmlYb02HgWAmfo1icjo0nMy');
+GO
