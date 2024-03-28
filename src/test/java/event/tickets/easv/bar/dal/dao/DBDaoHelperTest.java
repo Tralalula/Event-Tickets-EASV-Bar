@@ -75,7 +75,18 @@ class DBDaoHelperTest {
     }
 
     @Test
-    void getEventNotExist() {
+    void getEventEmptyTable() {
+        // Call
+        Result<Optional<Event>> result = daoHelper.get(1);
+
+        // Check
+        assertThat(result).isInstanceOf(Success.class);
+        var success = (Success<Optional<Event>>) result;
+        assertThat(success.result()).isEmpty();
+    }
+
+    @Test
+    void getEventNotExists() {
         // Setup
         runScript(POPULATE_SINGLE);
 
@@ -88,6 +99,34 @@ class DBDaoHelperTest {
         assertThat(success.result()).isEmpty();
     }
 
+    @Test
+    void getEventExists() {
+        // Setup
+        runScript(POPULATE_SINGLE);
+
+        // Call
+        Result<Optional<Event>> result = daoHelper.get(1);
+
+        // Check
+        assertThat(result).isInstanceOf(Success.class);
+        var success = (Success<Optional<Event>>) result;
+        assertThat(success.result()).isPresent();
+        assertThat(success.result()).isEqualTo(Optional.of(new Event(1, "Single", "", "", LocalDate.now(), null, LocalTime.now(), null, "", "")));
+    }
+
+    @Test
+    void getEventFailure() throws SQLException {
+        // Setup
+        var mockDbConnector = mock(DBConnector.class);
+        when(mockDbConnector.connection()).thenThrow(new SQLException("Connection failed"));
+        daoHelper.setDbConnector(mockDbConnector);
+
+        // Call
+        Result<Optional<Event>> result = daoHelper.get(1);
+
+        // Check
+        assertThat(result).isInstanceOf(Failure.class);
+    }
 
     @Test
     void allEventEmptyTable() {
@@ -202,6 +241,8 @@ class DBDaoHelperTest {
 
     @Test
     void allEventInvalidData() {
+        // todo: this test should be moved to Event BE test not here...
+
         // Setup
         runScript(POPULATE_INVALID_DATA);
 
