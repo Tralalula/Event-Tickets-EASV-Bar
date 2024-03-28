@@ -27,6 +27,7 @@ public enum ViewType {
 
     // Tickets
     TICKETS(WindowType.MAIN_APP),
+    SHOW_TICKET(WindowType.MAIN_APP, TICKETS),
 
     // Users
     USERS(WindowType.MAIN_APP);

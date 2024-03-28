@@ -4,34 +4,38 @@ import atlantafx.base.controls.CustomTextField;
 import atlantafx.base.theme.Styles;
 import atlantafx.base.theme.Tweaks;
 import event.tickets.easv.bar.be.Ticket;
-import event.tickets.easv.bar.gui.common.View;
-import javafx.application.Platform;
+import event.tickets.easv.bar.gui.common.*;
+import event.tickets.easv.bar.gui.component.main.MainModel;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
 import org.kordamp.ikonli.feather.Feather;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.List;
 
 public class TicketsView implements View {
+    private final MainModel mainModel;
+    private final ObservableList<TicketModel> model;
+    private final BooleanProperty fetchingData;
+
+    public TicketsView(MainModel mainModel, ObservableList<TicketModel> model, BooleanProperty fetchingData) {
+        this.mainModel = mainModel;
+        this.model = model;
+        this.fetchingData = fetchingData;
+    }
+
     @Override
     public Region getView() {
         HBox top = topBar();
-        TableView<Ticket> table = createTicketTableView(
-                List.of(
-                        new Ticket("VIP", "Paid", 1),
-                        new Ticket("1st row", "Paid", 1),
-                        new Ticket("Normal", "Paid", 1),
-                        new Ticket("1 free beer", "Promotional", 3),
-                        new Ticket("1 free cocio", "Promotional", 3)
-                ));
+        TableView<TicketModel> table = createTicketTableView();
 
         VBox box = new VBox(top, table);
 
@@ -48,7 +52,7 @@ public class TicketsView implements View {
     public HBox topBar() {
         HBox top = new HBox();
         var search = new CustomTextField();
-        search.setPromptText("Prompt text");
+        search.setPromptText("Search");
         search.setLeft(new FontIcon(Feather.SEARCH));
         search.setPrefWidth(250);
 
@@ -65,27 +69,47 @@ public class TicketsView implements View {
         return top;
     }
 
-    public TableView<Ticket> createTicketTableView(List<Ticket> tickets) {
-        TableColumn<Ticket, String> col1 = new TableColumn<>("Title");
-        col1.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getTitle()));
+    public TableView<TicketModel> createTicketTableView() {
+        TableColumn<TicketModel, String> col1 = new TableColumn<>("Title");
+        col1.setCellValueFactory(c -> c.getValue().title());
 
-        TableColumn<Ticket, String> col2 = new TableColumn<>("Type");
-        col2.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getType()));
+        TableColumn<TicketModel, String> col2 = new TableColumn<>("Type");
+        col2.setCellValueFactory(c -> c.getValue().type());
 
-        TableColumn<Ticket, String> col3 = new TableColumn<>("Price");
-        col3.setCellValueFactory(c -> new SimpleStringProperty(String.valueOf(c.getValue().getPrice())));
+        TableColumn<TicketModel, String> col3 = new TableColumn<>("Category");
+        col3.setCellValueFactory(c -> c.getValue().categoryName());
 
-        TableView<Ticket> table = new TableView<>();
+        TableColumn<TicketModel, Void> col4 = new TableColumn<>("");
+        col4.setCellFactory(param -> new TableCell<>() {
+            private final Button editButton = new Button(null, new FontIcon(Feather.EDIT));
+            {
+                editButton.getStyleClass().addAll(
+                        Styles.BUTTON_ICON, Styles.FLAT, Styles.ACCENT, Styles.TITLE_4
+                );
+
+                editButton.setOnAction(event -> {
+                    TicketModel rowData = getTableView().getItems().get(getIndex());
+                    mainModel.changeTicketView(rowData);
+                });
+            }
+
+            @Override
+            protected void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+                setGraphic(empty ? null : editButton);
+            }
+        });
+
+        TableView<TicketModel> table = new TableView<>();
 
         table.setTableMenuButtonVisible(false);
         table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
         table.getStyleClass().addAll(Tweaks.NO_HEADER, Styles.STRIPED);
 
-        table.setItems(FXCollections.observableList(tickets));
-        table.getColumns().setAll(col1, col2, col3);
+        table.setItems(model);
+        table.getColumns().addAll(col1, col2, col3, col4);
 
         return table;
     }
-
 }

@@ -3,19 +3,13 @@ package event.tickets.easv.bar.be;
 public class Ticket {
 
     private int id;
-    //private TicketType type;
     private String title;
     private int price;
-    private int categoryId;
-
     private String type;
 
-    /*
-    public enum TicketType {
-        EVENT,
-        PROMOTIONAL
-    }
-    */
+    private int categoryId;
+    private String categoryName;
+
     public Ticket(String title, String type, int categoryId) {
         this.id = id;
         this.title = title;
@@ -32,6 +26,18 @@ public class Ticket {
 
     public Ticket(int id, Ticket ticket) {
         this(id, ticket.getType(), ticket.getTitle(), ticket.getPrice());
+    }
+
+    public Ticket(int id, String title, String classification, int categoryId, String categoryName) {
+        this.id = id;
+        this.title = title;
+        this.type = classification;
+        this.categoryId = categoryId;
+        this.categoryName = categoryName;
+    }
+
+    public int getId() {
+        return id;
     }
 
     public String getType() {
@@ -52,6 +58,14 @@ public class Ticket {
 
     public int getPrice() {
         return price;
+    }
+
+    public int getCategoryId() {
+        return categoryId;
+    }
+
+    public String getCategoryName() {
+        return categoryName;
     }
 
     public void setPrice(int price) {

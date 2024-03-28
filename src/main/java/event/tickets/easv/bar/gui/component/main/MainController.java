@@ -1,25 +1,38 @@
 package event.tickets.easv.bar.gui.component.main;
 
 import event.tickets.easv.bar.be.Event;
+import event.tickets.easv.bar.be.Ticket;
 import event.tickets.easv.bar.bll.EntityManager;
+import event.tickets.easv.bar.bll.TicketManager;
 import event.tickets.easv.bar.gui.common.EventModel;
+import event.tickets.easv.bar.gui.common.TicketModel;
 import event.tickets.easv.bar.gui.util.BackgroundExecutor;
 import event.tickets.easv.bar.util.Result;
 import event.tickets.easv.bar.util.Result.Success;
 import event.tickets.easv.bar.util.Result.Failure;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainController {
     private final EntityManager manager;
     private final MainModel model;
+    private TicketManager ticketManager;
 
-    public MainController(MainModel model) {
+    public MainController(MainModel model) throws SQLException {
         this.model = model;
         this.manager = new EntityManager();
 
+        this.ticketManager = new TicketManager();
+
         fetchEvents();
+        fetchTickets();
+    }
+
+    public void fetchTickets() throws SQLException {
+        model.fetchingDataProperty().set(true);
+        model.ticketModels().setAll(convertToTicketModels(ticketManager.getAllTickets()));
     }
 
     public void fetchEvents() {
@@ -46,5 +59,15 @@ public class MainController {
         }
 
         return eventModels;
+    }
+
+    private List<TicketModel> convertToTicketModels(List<Ticket> tickets) {
+        List<TicketModel> ticketModels = new ArrayList<>();
+
+        for (var ticket : tickets) {
+            ticketModels.add(TicketModel.fromEntity(ticket));
+        }
+
+        return ticketModels;
     }
 }
