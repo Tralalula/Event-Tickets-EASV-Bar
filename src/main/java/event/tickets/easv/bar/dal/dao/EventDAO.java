@@ -59,6 +59,11 @@ public class EventDAO implements DAO<Event> {
 class EventSQLTemplate implements SQLTemplate<Event> {
     @Override
     public String getSelectSQL() {
+        return "SELECT * FROM dbo.Event WHERE id = ?";
+    }
+
+    @Override
+    public String allSelectSQL() {
         return "SELECT * FROM dbo.Event";
     }
 }

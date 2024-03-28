@@ -17,6 +17,7 @@ import java.sql.Statement;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 
 import static com.google.common.truth.Truth.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -72,6 +73,21 @@ class DBDaoHelperTest {
             throw new RuntimeException("Error trying to connect to TEST DATABASE in DBDaoHelperTest.runScript().\n " + e);
         }
     }
+
+    @Test
+    void getEventNotExist() {
+        // Setup
+        runScript(POPULATE_SINGLE);
+
+        // Call
+        Result<Optional<Event>> result = daoHelper.get(2);
+
+        // Check
+        assertThat(result).isInstanceOf(Success.class);
+        var success = (Success<Optional<Event>>) result;
+        assertThat(success.result()).isEmpty();
+    }
+
 
     @Test
     void allEventEmptyTable() {

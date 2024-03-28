@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Helper class providing generic data access operations against a database.
@@ -33,6 +34,37 @@ public class DBDaoHelper<T> {
     }
 
     /**
+     * Retrieves an entity by its identifier.
+     *
+     * @param id the unique identifier of the entity to retrieve.
+     * @return a result which is either a success or a failure if any issues occurred during data retrieval.
+     *         The success contains optional which either contains the entity if found; otherwise an empty optional.
+     */
+    public Result<Optional<T>> get(int id) {
+        try {
+            setupDBConnector();
+        } catch (IOException e) {
+            return Failure.of(FailureType.IO_FAILURE, "Failed to read from the data source", e);
+        }
+
+        String sql = sqlTemplate.getSelectSQL();
+
+        try (Connection conn = dbConnector.connection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, id);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                return Success.of(Optional.of(resultSetMapper.map(rs)));
+            } else {
+                return Success.of(Optional.empty());
+            }
+        } catch (SQLException e) {
+            return Failure.of(FailureType.DB_DATA_RETRIEVAL_FAILURE, "Failed to retrieve data from the database", e);
+        }
+    }
+
+    /**
      * Retrieves all entities of type T from the database.
      *
      * @return a {@code Result<List<T>>} which is either a Success containing the list of entities,
@@ -42,11 +74,11 @@ public class DBDaoHelper<T> {
         try {
             setupDBConnector();
         } catch (IOException e) {
-            return new Failure<>(FailureType.IO_FAILURE, "Failed to read from the data source", e);
+            return Failure.of(FailureType.IO_FAILURE, "Failed to read from the data source", e);
         }
 
         List<T> results = new ArrayList<>();
-        String sql = sqlTemplate.getSelectSQL();
+        String sql = sqlTemplate.allSelectSQL();
 
         try (Connection conn = dbConnector.connection();
              Statement stmt = conn.createStatement();
@@ -56,10 +88,10 @@ public class DBDaoHelper<T> {
                 results.add(resultSetMapper.map(rs));
             }
         } catch (SQLException e) {
-            return new Failure<>(FailureType.DB_DATA_RETRIEVAL_FAILURE, "Failed to retrieve data from the database", e);
+            return Failure.of(FailureType.DB_DATA_RETRIEVAL_FAILURE, "Failed to retrieve data from the database", e);
         }
 
-        return new Success<>(results);
+        return Success.of(results);
     }
 
     /**

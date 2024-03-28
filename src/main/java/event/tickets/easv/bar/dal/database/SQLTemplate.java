@@ -10,4 +10,6 @@ public interface SQLTemplate<T> {
      * @return a String containing a SQL SELECT query tailored to the entity type T.
      */
     String getSelectSQL();
+
+    String allSelectSQL();
 }

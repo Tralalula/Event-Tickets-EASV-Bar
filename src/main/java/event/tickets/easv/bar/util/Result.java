@@ -12,7 +12,11 @@ public sealed interface Result<T> {
      *
      * @param <T> the type of the result.
      */
-    record Success<T>(T result) implements Result<T> {}
+    record Success<T>(T result) implements Result<T> {
+        public static <T> Success<T> of(T result) {
+            return new Success<>(result);
+        }
+    }
 
     /**
      * Represents a failed outcome of an operation, encapsulating details about the failure.
@@ -24,5 +28,9 @@ public sealed interface Result<T> {
      *           Does not directly relate to any of the fields of Failure.
      *           It's used to keep the Failure record consistent with the Result type's generic signature.
      */
-    record Failure<T>(FailureType type, String message, Throwable cause) implements Result<T> { }
+    record Failure<T>(FailureType type, String message, Throwable cause) implements Result<T> {
+        public static <T> Failure<T> of(FailureType type, String message, Throwable cause) {
+            return new Failure<>(type, message, cause);
+        }
+    }
 }
