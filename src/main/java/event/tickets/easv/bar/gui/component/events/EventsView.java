@@ -119,8 +119,6 @@ public class EventsView implements View {
                 card.setSubHeader(imageView);
                 card.setBody(content);
                 card.setFooter(footer);
-
-                card.setOnMouseClicked(e -> ViewHandler.changeView(ViewType.SHOW_EVENT));
             }
 
             @Override
@@ -142,6 +140,8 @@ public class EventsView implements View {
                     location.textProperty().bind(item.location());
                     startDateTime.textProperty().bind(dateTimeBinding(item.startDate(), item.startTime(), "Starts", formatter));
                     endDateTime.textProperty().bind(dateTimeBinding(item.endDate(), item.endTime(), "Ends", formatter));
+
+                    card.setOnMouseClicked(e -> ViewHandler.changeView(ViewType.SHOW_EVENT, item));
 
                     setGraphic(card);
                 }

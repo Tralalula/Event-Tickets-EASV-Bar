@@ -89,7 +89,8 @@ public class TicketsView implements View {
 
                 editButton.setOnAction(event -> {
                     TicketModel rowData = getTableView().getItems().get(getIndex());
-                    mainModel.changeTicketView(rowData);
+//                    mainModel.changeTicketView(rowData);
+                    ViewHandler.changeView(ViewType.SHOW_TICKET, rowData);
                 });
             }
 
