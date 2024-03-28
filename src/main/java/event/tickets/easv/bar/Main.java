@@ -2,6 +2,8 @@ package event.tickets.easv.bar;
 
 import atlantafx.base.theme.PrimerDark;
 import atlantafx.base.theme.PrimerLight;
+import event.tickets.easv.bar.gui.common.ViewHandler;
+import event.tickets.easv.bar.gui.common.ViewType;
 import event.tickets.easv.bar.gui.component.main.MainView;
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -17,6 +19,7 @@ public class Main extends Application {
         Application.setUserAgentStylesheet(new PrimerLight().getUserAgentStylesheet());
 
         stage.setScene(new Scene(new MainView().getView(), 1200, 800));
+        ViewHandler.changeView(ViewType.DASHBOARD);
         stage.show();
     }
 }

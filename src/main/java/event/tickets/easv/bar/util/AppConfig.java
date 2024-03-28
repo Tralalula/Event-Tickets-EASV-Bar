@@ -13,5 +13,5 @@ public class AppConfig {
     public static final String RESEND_API = "resend.api";
 
     public static final String EVENT_IMAGES_DIR = "/data/event_images/";
-    public static final String PROFILE_IMAGES_DIR = "/data/profile_images";
+    public static final String PROFILE_IMAGES_DIR = "/data/profile_images/";
 }
