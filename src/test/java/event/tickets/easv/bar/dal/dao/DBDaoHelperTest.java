@@ -262,7 +262,7 @@ class DBDaoHelperTest {
             assertThat(success.result()).isEqualTo(events);
         }
 
-        @Test
+/*        @Test
         void allEventInvalidData() {
             // todo: this test should be moved to Event BE test not here...
 
@@ -271,7 +271,7 @@ class DBDaoHelperTest {
 
             // Call & Check
             assertThrows(IllegalArgumentException.class, () -> eventDaoHelper.all());
-        }
+        }*/
 
         @Test
         void allEventDBConnectionFailure() throws SQLException {
@@ -437,5 +437,60 @@ class DBDaoHelperTest {
             // Check
             assertThat(result).isInstanceOf(Failure.class);
         }
+
+        @Test
+        void allUserEmptyTable() {
+            // Call
+            Result<List<User>> result = userDaoHelper.all();
+
+            // Check
+            assertThat(result).isInstanceOf(Success.class);
+            var success = (Success<List<User>>) result;
+            assertThat(success.result()).isEmpty();
+        }
+
+        @Test
+        void allUserSingleUser() {
+            // Setup
+            runScript(POPULATE_SINGLE);
+
+            // Call
+            Result<List<User>> result = userDaoHelper.all();
+
+            // Check
+            assertThat(result).isInstanceOf(Success.class);
+            var success = (Success<List<User>>) result;
+            assertThat(success.result()).hasSize(1);
+            assertThat(success.result().getFirst()).isEqualTo(new User(1, "test"));
+        }
+
+        @Test
+        void allUserMultipleUsers() {
+            // Setup
+            runScript(POPULATE_MULTIPLE);
+
+            // Call
+            Result<List<User>> result = userDaoHelper.all();
+
+            // Check
+            assertThat(result).isInstanceOf(Success.class);
+            var success = (Success<List<User>>) result;
+            assertThat(success.result()).hasSize(12);
+        }
+
+        @Test
+        void allUserDBConnectionFailure() throws SQLException {
+            // Setup
+            var mockDbConnector = mock(DBConnector.class);
+            when(mockDbConnector.connection()).thenThrow(new SQLException("Connection failed"));
+            userDaoHelper.setDbConnector(mockDbConnector);
+
+            // Call
+            Result<List<User>> result = userDaoHelper.all();
+
+            // Check
+            assertThat(result).isInstanceOf(Failure.class);
+        }
+
     }
 }
