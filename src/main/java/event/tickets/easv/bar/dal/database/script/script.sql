@@ -78,17 +78,10 @@ VALUES
     ('test', '$2a$10$CLYpJK6QyzLKEvKzgnYd4OgBDAhhI0tmlYb02HgWAmfo1icjo0nMy')
 GO
 
-CREATE TABLE TicketCategory (
-    id INT IDENTITY(1,1) PRIMARY KEY,
-    name NVARCHAR(255)
-);
-
 CREATE TABLE Ticket (
     id INT IDENTITY(1,1) PRIMARY KEY,
     title NVARCHAR(255),
     classification NVARCHAR(50) CHECK (classification IN ('PAID', 'PROMOTIONAL')),
-    categoryId INT,
-    FOREIGN KEY (categoryId) REFERENCES TicketCategory(id)
 );
 
 CREATE TABLE TicketEventAssociation (
@@ -113,14 +106,10 @@ CREATE TABLE GeneratedTicket (
      -- FOREIGN KEY (customerId) REFERENCES Customer(id)
 );
 
-INSERT INTO TicketCategory (name) VALUES ('Concert');
-INSERT INTO TicketCategory (name) VALUES ('Theater');
-INSERT INTO TicketCategory (name) VALUES ('Sports');
-INSERT INTO TicketCategory (name) VALUES ('Conference');
 
-INSERT INTO Ticket (title, classification, categoryId) VALUES ('Rock Band Live', 'PAID', 1);
-INSERT INTO Ticket (title, classification, categoryId) VALUES ('Shakespeare Play', 'PAID', 2);
-INSERT INTO Ticket (title, classification, categoryId) VALUES ('Football Match', 'PAID', 3);
-INSERT INTO Ticket (title, classification, categoryId) VALUES ('Tech Conference 2024', 'PROMOTIONAL', 4);
-INSERT INTO Ticket (title, classification, categoryId) VALUES ('Jazz Night', 'PAID', 1);
-INSERT INTO Ticket (title, classification, categoryId) VALUES ('Broadway Musical', 'PAID', 2);
+INSERT INTO Ticket (title, classification) VALUES ('Rock Band Live', 'PAID');
+INSERT INTO Ticket (title, classification) VALUES ('Shakespeare Play', 'PAID');
+INSERT INTO Ticket (title, classification) VALUES ('Football Match', 'PAID');
+INSERT INTO Ticket (title, classification) VALUES ('Tech Conference 2024', 'PROMOTIONAL');
+INSERT INTO Ticket (title, classification) VALUES ('Jazz Night', 'PAID');
+INSERT INTO Ticket (title, classification) VALUES ('Broadway Musical', 'PAID');

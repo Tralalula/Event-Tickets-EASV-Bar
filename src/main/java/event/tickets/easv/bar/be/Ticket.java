@@ -7,33 +7,20 @@ public class Ticket {
     private int price;
     private String type;
 
-    private int categoryId;
-    private String categoryName;
-
-    public Ticket(String title, String type, int categoryId) {
+    public Ticket(String title, String type) {
         this.id = id;
         this.title = title;
         this.type = type;
-        this.categoryId = categoryId;
     }
 
-    public Ticket(int id, String title, String type, int categoryId) {
+    public Ticket(int id, String title, String type) {
         this.id = id;
         this.title = title;
         this.type = type;
-        this.categoryId = categoryId;
     }
 
     public Ticket(int id, Ticket ticket) {
-        this(id, ticket.getType(), ticket.getTitle(), ticket.getPrice());
-    }
-
-    public Ticket(int id, String title, String classification, int categoryId, String categoryName) {
-        this.id = id;
-        this.title = title;
-        this.type = classification;
-        this.categoryId = categoryId;
-        this.categoryName = categoryName;
+        this(id, ticket.getTitle(), ticket.getType());
     }
 
     public int getId() {
@@ -58,14 +45,6 @@ public class Ticket {
 
     public int getPrice() {
         return price;
-    }
-
-    public int getCategoryId() {
-        return categoryId;
-    }
-
-    public String getCategoryName() {
-        return categoryName;
     }
 
     public void setPrice(int price) {

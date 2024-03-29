@@ -59,29 +59,18 @@ public class TicketDAO implements DAO<Ticket> {
 class TicketSQLTemplate implements SQLTemplate<Ticket> {
     @Override
     public String getSelectSQL() {
-        return """
-                SELECT T.*, TC.name AS categoryName
-                FROM Ticket AS T
-                INNER JOIN TicketCategory AS TC ON T.categoryId = TC.id
-                INNER JOIN TicketCategory AS TC2 ON T.id = TC2.id
-                WHERE id = ?
-                """;
+        return "SELECT * FROM dbo.Ticket WHERE id = ?";
     }
 
     @Override
     public String allSelectSQL() {
-        return """
-                SELECT T.*, TC.name AS categoryName
-                FROM Ticket AS T
-                INNER JOIN TicketCategory AS TC ON T.categoryId = TC.id
-                INNER JOIN TicketCategory AS TC2 ON T.id = TC2.id
-                """;
+        return "SELECT * FROM dbo.Ticket";
     }
 
     @Override
     public String insertSQL() {
         return """
-        INSERT INTO dbo.Ticket (id, title, classification, categoryId)
+        INSERT INTO dbo.Ticket (id, title, classification)
         VALUES (?, ?, ?, ?);
         """;
     }
@@ -93,9 +82,8 @@ class TicketResultSetMapper implements ResultSetMapper<Ticket> {
         int id = rs.getInt("id");
         String title = rs.getString("title");
         String classification = rs.getString("classification");
-        int categoryId = rs.getInt("categoryId");
 
-        return new Ticket(id, title, classification, categoryId);
+        return new Ticket(id, title, classification);
     }
 }
 

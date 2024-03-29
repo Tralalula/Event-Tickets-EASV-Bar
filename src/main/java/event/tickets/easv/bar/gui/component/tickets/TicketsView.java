@@ -75,8 +75,8 @@ public class TicketsView implements View {
         TableColumn<TicketModel, String> col2 = new TableColumn<>("Type");
         col2.setCellValueFactory(c -> c.getValue().type());
 
-        TableColumn<TicketModel, String> col3 = new TableColumn<>("Category");
-        col3.setCellValueFactory(c -> c.getValue().categoryName());
+       // TableColumn<TicketModel, String> col3 = new TableColumn<>("Category");
+       // col3.setCellValueFactory(c -> c.getValue().categoryName());
 
         TableColumn<TicketModel, Void> col4 = new TableColumn<>("");
         col4.setCellFactory(param -> new TableCell<>() {
@@ -108,7 +108,7 @@ public class TicketsView implements View {
         table.getStyleClass().addAll(Tweaks.NO_HEADER, Styles.STRIPED);
 
         table.setItems(model);
-        table.getColumns().addAll(col1, col2, col3, col4);
+        table.getColumns().addAll(col1, col2, col4);
 
         table.getStyleClass().add(StyleConfig.ACTIONABLE);
         handleRowClick(table);
