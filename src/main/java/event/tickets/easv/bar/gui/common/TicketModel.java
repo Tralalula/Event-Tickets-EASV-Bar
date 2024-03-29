@@ -17,6 +17,16 @@ public record TicketModel(
                 );
     }
 
+    public static TicketModel Empty() {
+        return new TicketModel(new SimpleIntegerProperty(), new SimpleStringProperty(), new SimpleStringProperty());
+    }
+
+    public void update(TicketModel ticketModel) {
+        this.id.set(ticketModel.id.get());
+        this.title.set(ticketModel.title.get());
+        this.type.set(ticketModel.title.get());
+    }
+
     public Ticket toEntity() {
         return new Ticket(
                 id.get(),
