@@ -10,5 +10,6 @@ public interface EntityAssociation<A, B> {
     Result<Boolean> removeAssociation(A entityA, B entityB);
     Result<List<B>> findAssociatesOfA(A entityA);
     Result<List<A>> findAssociatesOfB(B entityB);
+    Result<List<?>> findAssociatesOf(Entity<?> entity);
     Result<Boolean> deleteAssociationsFor(Entity<?> entity);
 }

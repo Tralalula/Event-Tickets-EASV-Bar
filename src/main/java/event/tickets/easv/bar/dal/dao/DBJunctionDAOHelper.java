@@ -121,6 +121,18 @@ public class DBJunctionDAOHelper<A extends Entity<A>, B extends Entity<B>> imple
 
     @Override
     @SuppressWarnings("unchecked")
+    public Result<List<?>> findAssociatesOf(Entity<?> entity) {
+        if (entity.getClass().equals(classA)) {
+            return Success.of(findAssociatesOfA((A) entity).get());
+        } else if (entity.getClass().equals(classB)) {
+            return Success.of(findAssociatesOfB((B) entity).get());
+        } else {
+            return Failure.of(FailureType.INVALID_ENTITY_TYPE, "Entity does not match expected types A or B");
+        }
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
     public Result<Boolean> deleteAssociationsFor(Entity<?> entity) {
         if (entity == null) throw new IllegalArgumentException("Entity must not be null");
 

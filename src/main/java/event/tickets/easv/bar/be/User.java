@@ -2,11 +2,14 @@ package event.tickets.easv.bar.be;
 
 import event.tickets.easv.bar.bll.cryptographic.BCrypt;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class User implements Entity<User> {
     private int id;
     private String username, password;
+    private List<Event> events = new ArrayList<>();
 
     public User(int id, String username) {
         this.id = id;
@@ -53,6 +56,17 @@ public class User implements Entity<User> {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
+    public void setAssociations(List<?> associations) {
+        if (associations.isEmpty()) return;
+
+        Object first = associations.getFirst();
+        if (first instanceof Event) {
+            this.events = (List<Event>) associations;
+        }
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
@@ -66,5 +80,12 @@ public class User implements Entity<User> {
     @Override
     public int hashCode() {
         return Objects.hash(this.id, this.username);
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "username='" + username + '\'' +
+                '}';
     }
 }

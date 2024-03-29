@@ -12,7 +12,7 @@ import java.util.Optional;
 public class UserDAO implements DAO<User> {
     private final DBDaoHelper<User> daoHelper;
 
-    public UserDAO(DBDaoHelper<User> daoHelper) {
+    public UserDAO() {
         this.daoHelper = new DBDaoHelper<>(
                 new UserSQLTemplate(),
                 new UserResultSetMapper(),

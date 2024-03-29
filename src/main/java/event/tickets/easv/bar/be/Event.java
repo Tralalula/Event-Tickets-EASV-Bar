@@ -2,6 +2,8 @@ package event.tickets.easv.bar.be;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class Event implements Entity<Event> {
@@ -17,6 +19,8 @@ public class Event implements Entity<Event> {
     private LocalTime endTime;
     private String locationGuidance;
     private String extraInfo;
+
+    private List<User> users = new ArrayList<>();
 
     private void checkRep() {
         assert title != null : "title must not be null";
@@ -83,6 +87,17 @@ public class Event implements Entity<Event> {
 
     public int id() {
         return id;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public void setAssociations(List<?> associations) {
+        if (associations.isEmpty()) return;
+
+        Object first = associations.getFirst();
+        if (first instanceof User) {
+            this.users = (List<User>) associations;
+        }
     }
 
     public String title() {

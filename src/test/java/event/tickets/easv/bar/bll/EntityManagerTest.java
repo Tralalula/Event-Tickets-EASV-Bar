@@ -1,5 +1,6 @@
 package event.tickets.easv.bar.bll;
 
+import event.tickets.easv.bar.be.Entity;
 import event.tickets.easv.bar.be.Event;
 import event.tickets.easv.bar.dal.dao.DAO;
 import event.tickets.easv.bar.dal.dao.EventDAO;
@@ -21,8 +22,22 @@ class EntityManagerTest {
     private EntityManager entityManager;
     private DAO<Event> mockEventDAO;
 
-    static class UnregisteredEntity {
+    static class UnregisteredEntity implements Entity {
 
+        @Override
+        public void update(Object updatedDate) {
+
+        }
+
+        @Override
+        public int id() {
+            return 0;
+        }
+
+        @Override
+        public void setAssociations(List associations) {
+
+        }
     }
 
     @BeforeEach
