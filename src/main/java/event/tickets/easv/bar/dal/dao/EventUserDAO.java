@@ -17,7 +17,9 @@ public class EventUserDAO implements EntityAssociation<Event, User> {
     public EventUserDAO() {
         this.daoHelper = new DBJunctionDAOHelper<>(
                 new EventUserSQLTemplate(),
-                new EventUserInsertParameterSetter()
+                new EventUserInsertParameterSetter(),
+                new EventResultSetMapper(),
+                new UserResultSetMapper()
         );
     }
 
@@ -56,6 +58,26 @@ class EventUserSQLTemplate implements AssociationSQLTemplate<Event, User> {
     @Override
     public String deleteRelationSQL() {
         return "DELETE FROM dbo.EventUser WHERE EventId = ? AND UserID = ?";
+    }
+
+    @Override
+    public String selectAForBSQL() {
+        return """
+               SELECT id, title, imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo
+               FROM dbo.EventUser eventuser
+               JOIN dbo.Event event ON eventuser.EventId = event.id
+               WHERE eventuser.UserId = ?;
+               """;
+    }
+
+    @Override
+    public String selectBForASQL() {
+        return """
+               SELECT id, username
+               FROM dbo.EventUser eventuser
+               JOIN dbo.Users users ON eventuser.UserId = users.id
+               WHERE eventuser.EventId = ?;
+               """;
     }
 }
 

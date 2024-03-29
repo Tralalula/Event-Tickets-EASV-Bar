@@ -19,6 +19,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 
 import static com.google.common.truth.Truth.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -50,7 +51,9 @@ class DBJunctionDAOHelperTest {
 
         this.eventUserDaoHelper = new DBJunctionDAOHelper<>(
                 new EventUserSQLTemplate(),
-                new EventUserInsertParameterSetter()
+                new EventUserInsertParameterSetter(),
+                new EventResultSetMapper(),
+                new UserResultSetMapper()
         );
         eventUserDaoHelper.setDbConnector(dbConnector);
 
@@ -115,7 +118,7 @@ class DBJunctionDAOHelperTest {
 
         @Test
         void removeAssociationEventUserDoesntExist() {
-            // setup
+            // Setup
             runScript(POPULATE_SINGLE);
             var event = new Event(1, "Single", "sample.png", "6700 Esbjerg", LocalDate.of(2024, 4, 5), LocalDate.of(2024, 4, 5), LocalTime.of(10, 0), LocalTime.of(20, 0), "", "");
             var user = new User(1, "test");
@@ -131,11 +134,11 @@ class DBJunctionDAOHelperTest {
 
         @Test
         void removeAssociationEventUserExists() {
-            // setup
+            // Setup
             runScript(POPULATE_SINGLE);
             var event = new Event(1, "Single", "sample.png", "6700 Esbjerg", LocalDate.of(2024, 4, 5), LocalDate.of(2024, 4, 5), LocalTime.of(10, 0), LocalTime.of(20, 0), "", "");
             var user = new User(1, "test");
-            eventUserDaoHelper.addAssociation(event, user); // integration test here, probably shouldnt be:
+            eventUserDaoHelper.addAssociation(event, user); // integration test here, probably shouldnt be
 
             // Call
             Result<Boolean> result = eventUserDaoHelper.removeAssociation(event, user);
@@ -145,5 +148,40 @@ class DBJunctionDAOHelperTest {
             var success = (Success<Boolean>) result;
             assertThat(success.result()).isEqualTo(true);
         }
+
+        @Test
+        void getAllUsersAssociatedWithEventSingle() {
+            // Setup
+            runScript(POPULATE_SINGLE);
+            var event = new Event(1, "Single", "sample.png", "6700 Esbjerg", LocalDate.of(2024, 4, 5), LocalDate.of(2024, 4, 5), LocalTime.of(10, 0), LocalTime.of(20, 0), "", "");
+            var user = new User(1, "test");
+            eventUserDaoHelper.addAssociation(event, user); // integration test here, probably shouldnt be
+
+            // Call
+            Result<List<User>> result = eventUserDaoHelper.findAssociatesOfA(event);
+
+            // Check
+            assertThat(result).isInstanceOf(Success.class);
+            var success = (Success<List<User>>) result;
+            assertThat(success.result()).isEqualTo(List.of(user));
+        }
+
+        @Test
+        void getAllEventsAssociatedWithUserSingle() {
+            // Setup
+            runScript(POPULATE_SINGLE);
+            var event = new Event(1, "Single", "sample.png", "6700 Esbjerg", LocalDate.of(2024, 4, 5), LocalDate.of(2024, 4, 5), LocalTime.of(10, 0), LocalTime.of(20, 0), "", "");
+            var user = new User(1, "test");
+            eventUserDaoHelper.addAssociation(event, user); // integration test here, probably shouldnt be
+
+            // Call
+            Result<List<Event>> result = eventUserDaoHelper.findAssociatesOfB(user);
+
+            // Check
+            assertThat(result).isInstanceOf(Success.class);
+            var success = (Success<List<Event>>) result;
+            assertThat(success.result()).isEqualTo(List.of(event));
+        }
+
     }
 }
