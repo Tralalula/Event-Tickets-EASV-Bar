@@ -14,15 +14,15 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
-public class TicketDAO implements DAO<Ticket> {
+public class TicketGeneratedDAO implements DAO<Ticket> {
     private final DBDaoHelper<Ticket> daoHelper;
 
-    public TicketDAO() {
+    public TicketGeneratedDAO() {
         this.daoHelper = new DBDaoHelper<>(
-                new TicketSQLTemplate(),
-                new TicketResultSetMapper(),
-                new TicketPreparedStatementSetter(),
-                new TicketIdSetter()
+                new TicketGeneratedSQLTemplate(),
+                new TicketGeneratedResultSetMapper(),
+                new TicketGeneratedPreparedStatementSetter(),
+                new TicketGeneratedIdSetter()
         );
     }
     @Override
@@ -56,7 +56,7 @@ public class TicketDAO implements DAO<Ticket> {
     }
 }
 
-class TicketSQLTemplate implements SQLTemplate<Ticket> {
+class TicketGeneratedSQLTemplate implements SQLTemplate<Ticket> {
     @Override
     public String getSelectSQL() {
         return "SELECT * FROM dbo.Ticket WHERE id = ?";
@@ -76,7 +76,7 @@ class TicketSQLTemplate implements SQLTemplate<Ticket> {
     }
 }
 
-class TicketResultSetMapper implements ResultSetMapper<Ticket> {
+class TicketGeneratedResultSetMapper implements ResultSetMapper<Ticket> {
     @Override
     public Ticket map(@NotNull ResultSet rs) throws SQLException {
         int id = rs.getInt("id");
@@ -87,14 +87,14 @@ class TicketResultSetMapper implements ResultSetMapper<Ticket> {
     }
 }
 
-class TicketPreparedStatementSetter implements PreparedStatementSetter<Ticket> {
+class TicketGeneratedPreparedStatementSetter implements PreparedStatementSetter<Ticket> {
     @Override
     public void setParameters(PreparedStatement stmt, Ticket entity) throws SQLException {
 
     }
 }
 
-class TicketIdSetter implements IdSetter<Ticket> {
+class TicketGeneratedIdSetter implements IdSetter<Ticket> {
     @Override
     public Ticket setId(Ticket entity, int id) {
         return new Ticket(id, entity);

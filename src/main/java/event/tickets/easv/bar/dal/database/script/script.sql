@@ -84,7 +84,7 @@ CREATE TABLE Ticket (
     classification NVARCHAR(50) CHECK (classification IN ('PAID', 'PROMOTIONAL')),
 );
 
-CREATE TABLE TicketEventAssociation (
+CREATE TABLE TicketEvent (
     id INT IDENTITY(1,1) PRIMARY KEY,
     ticketId INT,
     eventId INT NULL,
@@ -94,7 +94,7 @@ CREATE TABLE TicketEventAssociation (
     FOREIGN KEY (eventId) REFERENCES Event(id)
 );
 
-CREATE TABLE GeneratedTicket (
+CREATE TABLE TicketGenerated (
      id INT IDENTITY(1,1) PRIMARY KEY,
      ticketEventAssociationId INT,
      customerId INT NULL,
@@ -102,7 +102,7 @@ CREATE TABLE GeneratedTicket (
      used BIT DEFAULT 0,
      barcode NVARCHAR(255),
      qrcode NVARCHAR(255),
-     FOREIGN KEY (ticketEventAssociationId) REFERENCES TicketEventAssociation(id),
+     FOREIGN KEY (ticketEventAssociationId) REFERENCES TicketEvent(id),
      -- FOREIGN KEY (customerId) REFERENCES Customer(id)
 );
 
