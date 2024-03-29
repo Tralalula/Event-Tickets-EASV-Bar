@@ -25,7 +25,7 @@ public class MainController {
     public void fetchEvents() {
         model.fetchingDataProperty().set(true);
         BackgroundExecutor.performBackgroundTask(
-                () -> manager.all(Event.class),
+                () -> manager.allWithAssociations(Event.class),
                 this::processResult
         );
     }

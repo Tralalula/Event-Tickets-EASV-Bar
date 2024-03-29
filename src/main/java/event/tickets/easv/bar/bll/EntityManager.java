@@ -56,7 +56,14 @@ public class EntityManager {
      * @throws IllegalArgumentException if there is no DAO registered for the provided entity type.
      */
     @SuppressWarnings("unchecked")
-    public <T extends Entity<T>> Result<List<T>> all(Class<T> entityClass) {
+    public <T> Result<List<T>> all(Class<T> entityClass) {
+        DAO<T> dao = (DAO<T>) daos.get(entityClass);
+        if (dao == null) throw new IllegalArgumentException("Unknown entity type: " + entityClass);
+        return dao.all();
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T extends Entity<T>> Result<List<T>> allWithAssociations(Class<T> entityClass) {
         DAO<T> dao = (DAO<T>) daos.get(entityClass);
         if (dao == null) throw new IllegalArgumentException("Unexpected entity: " + entityClass);
         Result<List<T>> result = dao.all();
@@ -75,6 +82,7 @@ public class EntityManager {
 
     private void findAndSetAssociations(EntityAssociation<?, ?> association, Entity<?> entity) {
         Result<List<?>> associatesResult = association.findAssociatesOf(entity);
+        if (associatesResult == null) throw new IllegalArgumentException("associatesResult must not be null");
         associatesResult.ifSuccess(entity::setAssociations);
     }
 
@@ -83,7 +91,7 @@ public class EntityManager {
      * @param args unused
      */
     public static void main(String[] args) {
-        System.out.println(new EntityManager().all(Event.class));
+        System.out.println(new EntityManager().allWithAssociations(Event.class));
 
     }
 }
