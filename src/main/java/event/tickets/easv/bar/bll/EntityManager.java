@@ -10,6 +10,7 @@ import event.tickets.easv.bar.util.Result;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Processes and manages entities.
@@ -48,6 +49,13 @@ public class EntityManager {
         DAO<T> dao = (DAO<T>) daos.get(entity);
         if (dao == null) throw new IllegalArgumentException("Unknown entity type: " + entity);
         return dao.all();
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> Result<Optional<T>> get(Class<T> entity, int id) {
+        DAO<T> dao = (DAO<T>) daos.get(entity);
+        if (dao == null) throw new IllegalArgumentException("Unknown entity type: " + entity);
+        return dao.get(id);
     }
 
     /**

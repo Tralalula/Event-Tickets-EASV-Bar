@@ -8,6 +8,7 @@ import event.tickets.easv.bar.gui.component.dashboard.DashboardView;
 import event.tickets.easv.bar.gui.component.events.EventsView;
 import event.tickets.easv.bar.gui.component.events.ShowEventView;
 import event.tickets.easv.bar.gui.component.tickets.ShowTicketView;
+import event.tickets.easv.bar.gui.component.tickets.TicketsModel;
 import event.tickets.easv.bar.gui.component.tickets.TicketsView;
 import event.tickets.easv.bar.gui.util.StyleConfig;
 import event.tickets.easv.bar.gui.util.*;
@@ -60,7 +61,7 @@ public class MainView implements View {
         this.showEventView = new ShowEventView().getView();
 
         this.ticketsView = new TicketsView(model, model.ticketModels(), model.fetchingDataProperty()).getView();
-        this.showTicketView = new ShowTicketView().getView();
+        this.showTicketView = new ShowTicketView(new TicketsModel(model)).getView();
     }
 
     @Override

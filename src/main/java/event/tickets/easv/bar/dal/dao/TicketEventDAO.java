@@ -29,7 +29,7 @@ public class TicketEventDAO implements DAO<TicketEvent> {
     }
     @Override
     public Result<Optional<TicketEvent>> get(int id) {
-        return null;
+        return daoHelper.get(id);
     }
 
     @Override
