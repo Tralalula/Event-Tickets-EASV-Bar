@@ -32,11 +32,6 @@ public class EventDAO implements DAO<Event> {
 
     @Override
     public Result<List<Event>> all() {
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
         return daoHelper.all();
     }
 

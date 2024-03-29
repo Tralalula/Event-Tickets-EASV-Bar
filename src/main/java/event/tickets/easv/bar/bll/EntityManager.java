@@ -52,6 +52,9 @@ public class EntityManager {
         return new QueryBuilder<>(this, entityClass);
     }
 
+    /**
+     * Package-private; used by QueryBuilder.
+     */
     <T extends Entity<T>> Result<List<T>> fetchWithAssociations(Class<T> entityClass, List<Class<?>> associationClasses) {
         return fetchEntities(entityClass, associationClasses);
     }

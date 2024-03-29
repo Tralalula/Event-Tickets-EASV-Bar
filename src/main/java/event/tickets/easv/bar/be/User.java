@@ -44,6 +44,10 @@ public class User implements Entity<User> {
         return id;
     }
 
+    public List<Event> events() {
+        return events;
+    }
+
     @Override
     public void update(User updatedDate) {
         this.username = updatedDate.getUsername();

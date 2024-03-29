@@ -139,6 +139,8 @@ public class EventsView implements View {
                     startDateTime.textProperty().bind(dateTimeBinding(item.startDate(), item.startTime(), "Starts", formatter));
                     endDateTime.textProperty().bind(dateTimeBinding(item.endDate(), item.endTime(), "Ends", formatter));
 
+                    card.setOnMouseClicked(event -> System.out.println(item.users()));
+
                     setGraphic(card);
                 }
             }
