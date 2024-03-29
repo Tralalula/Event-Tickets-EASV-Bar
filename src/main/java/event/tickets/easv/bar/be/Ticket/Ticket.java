@@ -1,20 +1,29 @@
 package event.tickets.easv.bar.be.Ticket;
 
+import event.tickets.easv.bar.bll.TicketManager;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public class Ticket {
 
     private int id, price;
     private String title, type;
 
     private TicketGenerated generatedTicket;
-    private TicketEvent ticketEvent;
+    private List<TicketEvent> ticketEvent = new ArrayList<>();
+
+    private TicketManager ticketManager;
 
     public Ticket(String title, String type) {
+        this.ticketManager = new TicketManager();
         this.id = id;
         this.title = title;
         this.type = type;
     }
 
     public Ticket(int id, String title, String type) {
+        this.ticketManager = new TicketManager();
         this.id = id;
         this.title = title;
         this.type = type;
@@ -53,19 +62,12 @@ public class Ticket {
         this.price = price;
     }
 
-    public void setGeneratedTicket(TicketGenerated ticket) {
-        this.generatedTicket = ticket;
+    public void setTicketEvent() {
+        if (this.ticketEvent.isEmpty())
+            this.ticketEvent.addAll(ticketManager.getAllTicketsForTicket(this));
     }
 
-    public TicketGenerated getGeneratedTicket() {
-        return generatedTicket;
-    }
-
-    public void setTicketEvent(TicketEvent ticket) {
-        this.ticketEvent = ticket;
-    }
-
-    public TicketEvent getTicketEvent() {
+    public List<TicketEvent> getTicketEvent() {
         return ticketEvent;
     }
 

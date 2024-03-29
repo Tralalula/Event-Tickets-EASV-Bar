@@ -1,7 +1,10 @@
 package event.tickets.easv.bar.gui.component.tickets;
 
 import event.tickets.easv.bar.Main;
+import event.tickets.easv.bar.be.Event;
+import event.tickets.easv.bar.be.Ticket.Ticket;
 import event.tickets.easv.bar.be.Ticket.TicketEvent;
+import event.tickets.easv.bar.be.Ticket.TicketGenerated;
 import event.tickets.easv.bar.bll.TicketManager;
 import event.tickets.easv.bar.gui.common.EventModel;
 import event.tickets.easv.bar.gui.common.TicketModel;
@@ -23,31 +26,22 @@ public class TicketsModel {
         this.ticketManager = new TicketManager();
     }
 
-    public <T> ObservableList<T> convertToObservableList(List<T> list) {
-        return FXCollections.observableList(list);
+    public ObservableList<EventModel> getEventModelsForEventTicket(TicketEvent ticket) {
+        return model.eventModels().filtered(eventModel -> eventModel.id().get() == ticket.getEventId());
     }
 
-    public FilteredList<EventModel> getEventModels(int id) {
-        FilteredList<EventModel> filtered = new FilteredList<>(model.eventModels());
-        filtered.setPredicate(ticketEvent -> ticketEvent.id().get() == id);
-
-        return filtered;
+    public List<TicketEvent> getTickets(Ticket ticket) {
+        return ticketManager.getAllTicketsForTicket(ticket);
     }
 
-    public FilteredList<TicketEvent> getTickets(int id) {
-        FilteredList<TicketEvent> filtered = new FilteredList<>(convertToObservableList(ticketManager.getAllEventTickets()));
-        filtered.setPredicate(ticketEvent -> ticketEvent.getTicketId() == id);
-
-        return filtered;
-    }
-
-    //TODO lav smartere, hurtig løsning
-    public List<TicketEventModel> getTicketsForEvent(int ticketId) {
+    public List<TicketEventModel> getTicketsForEvent(Ticket ticket) {
         List<TicketEventModel> ticketModels = new ArrayList<>();
-        FilteredList<TicketEvent> ticketEvents = getTickets(ticketId);
+        List<TicketEvent> ticketEvents = getTickets(ticket);
+
+        System.out.println(ticketEvents.size());
 
         for (TicketEvent ticketEvent : ticketEvents) {
-            FilteredList<EventModel> filteredEvents = getEventModels(ticketEvent.getEventId());
+            ObservableList<EventModel> filteredEvents = getEventModelsForEventTicket(ticketEvent);
 
             for (EventModel event : filteredEvents) {
                 TicketEventModel ticketModel = TicketEventModel.fromEntity(ticketEvent, event.toEntity());

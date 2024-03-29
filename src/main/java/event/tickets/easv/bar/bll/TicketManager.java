@@ -1,15 +1,16 @@
 package event.tickets.easv.bar.bll;
 
+import event.tickets.easv.bar.be.Event;
+import event.tickets.easv.bar.be.Ticket.Ticket;
 import event.tickets.easv.bar.be.Ticket.TicketEvent;
 import event.tickets.easv.bar.be.Ticket.TicketGenerated;
-import event.tickets.easv.bar.gui.common.TicketModel;
 import event.tickets.easv.bar.util.Result;
 import event.tickets.easv.bar.util.Result.Success;
 import event.tickets.easv.bar.util.Result.Failure;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class TicketManager {
     private EntityManager entityManager;
@@ -18,18 +19,6 @@ public class TicketManager {
 
     public TicketManager() {
         this.entityManager = new EntityManager();
-    }
-
-    public List<TicketGenerated> getAllTickets(int id) {
-        ArrayList<TicketGenerated> generatedTickets = new ArrayList<>();
-
-        Result<List<TicketGenerated>> result = entityManager.all(TicketGenerated.class);
-        switch (result) {
-            case Success<List<TicketGenerated>> s -> generatedTickets.addAll(s.result());
-            case Failure<List<TicketGenerated>> f -> System.out.println("Error: " + f.cause());
-        }
-
-        return generatedTickets;
     }
 
     public List<TicketEvent> getAllEventTickets() {
@@ -43,7 +32,25 @@ public class TicketManager {
         return allEventTickets;
     }
 
-    public TicketEvent getEventTicket(int id) {
-        return null;
+    public List<TicketEvent> getAllTicketsForTicket(Ticket ticket) {
+        List<TicketEvent> allEventTickets = getAllEventTickets();
+        List<TicketEvent> matchingEvents = allEventTickets.stream()
+                .filter(ticketEvent -> ticketEvent.getTicketId() == ticket.getId())
+                .collect(Collectors.toList());
+
+
+        return matchingEvents;
+    }
+
+    public List<TicketGenerated> getAllTickets() {
+        ArrayList<TicketGenerated> generatedTickets = new ArrayList<>();
+
+        Result<List<TicketGenerated>> result = entityManager.all(TicketGenerated.class);
+        switch (result) {
+            case Success<List<TicketGenerated>> s -> generatedTickets.addAll(s.result());
+            case Failure<List<TicketGenerated>> f -> System.out.println("Error: " + f.cause());
+        }
+
+        return generatedTickets;
     }
 }

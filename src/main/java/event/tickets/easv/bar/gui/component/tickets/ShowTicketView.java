@@ -42,9 +42,7 @@ public class ShowTicketView implements View {
             if (newData instanceof TicketModel) {
                 model.update((TicketModel) newData);
                 ticketEventModels.clear();
-                System.out.println("HEY");
-                ticketEventModels.addAll(ticketsModel.getTicketsForEvent(model.id().get()));
-                System.out.println(ticketEventModels.size());
+                ticketEventModels.addAll(ticketsModel.getTicketsForEvent(model.toEntity()));
             }
         });
     }
@@ -116,7 +114,6 @@ public class ShowTicketView implements View {
                 setGraphic(empty ? null : editButton);
             }
         });
-
 
         TableView<TicketEventModel> table = new TableView<>();
 

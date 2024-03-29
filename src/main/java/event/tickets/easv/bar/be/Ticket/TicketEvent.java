@@ -34,7 +34,6 @@ public class TicketEvent {
     }
 
     public TicketEvent(int id, TicketEvent ticket) {
-
         this(id, ticket.getTicketId(), ticket.getEventId(), ticket.getPrice(), ticket.getQuantity());
     }
 
@@ -87,6 +86,7 @@ public class TicketEvent {
     }
 
     // TODO: Håndter et andet sted end i entiteten selv
+    /*
     public void setTickets(int eventId) {
         if (this.tickets.isEmpty()) {
             Result<List<TicketGenerated>> result = entityManager.all(TicketGenerated.class);
@@ -102,12 +102,13 @@ public class TicketEvent {
                 case Result.Failure<List<TicketGenerated>> f -> System.out.println("Error: " + f.cause());
             }
         }
+    }*/
+
+    public void setTickets(List<TicketGenerated> tickets) {
+        this.tickets.addAll(tickets);
     }
 
-    public List<TicketGenerated> getTickets() {
-        if (tickets == null)
-            setTickets(eventId);
-
+        public List<TicketGenerated> getTickets() {
         return tickets;
     }
 
