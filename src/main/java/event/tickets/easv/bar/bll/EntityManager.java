@@ -2,6 +2,7 @@ package event.tickets.easv.bar.bll;
 
 import event.tickets.easv.bar.be.Entity;
 import event.tickets.easv.bar.be.Event;
+import event.tickets.easv.bar.be.Ticket;
 import event.tickets.easv.bar.be.User;
 import event.tickets.easv.bar.dal.dao.DAO;
 import event.tickets.easv.bar.dal.dao.EventDAO;
@@ -47,6 +48,14 @@ public class EntityManager {
         associations.add(new EntityAssociationDescriptor<>(entityA, entityB, entityAssociation));
     }
 
+    public <T extends Entity<T>> QueryBuilder<T> get(Class<T> entityClass) {
+        return new QueryBuilder<>(this, entityClass);
+    }
+
+    <T extends Entity<T>> Result<List<T>> fetchWithAssociations(Class<T> entityClass, List<Class<?>> associationClasses) {
+        return fetchEntities(entityClass, associationClasses);
+    }
+
     /**
      * Retrieves all instances of a specified entity.
      *
@@ -62,28 +71,38 @@ public class EntityManager {
         return dao.all();
     }
 
-    @SuppressWarnings("unchecked")
     public <T extends Entity<T>> Result<List<T>> allWithAssociations(Class<T> entityClass) {
+        return fetchEntities(entityClass, List.of());
+    }
+
+    @SuppressWarnings("unchecked")
+    private <T extends Entity<T>> Result<List<T>> fetchEntities(Class<T> entityClass, List<Class<?>> associationClasses) {
         DAO<T> dao = (DAO<T>) daos.get(entityClass);
-        if (dao == null) throw new IllegalArgumentException("Unexpected entity: " + entityClass);
+        if (dao == null) throw new IllegalArgumentException("Unexpected entity " + entityClass);
+
         Result<List<T>> result = dao.all();
-
-        result.ifSuccess(entities -> entities.forEach(this::processEntityAssociation));
-
+        result.ifSuccess(entities -> entities.forEach(entity -> processAssociations(entity, associationClasses)));
         return result;
     }
 
-    private <T extends Entity<T>> void processEntityAssociation(T entity) {
+    private <T extends Entity<T>> void processAssociations(T entity, List<Class<?>> associationClasses) {
         Class<?> entityClass = entity.getClass();
+
         associations.stream()
-                .filter(descriptor -> descriptor.entityA().equals(entityClass) || descriptor.entityB().equals(entityClass))
-                .forEach(descriptor -> findAndSetAssociations(descriptor.entityAssociation(), entity));
+                .filter(descriptor -> shouldProcessAssociation(descriptor, entityClass, associationClasses))
+                .forEach(descriptor -> processSingleAssociation(entity, descriptor));
     }
 
-    private void findAndSetAssociations(EntityAssociation<?, ?> association, Entity<?> entity) {
+    private void processSingleAssociation(Entity<?> entity, EntityAssociationDescriptor<?, ?> descriptor) {
+        EntityAssociation<?, ?> association = descriptor.entityAssociation();
         Result<List<?>> associatesResult = association.findAssociatesOf(entity);
-        if (associatesResult == null) throw new IllegalArgumentException("associatesResult must not be null");
-        associatesResult.ifSuccess(entity::setAssociations);
+        if (associatesResult != null) associatesResult.ifSuccess(entity::setAssociations);
+    }
+
+    private boolean shouldProcessAssociation(EntityAssociationDescriptor<?, ?> descriptor, Class<?> entityClass, List<Class<?>> associationClasses) {
+        boolean isDirectAssociation = descriptor.entityA().equals(entityClass) || descriptor.entityB().equals(entityClass);
+        boolean isRequestedAssociation = associationClasses.isEmpty() || associationClasses.contains(descriptor.entityA()) || associationClasses.contains(descriptor.entityB());
+        return isDirectAssociation && isRequestedAssociation;
     }
 
     /**
@@ -91,7 +110,11 @@ public class EntityManager {
      * @param args unused
      */
     public static void main(String[] args) {
-        System.out.println(new EntityManager().allWithAssociations(Event.class));
+/*        Result<List<new EntityManager()
+                .get(Event.class)
+                .withAssociation(User.class)
+                .fetch();
+        );*/
 
     }
 }

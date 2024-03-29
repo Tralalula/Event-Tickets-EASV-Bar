@@ -2,6 +2,7 @@ package event.tickets.easv.bar.bll;
 
 import event.tickets.easv.bar.be.Entity;
 import event.tickets.easv.bar.be.Event;
+import event.tickets.easv.bar.be.Ticket;
 import event.tickets.easv.bar.be.User;
 import event.tickets.easv.bar.dal.dao.DAO;
 import event.tickets.easv.bar.dal.dao.EventDAO;
@@ -207,5 +208,60 @@ class EntityManagerTest {
 
         verify(mockEventDAO).all();
         events.forEach(event -> verify(mockEventUserAssociation).findAssociatesOf(event));
+    }
+
+    @Test
+    void getWithoutAssociations() {
+        // Setup
+        var imageName = "sample.png";
+        var location = "6700, Esbjerg";
+        var startDate = LocalDate.now();
+        LocalDate endDate = null;
+        var startTime = LocalTime.now();
+        LocalTime endTime = null;
+
+        List<Event> expected = List.of(
+                new Event(1, "a", imageName, location, startDate, endDate, startTime, endTime, "", ""),
+                new Event(2, "b", imageName, location, startDate, endDate, startTime, endTime, "", "")
+        );
+        when(mockEventDAO.all()).thenReturn(Success.of(expected));
+
+        // Call
+        Result<List<Event>> result = entityManager.get(Event.class).fetch();
+
+        // Check
+        assertThat(result).isInstanceOf(Success.class);
+        var success = (Success<List<Event>>) result;
+        assertThat(success.result()).isEqualTo(expected);
+        verify(mockEventDAO).all();
+    }
+
+    @Test
+    void getWithSingleAssociation() {
+        // Setup
+        var imageName = "sample.png";
+        var location = "6700, Esbjerg";
+        var startDate = LocalDate.now();
+        LocalDate endDate = null;
+        var startTime = LocalTime.now();
+        LocalTime endTime = null;
+
+        List<Event> events = List.of(
+                new Event(1, "a", imageName, location, startDate, endDate, startTime, endTime, "", ""),
+                new Event(2, "b", imageName, location, startDate, endDate, startTime, endTime, "", "")
+        );
+        List<User> userForEvent1 = List.of(new User(1, "User1"));
+        when(mockEventDAO.all()).thenReturn(Success.of(events));
+        when(mockEventUserAssociation.findAssociatesOf(any(Event.class))).thenReturn(Success.of(userForEvent1));
+
+        // Call
+        Result<List<Event>> result = entityManager.get(Event.class)
+                .withAssociation(User.class)
+                .fetch();
+
+        // Check
+        assertThat(result).isInstanceOf(Success.class);
+        var success = (Success<List<Event>>) result;
+        assertThat(success.result()).hasSize(events.size());
     }
 }
