@@ -1,6 +1,7 @@
 package event.tickets.easv.bar.dal.dao;
 
-import event.tickets.easv.bar.be.Ticket;
+import event.tickets.easv.bar.be.Ticket.Ticket;
+import event.tickets.easv.bar.be.Ticket.TicketGenerated;
 import event.tickets.easv.bar.dal.database.IdSetter;
 import event.tickets.easv.bar.dal.database.PreparedStatementSetter;
 import event.tickets.easv.bar.dal.database.ResultSetMapper;
@@ -14,8 +15,8 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
-public class TicketGeneratedDAO implements DAO<Ticket> {
-    private final DBDaoHelper<Ticket> daoHelper;
+public class TicketGeneratedDAO implements DAO<TicketGenerated> {
+    private final DBDaoHelper<TicketGenerated> daoHelper;
 
     public TicketGeneratedDAO() {
         this.daoHelper = new DBDaoHelper<>(
@@ -26,12 +27,12 @@ public class TicketGeneratedDAO implements DAO<Ticket> {
         );
     }
     @Override
-    public Result<Optional<Ticket>> get(int id) {
+    public Result<Optional<TicketGenerated>> get(int id) {
         return null;
     }
 
     @Override
-    public Result<List<Ticket>> all() {
+    public Result<List<TicketGenerated>> all() {
         try {
             Thread.sleep(2000);
         } catch (InterruptedException e) {
@@ -41,62 +42,66 @@ public class TicketGeneratedDAO implements DAO<Ticket> {
     }
 
     @Override
-    public Result<Ticket> add(Ticket entity) {
+    public Result<TicketGenerated> add(TicketGenerated entity) {
         return daoHelper.add(entity);
     }
 
     @Override
-    public Result<Boolean> update(Ticket original, Ticket updatedData) {
+    public Result<Boolean> update(TicketGenerated original, TicketGenerated updatedData) {
         return daoHelper.update(original, updatedData);
     }
 
     @Override
-    public Result<Boolean> delete(Ticket entity) {
+    public Result<Boolean> delete(TicketGenerated entity) {
         return daoHelper.delete(entity);
     }
 }
 
-class TicketGeneratedSQLTemplate implements SQLTemplate<Ticket> {
+class TicketGeneratedSQLTemplate implements SQLTemplate<TicketGenerated> {
     @Override
     public String getSelectSQL() {
-        return "SELECT * FROM dbo.Ticket WHERE id = ?";
+        return "SELECT * FROM dbo.TicketGenerated WHERE eventId = ?";
     }
 
     @Override
     public String allSelectSQL() {
-        return "SELECT * FROM dbo.Ticket";
+        return "SELECT * FROM dbo.TicketGenerated";
     }
 
     @Override
     public String insertSQL() {
         return """
-        INSERT INTO dbo.Ticket (id, title, classification)
-        VALUES (?, ?, ?, ?);
+        INSERT INTO dbo.TicketGenerated (eventId, customerId, assigned, used, barcode, qrcode)
+        VALUES (?, ?, ?, ?, ?, ?);
         """;
     }
 }
 
-class TicketGeneratedResultSetMapper implements ResultSetMapper<Ticket> {
+class TicketGeneratedResultSetMapper implements ResultSetMapper<TicketGenerated> {
     @Override
-    public Ticket map(@NotNull ResultSet rs) throws SQLException {
+    public TicketGenerated map(@NotNull ResultSet rs) throws SQLException {
         int id = rs.getInt("id");
-        String title = rs.getString("title");
-        String classification = rs.getString("classification");
+        int eventId = rs.getInt("eventId");
+        int customerId = rs.getInt("customerId");
+        boolean assigned = rs.getBoolean("assigned");
+        boolean used = rs.getBoolean("used");
+        String barcode = rs.getString("barcode");
+        String qrcode = rs.getString("qrcode");
 
-        return new Ticket(id, title, classification);
+        return new TicketGenerated(id, eventId, customerId, assigned, used, barcode, qrcode);
     }
 }
 
-class TicketGeneratedPreparedStatementSetter implements PreparedStatementSetter<Ticket> {
+class TicketGeneratedPreparedStatementSetter implements PreparedStatementSetter<TicketGenerated> {
     @Override
-    public void setParameters(PreparedStatement stmt, Ticket entity) throws SQLException {
+    public void setParameters(PreparedStatement stmt, TicketGenerated entity) throws SQLException {
 
     }
 }
 
-class TicketGeneratedIdSetter implements IdSetter<Ticket> {
+class TicketGeneratedIdSetter implements IdSetter<TicketGenerated> {
     @Override
-    public Ticket setId(Ticket entity, int id) {
-        return new Ticket(id, entity);
+    public TicketGenerated setId(TicketGenerated entity, int id) {
+        return new TicketGenerated(id, entity);
     }
 }

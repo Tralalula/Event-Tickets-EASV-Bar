@@ -1,6 +1,7 @@
 package event.tickets.easv.bar.dal.dao;
 
-import event.tickets.easv.bar.be.Ticket;
+import event.tickets.easv.bar.be.Ticket.Ticket;
+import event.tickets.easv.bar.be.Ticket.TicketGenerated;
 import event.tickets.easv.bar.dal.database.IdSetter;
 import event.tickets.easv.bar.dal.database.PreparedStatementSetter;
 import event.tickets.easv.bar.dal.database.ResultSetMapper;
@@ -70,8 +71,8 @@ class TicketSQLTemplate implements SQLTemplate<Ticket> {
     @Override
     public String insertSQL() {
         return """
-        INSERT INTO dbo.Ticket (id, title, classification)
-        VALUES (?, ?, ?, ?);
+        INSERT INTO dbo.Ticket (title, classification)
+        VALUES (?, ?);
         """;
     }
 }

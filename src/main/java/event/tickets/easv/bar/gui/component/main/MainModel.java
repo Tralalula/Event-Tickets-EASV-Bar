@@ -1,6 +1,5 @@
 package event.tickets.easv.bar.gui.component.main;
 
-import event.tickets.easv.bar.be.Ticket;
 import event.tickets.easv.bar.gui.common.EventModel;
 import event.tickets.easv.bar.gui.common.TicketModel;
 import event.tickets.easv.bar.gui.common.ViewHandler;

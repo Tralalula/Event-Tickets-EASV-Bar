@@ -1,6 +1,6 @@
 package event.tickets.easv.bar.gui.common;
 
-import event.tickets.easv.bar.be.Ticket;
+import event.tickets.easv.bar.be.Ticket.Ticket;
 import javafx.beans.property.*;
 
 

@@ -96,13 +96,13 @@ CREATE TABLE TicketEvent (
 
 CREATE TABLE TicketGenerated (
      id INT IDENTITY(1,1) PRIMARY KEY,
-     ticketEventAssociationId INT,
+     eventId INT, -- Can be null, null defines that its available for all events.
      customerId INT NULL,
      assigned BIT DEFAULT 0,
      used BIT DEFAULT 0,
      barcode NVARCHAR(255),
      qrcode NVARCHAR(255),
-     FOREIGN KEY (ticketEventAssociationId) REFERENCES TicketEvent(id),
+     FOREIGN KEY (eventId) REFERENCES TicketEvent(id),
      -- FOREIGN KEY (customerId) REFERENCES Customer(id)
 );
 

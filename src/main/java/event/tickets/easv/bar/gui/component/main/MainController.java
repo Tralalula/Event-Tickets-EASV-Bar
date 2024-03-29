@@ -1,7 +1,7 @@
 package event.tickets.easv.bar.gui.component.main;
 
 import event.tickets.easv.bar.be.Event;
-import event.tickets.easv.bar.be.Ticket;
+import event.tickets.easv.bar.be.Ticket.Ticket;
 import event.tickets.easv.bar.bll.EntityManager;
 import event.tickets.easv.bar.bll.TicketManager;
 import event.tickets.easv.bar.gui.common.EventModel;
@@ -11,7 +11,6 @@ import event.tickets.easv.bar.util.Result;
 import event.tickets.easv.bar.util.Result.Success;
 import event.tickets.easv.bar.util.Result.Failure;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 

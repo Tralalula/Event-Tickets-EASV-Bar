@@ -1,11 +1,11 @@
-package event.tickets.easv.bar.be;
+package event.tickets.easv.bar.be.Ticket;
 
 public class Ticket {
 
-    private int id;
-    private String title;
-    private int price;
-    private String type;
+    private int id, price;
+    private String title, type;
+
+    private TicketGenerated generatedTicket;
 
     public Ticket(String title, String type) {
         this.id = id;
@@ -35,6 +35,7 @@ public class Ticket {
         this.type = type;
     }
 
+
     public String getTitle() {
         return title;
     }
@@ -49,5 +50,23 @@ public class Ticket {
 
     public void setPrice(int price) {
         this.price = price;
+    }
+
+    public void setGeneratedTicket(TicketGenerated ticket) {
+        this.generatedTicket = ticket;
+    }
+
+    public TicketGenerated getGeneratedTicket() {
+        return generatedTicket;
+    }
+
+    @Override
+    public String toString() {
+        return "Ticket{" +
+                "id=" + id +
+                ", price=" + price +
+                ", title='" + title + '\'' +
+                ", type='" + type + '\'' +
+                '}';
     }
 }
