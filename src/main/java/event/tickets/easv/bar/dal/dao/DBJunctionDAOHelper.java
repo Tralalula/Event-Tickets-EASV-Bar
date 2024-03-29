@@ -44,7 +44,20 @@ public class DBJunctionDAOHelper<A extends Entity<A>, B extends Entity<B>> imple
 
     @Override
     public Result<Boolean> removeAssociation(A entityA, B entityB) {
-        return null;
+        try {
+            setupDBConnector();
+        } catch (IOException e) {
+            return Failure.of(FailureType.IO_FAILURE, "Failed to read from the data source", e);
+        }
+
+        try (Connection conn = dbConnector.connection();
+             PreparedStatement stmt = conn.prepareStatement(sqlTemplate.deleteRelationSQL())) {
+            insertParameterSetter.setParameters(stmt, entityA, entityB);
+            int rowsAffected = stmt.executeUpdate();
+            return Success.of(rowsAffected > 0);
+        } catch (SQLException e) {
+            return Failure.of(FailureType.DB_DATA_RETRIEVAL_FAILURE, "Failed to access the database", e);
+        }
     }
 
     @Override

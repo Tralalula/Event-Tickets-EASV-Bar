@@ -52,6 +52,11 @@ class EventUserSQLTemplate implements AssociationSQLTemplate<Event, User> {
     public String insertRelationSQL() {
         return "INSERT INTO dbo.EventUser (EventId, UserId) VALUES (?, ?);";
     }
+
+    @Override
+    public String deleteRelationSQL() {
+        return "DELETE FROM dbo.EventUser WHERE EventId = ? AND UserID = ?";
+    }
 }
 
 class EventUserInsertParameterSetter implements AssociationInsertParameterSetter<Event, User> {

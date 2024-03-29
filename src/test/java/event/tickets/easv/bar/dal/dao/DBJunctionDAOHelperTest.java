@@ -112,5 +112,38 @@ class DBJunctionDAOHelperTest {
             // Check
             assertThat(result).isInstanceOf(Failure.class);
         }
+
+        @Test
+        void removeAssociationEventUserDoesntExist() {
+            // setup
+            runScript(POPULATE_SINGLE);
+            var event = new Event(1, "Single", "sample.png", "6700 Esbjerg", LocalDate.of(2024, 4, 5), LocalDate.of(2024, 4, 5), LocalTime.of(10, 0), LocalTime.of(20, 0), "", "");
+            var user = new User(1, "test");
+
+            // Call
+            Result<Boolean> result = eventUserDaoHelper.removeAssociation(event, user);
+
+            // Check
+            assertThat(result).isInstanceOf(Success.class);
+            var success = (Success<Boolean>) result;
+            assertThat(success.result()).isEqualTo(false);
+        }
+
+        @Test
+        void removeAssociationEventUserExists() {
+            // setup
+            runScript(POPULATE_SINGLE);
+            var event = new Event(1, "Single", "sample.png", "6700 Esbjerg", LocalDate.of(2024, 4, 5), LocalDate.of(2024, 4, 5), LocalTime.of(10, 0), LocalTime.of(20, 0), "", "");
+            var user = new User(1, "test");
+            eventUserDaoHelper.addAssociation(event, user); // integration test here, probably shouldnt be:
+
+            // Call
+            Result<Boolean> result = eventUserDaoHelper.removeAssociation(event, user);
+
+            // Check
+            assertThat(result).isInstanceOf(Success.class);
+            var success = (Success<Boolean>) result;
+            assertThat(success.result()).isEqualTo(true);
+        }
     }
 }
