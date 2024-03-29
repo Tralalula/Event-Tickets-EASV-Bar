@@ -4,10 +4,11 @@ GO
 -- Drop order
 -- 1. 'GeneratedTicket' because it references 'TicketEventAssociation'
 -- 2. 'TicketEventAssociation' because it references 'Ticket' and 'Event'
--- 3. 'Ticket' because it references 'TicketCategory'
--- 4. 'Event' can be dropped now, all references removed.
--- 5. 'TicketCategory' can be dropped now (after Ticket is dropped)
--- 6. 'User' can be dropped at any time (no references to it)
+-- 3. 'EventUser' because it references 'Event' and 'Users'
+-- 4. 'Ticket' because it references 'TicketCategory'
+-- 5. 'Event' can be dropped now, all references removed.
+-- 6. 'TicketCategory' can be dropped now (after Ticket is dropped)
+-- 7. 'Users' can be dropped at any time (no references to it)
 
 IF OBJECT_ID('dbo.GeneratedTicket', 'U') IS NOT NULL
     DROP TABLE dbo.GeneratedTicket;
@@ -15,6 +16,10 @@ GO
 
 IF OBJECT_ID('dbo.TicketEventAssociation', 'U') IS NOT NULL
     DROP TABLE dbo.TicketEventAssociation;
+GO
+
+IF OBJECT_ID('dbo.EventUser', 'U') IS NOT NULL
+    DROP TABLE dbo.EventUser;
 GO
 
 IF OBJECT_ID('dbo.Ticket', 'U') IS NOT NULL
@@ -67,6 +72,15 @@ CREATE TABLE Ticket (
     classification NVARCHAR(50) CHECK (classification IN ('PAID', 'PROMOTIONAL')),
     categoryId     INT,
     FOREIGN KEY (categoryId) REFERENCES TicketCategory(id)
+);
+GO
+
+CREATE TABLE EventUser (
+    EventId INT,
+    UserId INT,
+    PRIMARY KEY (EventId, UserId),
+    FOREIGN KEY (EventId) REFERENCES Event(id),
+    FOREIGN KEY (UserId) REFERENCES Users(id)
 );
 GO
 
