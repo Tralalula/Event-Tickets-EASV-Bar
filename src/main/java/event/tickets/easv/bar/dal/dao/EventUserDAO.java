@@ -50,7 +50,7 @@ public class EventUserDAO implements EntityAssociation<Event, User> {
 class EventUserSQLTemplate implements AssociationSQLTemplate<Event, User> {
     @Override
     public String insertRelationSQL() {
-        return null;
+        return "INSERT INTO dbo.EventUser (EventId, UserId) VALUES (?, ?);";
     }
 }
 

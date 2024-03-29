@@ -70,4 +70,11 @@ public class DBJunctionDAOHelper<A extends Entity<A>, B extends Entity<B>> imple
             dbConnector = new DBConnector();
         }
     }
+
+    /**
+     * To set DBConnector for testing purposes.
+     */
+    void setDbConnector(DBConnector dbConnector) {
+        this.dbConnector = dbConnector;
+    }
 }
