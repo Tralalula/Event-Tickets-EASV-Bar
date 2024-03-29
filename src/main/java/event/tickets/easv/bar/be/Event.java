@@ -143,6 +143,10 @@ public class Event implements Entity<Event> {
         return extraInfo;
     }
 
+    public List<User> users() {
+        return users;
+    }
+
 
     // Setters
     public void setId(int id) {

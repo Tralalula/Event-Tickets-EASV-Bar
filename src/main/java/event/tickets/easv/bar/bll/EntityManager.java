@@ -75,7 +75,6 @@ public class EntityManager {
 
     private void findAndSetAssociations(EntityAssociation<?, ?> association, Entity<?> entity) {
         Result<List<?>> associatesResult = association.findAssociatesOf(entity);
-        System.out.println(associatesResult);
         associatesResult.ifSuccess(entity::setAssociations);
     }
 
@@ -84,7 +83,7 @@ public class EntityManager {
      * @param args unused
      */
     public static void main(String[] args) {
-        System.out.println(new EntityManager().all(User.class));
+        System.out.println(new EntityManager().all(Event.class));
 
     }
 }

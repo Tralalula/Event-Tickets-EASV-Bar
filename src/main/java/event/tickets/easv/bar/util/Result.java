@@ -16,7 +16,7 @@ public sealed interface Result<T> {
      */
     default void ifSuccess(Consumer<T> action) {
         if (this instanceof Success<T> success) {
-            action.accept(success.result);
+            if (success.result() != null) action.accept(success.result());
         }
     }
 
