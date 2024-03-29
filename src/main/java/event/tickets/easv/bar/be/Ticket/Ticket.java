@@ -16,8 +16,6 @@ public class Ticket {
     private TicketManager ticketManager;
 
     public Ticket(String title, String type) {
-        this.ticketManager = new TicketManager();
-        this.id = id;
         this.title = title;
         this.type = type;
     }

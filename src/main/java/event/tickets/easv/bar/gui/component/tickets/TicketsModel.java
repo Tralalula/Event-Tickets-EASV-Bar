@@ -5,6 +5,7 @@ import event.tickets.easv.bar.be.Event;
 import event.tickets.easv.bar.be.Ticket.Ticket;
 import event.tickets.easv.bar.be.Ticket.TicketEvent;
 import event.tickets.easv.bar.be.Ticket.TicketGenerated;
+import event.tickets.easv.bar.bll.EntityManager;
 import event.tickets.easv.bar.bll.TicketManager;
 import event.tickets.easv.bar.gui.common.EventModel;
 import event.tickets.easv.bar.gui.common.TicketModel;
@@ -18,16 +19,24 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class TicketsModel {
-    private MainModel model;
+    ObservableList<EventModel> model;
     private TicketManager ticketManager;
 
-    public TicketsModel(MainModel model) {
+    private EntityManager entityManager;
+
+    public TicketsModel(ObservableList<EventModel> model) {
         this.model = model;
         this.ticketManager = new TicketManager();
+
+        this.entityManager = new EntityManager();
+    }
+
+    public void add(Ticket ticket) {
+        ticketManager.add(ticket);
     }
 
     public ObservableList<EventModel> getEventModelsForEventTicket(TicketEvent ticket) {
-        return model.eventModels().filtered(eventModel -> eventModel.id().get() == ticket.getEventId());
+        return model.filtered(eventModel -> eventModel.id().get() == ticket.getEventId());
     }
 
     public List<TicketEvent> getTickets(Ticket ticket) {

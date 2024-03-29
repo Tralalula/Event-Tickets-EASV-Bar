@@ -28,7 +28,7 @@ public class TicketDAO implements DAO<Ticket> {
     }
     @Override
     public Result<Optional<Ticket>> get(int id) {
-        return null;
+        return daoHelper.get(id);
     }
 
     @Override
@@ -91,7 +91,8 @@ class TicketResultSetMapper implements ResultSetMapper<Ticket> {
 class TicketPreparedStatementSetter implements PreparedStatementSetter<Ticket> {
     @Override
     public void setParameters(PreparedStatement stmt, Ticket entity) throws SQLException {
-
+        stmt.setString(1, entity.getTitle());
+        stmt.setString(2, entity.getType());
     }
 }
 

@@ -23,11 +23,6 @@ public class MainModel {
         return ticketModelProperty;
     }
 
-    public void changeTicketView(TicketModel model) {
-        this.ticketModelProperty().set(model);
-        ViewHandler.changeView(ViewType.SHOW_TICKET);
-    }
-
     public ObservableList<EventModel> eventModels() {
         return eventModels;
     }

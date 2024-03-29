@@ -59,6 +59,10 @@ public class TicketsView implements View {
                 Styles.BUTTON_ICON, Styles.FLAT, Styles.ACCENT, Styles.TITLE_4
         );
 
+        addTicket.setOnAction(e -> {
+            ViewHandler.changeView(ViewType.ADD_TICKET);
+        });
+
         top.getChildren().addAll(search, spacer, addTicket);
         return top;
     }

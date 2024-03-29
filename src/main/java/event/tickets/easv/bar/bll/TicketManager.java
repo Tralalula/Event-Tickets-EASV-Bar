@@ -4,6 +4,7 @@ import event.tickets.easv.bar.be.Event;
 import event.tickets.easv.bar.be.Ticket.Ticket;
 import event.tickets.easv.bar.be.Ticket.TicketEvent;
 import event.tickets.easv.bar.be.Ticket.TicketGenerated;
+import event.tickets.easv.bar.dal.dao.TicketDAO;
 import event.tickets.easv.bar.util.Result;
 import event.tickets.easv.bar.util.Result.Success;
 import event.tickets.easv.bar.util.Result.Failure;
@@ -17,8 +18,15 @@ public class TicketManager {
 
     private ArrayList<TicketEvent> allEventTickets = new ArrayList<>();
 
+    private TicketDAO ticketDAO;
+
     public TicketManager() {
         this.entityManager = new EntityManager();
+        this.ticketDAO = new TicketDAO();
+    }
+
+    public void add(Ticket ticket) {
+        ticketDAO.add(ticket);
     }
 
     public List<TicketEvent> getAllEventTickets() {
