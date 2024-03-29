@@ -14,11 +14,15 @@ public record TicketModel(
                 new SimpleIntegerProperty(ticket.getId()),
                 new SimpleStringProperty(ticket.getTitle()),
                 new SimpleStringProperty(ticket.getType())
-                );
+        );
     }
 
     public static TicketModel Empty() {
-        return new TicketModel(new SimpleIntegerProperty(), new SimpleStringProperty(), new SimpleStringProperty());
+        return new TicketModel(
+                new SimpleIntegerProperty(),
+                new SimpleStringProperty(),
+                new SimpleStringProperty()
+        );
     }
 
     public void update(TicketModel ticketModel) {
