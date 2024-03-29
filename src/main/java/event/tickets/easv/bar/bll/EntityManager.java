@@ -28,7 +28,7 @@ public class EntityManager {
         registerDao(User.class, new UserDAO());
 
         // Associations
-        registerEntityAssociation(Event.class, User.class, new EventUserDAO());
+        registerAssociation(Event.class, User.class, new EventUserDAO());
     }
 
     /**
@@ -42,8 +42,8 @@ public class EntityManager {
         daos.put(entity, dao);
     }
 
-    public <A, B> void registerEntityAssociation(Class<A> entityA, Class<B> entityB,
-                                                 EntityAssociation<A, B> entityAssociation) {
+    public <A, B> void registerAssociation(Class<A> entityA, Class<B> entityB,
+                                           EntityAssociation<A, B> entityAssociation) {
         associations.add(new EntityAssociationDescriptor<>(entityA, entityB, entityAssociation));
     }
 

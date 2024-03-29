@@ -183,6 +183,40 @@ class DBJunctionDAOHelperTest {
         }
 
         @Test
+        void findAssociatesOfUserSingle() {
+            // Setup
+            runScript(POPULATE_SINGLE);
+            var event = new Event(1, "Single", "sample.png", "6700 Esbjerg", LocalDate.of(2024, 4, 5), LocalDate.of(2024, 4, 5), LocalTime.of(10, 0), LocalTime.of(20, 0), "", "");
+            var user = new User(1, "test");
+            eventUserDaoHelper.addAssociation(event, user); // integration test here, probably shouldnt be
+
+            // Call
+            Result<List<?>> result = eventUserDaoHelper.findAssociatesOf(user);
+
+            // Check
+            assertThat(result).isInstanceOf(Success.class);
+            var success = (Success<List<?>>) result;
+            assertThat(success.result()).isEqualTo(List.of(event));
+        }
+
+        @Test
+        void findAssociatesOfEventSingle() {
+            // Setup
+            runScript(POPULATE_SINGLE);
+            var event = new Event(1, "Single", "sample.png", "6700 Esbjerg", LocalDate.of(2024, 4, 5), LocalDate.of(2024, 4, 5), LocalTime.of(10, 0), LocalTime.of(20, 0), "", "");
+            var user = new User(1, "test");
+            eventUserDaoHelper.addAssociation(event, user); // integration test here, probably shouldnt be
+
+            // Call
+            Result<List<?>> result = eventUserDaoHelper.findAssociatesOf(event);
+
+            // Check
+            assertThat(result).isInstanceOf(Success.class);
+            var success = (Success<List<?>>) result;
+            assertThat(success.result()).isEqualTo(List.of(user));
+        }
+
+        @Test
         void deleteAssociationsForEventInEventUserSingle() {
             // Setup
             runScript(POPULATE_SINGLE);
