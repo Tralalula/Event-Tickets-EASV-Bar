@@ -19,7 +19,7 @@ public class UserDAO implements DAO<User> {
                 new UserInsertParameterSetter(),
                 new UserUpdateParameterSetter(),
                 new UserIdSetter(),
-                List.of()
+                List.of(new EventUserDAO())
         );
     }
 

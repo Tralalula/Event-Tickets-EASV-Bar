@@ -21,7 +21,7 @@ public class EventDAO implements DAO<Event> {
                 new EventInsertParameterSetter(),
                 new EventUpdateParameterSetter(),
                 new EventIdSetter(),
-                List.of()
+                List.of(new EventUserDAO())
         );
     }
 

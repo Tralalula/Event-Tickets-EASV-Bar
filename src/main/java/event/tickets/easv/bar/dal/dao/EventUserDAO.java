@@ -32,22 +32,22 @@ public class EventUserDAO implements EntityAssociation<Event, User> {
 
     @Override
     public Result<Boolean> removeAssociation(Event entityA, User entityB) {
-        return null;
+        return daoHelper.removeAssociation(entityA, entityB);
     }
 
     @Override
     public Result<List<User>> findAssociatesOfA(Event entityA) {
-        return null;
+        return daoHelper.findAssociatesOfA(entityA);
     }
 
     @Override
     public Result<List<Event>> findAssociatesOfB(User entityB) {
-        return null;
+        return daoHelper.findAssociatesOfB(entityB);
     }
 
     @Override
     public Result<Boolean> deleteAssociationsFor(Entity<?> entity) {
-        return null;
+        return daoHelper.deleteAssociationsFor(entity);
     }
 }
 
