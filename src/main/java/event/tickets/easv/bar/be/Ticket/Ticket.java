@@ -6,6 +6,7 @@ public class Ticket {
     private String title, type;
 
     private TicketGenerated generatedTicket;
+    private TicketEvent ticketEvent;
 
     public Ticket(String title, String type) {
         this.id = id;
@@ -58,6 +59,14 @@ public class Ticket {
 
     public TicketGenerated getGeneratedTicket() {
         return generatedTicket;
+    }
+
+    public void setTicketEvent(TicketEvent ticket) {
+        this.ticketEvent = ticket;
+    }
+
+    public TicketEvent getTicketEvent() {
+        return ticketEvent;
     }
 
     @Override

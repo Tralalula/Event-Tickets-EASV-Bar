@@ -61,19 +61,19 @@ public class TicketEventDAO implements DAO<TicketEvent> {
 class TicketEventSQLTemplate implements SQLTemplate<TicketEvent> {
     @Override
     public String getSelectSQL() {
-        return "SELECT * FROM dbo.TicketGenerated WHERE eventId = ?";
+        return "SELECT * FROM dbo.TicketEvent WHERE ticketId = ?";
     }
 
     @Override
     public String allSelectSQL() {
-        return "SELECT * FROM dbo.TicketGenerated";
+        return "SELECT * FROM dbo.TicketEvent";
     }
 
     @Override
     public String insertSQL() {
         return """
-        INSERT INTO dbo.TicketGenerated (eventId, customerId, assigned, used, barcode, qrcode)
-        VALUES (?, ?, ?, ?, ?, ?);
+        INSERT INTO dbo.TicketEvent (ticketId, eventId, price, quantity)
+        VALUES (?, ?, ?, ?);
         """;
     }
 }

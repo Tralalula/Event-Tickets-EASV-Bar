@@ -2,11 +2,9 @@ package event.tickets.easv.bar.bll;
 
 import event.tickets.easv.bar.be.Event;
 import event.tickets.easv.bar.be.Ticket.Ticket;
+import event.tickets.easv.bar.be.Ticket.TicketEvent;
 import event.tickets.easv.bar.be.Ticket.TicketGenerated;
-import event.tickets.easv.bar.dal.dao.DAO;
-import event.tickets.easv.bar.dal.dao.EventDAO;
-import event.tickets.easv.bar.dal.dao.TicketDAO;
-import event.tickets.easv.bar.dal.dao.TicketGeneratedDAO;
+import event.tickets.easv.bar.dal.dao.*;
 import event.tickets.easv.bar.util.Result;
 
 import java.util.HashMap;
@@ -23,6 +21,7 @@ public class EntityManager {
         registerDao(Event.class, new EventDAO());
         registerDao(Ticket.class, new TicketDAO());
         registerDao(TicketGenerated.class, new TicketGeneratedDAO());
+        registerDao(TicketEvent.class, new TicketEventDAO());
     }
 
     /**
