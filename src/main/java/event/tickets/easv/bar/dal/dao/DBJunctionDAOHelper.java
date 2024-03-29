@@ -17,15 +17,20 @@ import java.util.List;
 
 public class DBJunctionDAOHelper<A extends Entity<A>, B extends Entity<B>> implements EntityAssociation<A, B> {
     private DBConnector dbConnector = null;
+    private final Class<A> classA;
+    private final Class<B> classB;
     private final AssociationSQLTemplate<A, B> sqlTemplate;
-    private final AssociationInsertParameterSetter<A, B> insertParameterSetter;
+    private final AssociationParameterSetter<A, B> insertParameterSetter;
     private final ResultSetMapper<A> resultSetMapperA;
     private final ResultSetMapper<B> resultSetMapperB;
 
-    public DBJunctionDAOHelper(AssociationSQLTemplate<A, B> sqlTemplate,
-                               AssociationInsertParameterSetter<A, B> insertParameterSetter,
+    public DBJunctionDAOHelper(Class<A> classA, Class<B> classB,
+                               AssociationSQLTemplate<A, B> sqlTemplate,
+                               AssociationParameterSetter<A, B> insertParameterSetter,
                                ResultSetMapper<A> resultSetMapperA,
                                ResultSetMapper<B> resultSetMapperB) {
+        this.classA = classA;
+        this.classB = classB;
         this.sqlTemplate = sqlTemplate;
         this.insertParameterSetter = insertParameterSetter;
         this.resultSetMapperA = resultSetMapperA;
@@ -115,8 +120,30 @@ public class DBJunctionDAOHelper<A extends Entity<A>, B extends Entity<B>> imple
     }
 
     @Override
-    public Result<Boolean> deleteAssociationsFor(Object entity) {
-        return null;
+    @SuppressWarnings("unchecked")
+    public Result<Boolean> deleteAssociationsFor(Entity<?> entity) {
+        if (entity == null) throw new IllegalArgumentException("Entity must not be null");
+
+        if (classA.isAssignableFrom(entity.getClass())) {
+            A aEntity = (A) entity;
+            return executeDelete(sqlTemplate.deleteAssociationsForASQL(), aEntity.id());
+        } else if (classB.isAssignableFrom(entity.getClass())) {
+            B bEntity = (B) entity;
+            return executeDelete(sqlTemplate.deleteAssociationsForBSQL(), bEntity.id());
+        } else {
+            throw new IllegalArgumentException("Unexpected entity: " + entity);
+        }
+    }
+
+    private Result<Boolean> executeDelete(String sql, int id) {
+        try (Connection conn = dbConnector.connection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, id);
+            int rowsAffected = stmt.executeUpdate();
+            return Success.of(rowsAffected > 0);
+        } catch (SQLException e) {
+            return Failure.of(FailureType.DB_DATA_RETRIEVAL_FAILURE, "Failed to access the database", e);
+        }
     }
 
     /**

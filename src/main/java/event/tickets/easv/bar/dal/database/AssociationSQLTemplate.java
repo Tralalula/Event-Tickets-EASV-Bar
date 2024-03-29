@@ -5,4 +5,6 @@ public interface AssociationSQLTemplate<A, B> {
     String deleteRelationSQL();
     String selectAForBSQL();
     String selectBForASQL();
+    String deleteAssociationsForASQL();
+    String deleteAssociationsForBSQL();
 }

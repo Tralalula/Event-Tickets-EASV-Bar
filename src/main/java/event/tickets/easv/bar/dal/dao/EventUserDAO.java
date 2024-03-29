@@ -1,8 +1,9 @@
 package event.tickets.easv.bar.dal.dao;
 
+import event.tickets.easv.bar.be.Entity;
 import event.tickets.easv.bar.be.Event;
 import event.tickets.easv.bar.be.User;
-import event.tickets.easv.bar.dal.database.AssociationInsertParameterSetter;
+import event.tickets.easv.bar.dal.database.AssociationParameterSetter;
 import event.tickets.easv.bar.dal.database.AssociationSQLTemplate;
 import event.tickets.easv.bar.dal.database.EntityAssociation;
 import event.tickets.easv.bar.util.Result;
@@ -16,8 +17,9 @@ public class EventUserDAO implements EntityAssociation<Event, User> {
 
     public EventUserDAO() {
         this.daoHelper = new DBJunctionDAOHelper<>(
+                Event.class, User.class,
                 new EventUserSQLTemplate(),
-                new EventUserInsertParameterSetter(),
+                new EventUserParameterSetter(),
                 new EventResultSetMapper(),
                 new UserResultSetMapper()
         );
@@ -44,7 +46,7 @@ public class EventUserDAO implements EntityAssociation<Event, User> {
     }
 
     @Override
-    public Result<Boolean> deleteAssociationsFor(Object entity) {
+    public Result<Boolean> deleteAssociationsFor(Entity<?> entity) {
         return null;
     }
 }
@@ -79,9 +81,19 @@ class EventUserSQLTemplate implements AssociationSQLTemplate<Event, User> {
                WHERE eventuser.EventId = ?;
                """;
     }
+
+    @Override
+    public String deleteAssociationsForASQL() {
+        return "DELETE FROM dbo.EventUser WHERE EventId = ?";
+    }
+
+    @Override
+    public String deleteAssociationsForBSQL() {
+        return "DELETE FROM dbo.EventUser WHERE UserId = ?";
+    }
 }
 
-class EventUserInsertParameterSetter implements AssociationInsertParameterSetter<Event, User> {
+class EventUserParameterSetter implements AssociationParameterSetter<Event, User> {
 
     @Override
     public void setParameters(PreparedStatement stmt, Event entityA, User entityB) throws SQLException {
