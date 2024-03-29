@@ -12,6 +12,7 @@ import javafx.collections.transformation.FilteredList;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class TicketsModel {
     private MainModel model;
@@ -40,19 +41,19 @@ public class TicketsModel {
         return filtered;
     }
 
-    public List<TicketEventModel> getTicketsForEvent(int id) {
-        EventModel event = model.eventModels().stream()
-                .filter(e -> e.id().get() == id)
-                .findFirst()
-                .orElse(null);
-
-        if (event == null)
-            return new ArrayList<>();
-
-        FilteredList<TicketEvent> tickets = getTickets(id);
-
+    //TODO lav smartere, hurtig løsning
+    public List<TicketEventModel> getTicketsForEvent(int ticketId) {
         List<TicketEventModel> ticketModels = new ArrayList<>();
-        tickets.forEach(ticket -> ticketModels.add(TicketEventModel.fromEntity(ticket, event.toEntity())));
+        FilteredList<TicketEvent> ticketEvents = getTickets(ticketId);
+
+        for (TicketEvent ticketEvent : ticketEvents) {
+            FilteredList<EventModel> filteredEvents = getEventModels(ticketEvent.getEventId());
+
+            for (EventModel event : filteredEvents) {
+                TicketEventModel ticketModel = TicketEventModel.fromEntity(ticketEvent, event.toEntity());
+                ticketModels.add(ticketModel);
+            }
+        }
 
         return ticketModels;
     }

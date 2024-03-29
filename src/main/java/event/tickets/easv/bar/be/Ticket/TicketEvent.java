@@ -94,7 +94,7 @@ public class TicketEvent {
                 case Result.Success<List<TicketGenerated>> s -> {
                     List<TicketGenerated> allTickets = s.result();
                     List<TicketGenerated> filteredTickets = allTickets.stream()
-                            .filter(ticket -> ticket.getEventId() == eventId)
+                            .filter(ticket -> ticket.getId() == eventId)
                             .collect(Collectors.toList());
 
                     this.tickets.addAll(filteredTickets);
