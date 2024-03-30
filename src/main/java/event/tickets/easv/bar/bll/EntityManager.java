@@ -58,19 +58,8 @@ public class EntityManager {
     @SuppressWarnings("unchecked")
     public <T> Result<Optional<T>> get(Class<T> entity, int id) {
         DAO<T> dao = (DAO<T>) daos.get(entity);
-        if (dao == null) throw new IllegalArgumentException("Unknown entity type: " + entity);
+        if (dao == null) throw new IllegalArgumentException("Unexpected entity: " + entity);
         return dao.get(id);
-    }
-
-    public <T extends Entity<T>> QueryBuilder<T> getAll(Class<T> entityClass) {
-        return new QueryBuilder<>(this, entityClass);
-    }
-
-    /**
-     * Package-private; used by QueryBuilder.
-     */
-    <T extends Entity<T>> Result<List<T>> fetchWithAssociations(Class<T> entityClass, List<Class<?>> associationClasses) {
-        return fetchEntities(entityClass, associationClasses);
     }
 
     /**
@@ -88,38 +77,28 @@ public class EntityManager {
         return dao.all();
     }
 
-    public <T extends Entity<T>> Result<List<T>> allWithAssociations(Class<T> entityClass) {
-        return fetchEntities(entityClass, List.of());
-    }
-
     @SuppressWarnings("unchecked")
-    private <T extends Entity<T>> Result<List<T>> fetchEntities(Class<T> entityClass, List<Class<?>> associationClasses) {
+    public <T extends Entity<T>> Result<List<T>> allWithAssociations(Class<T> entityClass) {
         DAO<T> dao = (DAO<T>) daos.get(entityClass);
-        if (dao == null) throw new IllegalArgumentException("Unexpected entity " + entityClass);
-
+        if (dao == null) throw new IllegalArgumentException("Unexpected entity: " + entityClass);
         Result<List<T>> result = dao.all();
-        result.ifSuccess(entities -> entities.forEach(entity -> processAssociations(entity, associationClasses)));
+
+        result.ifSuccess(entities -> entities.forEach(this::processEntityAssociation));
+
         return result;
     }
 
-    private <T extends Entity<T>> void processAssociations(T entity, List<Class<?>> associationClasses) {
+    private <T extends Entity<T>> void processEntityAssociation(T entity) {
         Class<?> entityClass = entity.getClass();
-
         associations.stream()
-                .filter(descriptor -> shouldProcessAssociation(descriptor, entityClass, associationClasses))
-                .forEach(descriptor -> processSingleAssociation(entity, descriptor));
+                .filter(descriptor -> descriptor.entityA().equals(entityClass) || descriptor.entityB().equals(entityClass))
+                .forEach(descriptor -> findAndSetAssociations(descriptor.entityAssociation(), entity));
     }
 
-    private void processSingleAssociation(Entity<?> entity, EntityAssociationDescriptor<?, ?> descriptor) {
-        EntityAssociation<?, ?> association = descriptor.entityAssociation();
+    private void findAndSetAssociations(EntityAssociation<?, ?> association, Entity<?> entity) {
         Result<List<?>> associatesResult = association.findAssociatesOf(entity);
-        if (associatesResult != null) associatesResult.ifSuccess(entity::setAssociations);
-    }
-
-    private boolean shouldProcessAssociation(EntityAssociationDescriptor<?, ?> descriptor, Class<?> entityClass, List<Class<?>> associationClasses) {
-        boolean isDirectAssociation = descriptor.entityA().equals(entityClass) || descriptor.entityB().equals(entityClass);
-        boolean isRequestedAssociation = associationClasses.isEmpty() || associationClasses.contains(descriptor.entityA()) || associationClasses.contains(descriptor.entityB());
-        return isDirectAssociation && isRequestedAssociation;
+        if (associatesResult == null) throw new IllegalArgumentException("associatesResult must not be null");
+        associatesResult.ifSuccess(entity::setAssociations);
     }
 
     /**
