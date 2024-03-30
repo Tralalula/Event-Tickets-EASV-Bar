@@ -53,7 +53,8 @@ public class TicketsModel {
             ObservableList<EventModel> filteredEvents = getEventModelsForEventTicket(ticketEvent);
 
             for (EventModel event : filteredEvents) {
-                TicketEventModel ticketModel = TicketEventModel.fromEntity(ticketEvent, event.toEntity());
+               // TicketEventModel ticketModel = TicketEventModel.fromEntity(ticketEvent, event.toEntity());
+                TicketEventModel ticketModel = TicketEventModel.fromEntity(ticketEvent);
                 ticketModels.add(ticketModel);
             }
         }

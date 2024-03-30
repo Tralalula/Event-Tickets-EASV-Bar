@@ -6,19 +6,18 @@ import event.tickets.easv.bar.be.User;
 import event.tickets.easv.bar.dal.dao.DAO;
 import event.tickets.easv.bar.dal.dao.EventDAO;
 import event.tickets.easv.bar.dal.dao.EventUserDAO;
+import event.tickets.easv.bar.dal.dao.Ticket.*;
 import event.tickets.easv.bar.dal.dao.UserDAO;
 import event.tickets.easv.bar.dal.database.EntityAssociation;
 import event.tickets.easv.bar.be.Ticket.Ticket;
 import event.tickets.easv.bar.be.Ticket.TicketEvent;
 import event.tickets.easv.bar.be.Ticket.TicketGenerated;
-import event.tickets.easv.bar.dal.dao.*;
 import event.tickets.easv.bar.util.FailureType;
 import event.tickets.easv.bar.util.Result;
 import event.tickets.easv.bar.util.Result.Failure;
 import event.tickets.easv.bar.util.Result.Success;
 
 
-import javax.swing.text.html.Option;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -42,6 +41,8 @@ public class EntityManager {
 
         // Associations
         registerAssociation(Event.class, User.class, new EventUserDAO());
+        registerAssociation(Ticket.class, TicketEvent.class, new TicketEventAssociationDAO());
+        registerAssociation(TicketEvent.class, TicketGenerated.class, new TicketEventGeneratedDAO());
     }
 
     /**

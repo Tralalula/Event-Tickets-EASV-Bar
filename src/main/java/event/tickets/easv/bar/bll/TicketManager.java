@@ -1,10 +1,9 @@
 package event.tickets.easv.bar.bll;
 
-import event.tickets.easv.bar.be.Event;
 import event.tickets.easv.bar.be.Ticket.Ticket;
 import event.tickets.easv.bar.be.Ticket.TicketEvent;
 import event.tickets.easv.bar.be.Ticket.TicketGenerated;
-import event.tickets.easv.bar.dal.dao.TicketDAO;
+import event.tickets.easv.bar.dal.dao.Ticket.TicketDAO;
 import event.tickets.easv.bar.util.Result;
 import event.tickets.easv.bar.util.Result.Success;
 import event.tickets.easv.bar.util.Result.Failure;

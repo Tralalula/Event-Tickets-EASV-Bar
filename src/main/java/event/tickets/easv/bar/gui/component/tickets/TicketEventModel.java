@@ -6,16 +6,16 @@ import javafx.beans.property.*;
 
 public record TicketEventModel(
         IntegerProperty eventId,
-        StringProperty title,
+        //StringProperty title,
         IntegerProperty total,
         IntegerProperty left,
         IntegerProperty bought,
         FloatProperty price
 ) {
-    public static TicketEventModel fromEntity(TicketEvent ticket, Event event) {
+    public static TicketEventModel fromEntity(TicketEvent ticket) {
         return new TicketEventModel(
-                new SimpleIntegerProperty(event.id()),
-                new SimpleStringProperty(event.title()),
+                new SimpleIntegerProperty(ticket.getEventId()),
+                //new SimpleStringProperty(event.title()),
                 new SimpleIntegerProperty(ticket.getQuantity()),
                 new SimpleIntegerProperty(ticket.getLeft()),
                 new SimpleIntegerProperty(ticket.getBought()),
@@ -26,7 +26,7 @@ public record TicketEventModel(
     public static TicketEventModel Empty() {
         return new TicketEventModel(
                 new SimpleIntegerProperty(),
-                new SimpleStringProperty(),
+                //new SimpleStringProperty(),
                 new SimpleIntegerProperty(),
                 new SimpleIntegerProperty(),
                 new SimpleIntegerProperty(),
@@ -36,7 +36,7 @@ public record TicketEventModel(
 
     public void update(TicketEventModel ticketEventModel) {
         this.eventId.set(ticketEventModel.eventId.get());
-        this.title.set(ticketEventModel.title.get());
+       // this.title.set(ticketEventModel.title.get());
         this.total.set(ticketEventModel.total.get());
         this.left.set(ticketEventModel.left.get());
         this.bought.set(ticketEventModel.bought.get());

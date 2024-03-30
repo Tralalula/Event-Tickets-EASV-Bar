@@ -41,8 +41,9 @@ public class ShowTicketView implements View {
         ViewHandler.currentViewDataProperty().subscribe((oldData, newData) -> {
             if (newData instanceof TicketModel) {
                 model.update((TicketModel) newData);
-                ticketEventModels.clear();
-                ticketEventModels.addAll(ticketsModel.getTicketsForEvent(model.toEntity()));
+                ticketEventModels.setAll(((TicketModel) newData).ticketEvents());
+
+                //ticketEventModels.addAll(ticketsModel.getTicketsForEvent(model.toEntity()));
             }
         });
     }
@@ -62,13 +63,15 @@ public class ShowTicketView implements View {
 
         defaultPrice.setText("Default price: 250 DKK,-");
 
-        box.getChildren().addAll(titleLabel, type, defaultPrice, createTicketTableView());
+        var associate = new Button("Add");
+
+        box.getChildren().addAll(titleLabel, type, defaultPrice, associate, createTicketTableView());
         return box;
     }
 
     public TableView<TicketEventModel> createTicketTableView() {
         TableColumn<TicketEventModel, String> col1 = new TableColumn<>("Title");
-        col1.setCellValueFactory(c -> c.getValue().title());
+       // col1.setCellValueFactory(c -> c.getValue().title());
 
         TableColumn<TicketEventModel, String> col2 = new TableColumn<>("Total");
         col2.setCellValueFactory(cellData -> {

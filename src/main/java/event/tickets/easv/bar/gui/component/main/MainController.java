@@ -1,6 +1,7 @@
 package event.tickets.easv.bar.gui.component.main;
 
 import event.tickets.easv.bar.be.Event;
+import event.tickets.easv.bar.be.Ticket.TicketEvent;
 import event.tickets.easv.bar.be.User;
 import event.tickets.easv.bar.be.Ticket.Ticket;
 import event.tickets.easv.bar.bll.EntityManager;
@@ -64,7 +65,7 @@ public class MainController {
     public void fetchTickets() {
         model.fetchingTicketsProperty().set(true);
         BackgroundExecutor.performBackgroundTask(
-                () -> manager.all(Ticket.class),
+                () -> manager.allWithAssociations(Ticket.class),
                 this::processTicketResult
         );
     }
@@ -84,7 +85,6 @@ public class MainController {
                 this::processUsers
         );
     }
-
 
     private void processTicketResult(Result<List<Ticket>> result) {
         model.fetchingTicketsProperty().set(false);

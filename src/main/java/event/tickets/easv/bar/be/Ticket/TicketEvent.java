@@ -3,12 +3,9 @@ package event.tickets.easv.bar.be.Ticket;
 import event.tickets.easv.bar.be.Entity;
 import event.tickets.easv.bar.be.Event;
 import event.tickets.easv.bar.bll.EntityManager;
-import event.tickets.easv.bar.dal.dao.TicketGeneratedDAO;
-import event.tickets.easv.bar.util.Result;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class TicketEvent implements Entity<TicketEvent> {
     private int id;
@@ -18,7 +15,7 @@ public class TicketEvent implements Entity<TicketEvent> {
 
     private int quantity;
 
-    private ArrayList<TicketGenerated> tickets = new ArrayList<>();
+    private List<TicketGenerated> tickets = new ArrayList<>();
     private Event connectedEvent;
 
     // ???????????????
@@ -109,7 +106,7 @@ public class TicketEvent implements Entity<TicketEvent> {
         this.tickets.addAll(tickets);
     }
 
-        public List<TicketGenerated> getTickets() {
+    public List<TicketGenerated> getTickets() {
         return tickets;
     }
 
@@ -144,6 +141,11 @@ public class TicketEvent implements Entity<TicketEvent> {
 
     @Override
     public void setAssociations(List<?> associations) {
-        throw new UnsupportedOperationException("Er ikke implementeret. TicketEvent.setAssociations()");
+        if (associations.isEmpty()) return;
+
+        Object first = associations.getFirst();
+        if (first instanceof TicketGenerated) {
+            this.tickets = (List<TicketGenerated>) associations;
+        }
     }
 }

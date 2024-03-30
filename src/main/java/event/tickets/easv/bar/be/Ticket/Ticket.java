@@ -1,6 +1,7 @@
 package event.tickets.easv.bar.be.Ticket;
 
 import event.tickets.easv.bar.be.Entity;
+import event.tickets.easv.bar.be.Event;
 import event.tickets.easv.bar.bll.TicketManager;
 
 import java.util.ArrayList;
@@ -30,6 +31,11 @@ public class Ticket implements Entity<Ticket> {
 
     public Ticket(int id, Ticket ticket) {
         this(id, ticket.getTitle(), ticket.getType());
+    }
+
+    public Ticket(int id, String title, String type, ArrayList ticketEvent) {
+        this(id, title, type);
+        setAssociations(ticketEvent);
     }
 
     public int getId() {
@@ -94,7 +100,13 @@ public class Ticket implements Entity<Ticket> {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void setAssociations(List<?> associations) {
-        throw new UnsupportedOperationException("Er ikke implementeret. Ticket.setAssociations()");
+        if (associations.isEmpty()) return;
+
+        Object first = associations.getFirst();
+        if (first instanceof TicketEvent) {
+            this.ticketEvent = (List<TicketEvent>) associations;
+        }
     }
 }
