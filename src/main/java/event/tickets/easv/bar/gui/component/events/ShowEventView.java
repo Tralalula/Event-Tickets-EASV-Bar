@@ -11,6 +11,7 @@ import event.tickets.easv.bar.gui.util.StyleConfig;
 import event.tickets.easv.bar.gui.widgets.Images;
 import event.tickets.easv.bar.gui.widgets.Labels;
 import javafx.application.Platform;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.control.Button;
@@ -56,7 +57,7 @@ public class ShowEventView implements View {
     @Override
     public Region getView() {
         var results = new VBox(StyleConfig.STANDARD_SPACING * 4);
-
+        results.setPadding(new Insets(10));
         results.setFillWidth(true);
 
         var title = Labels.styledLabel(model.title(), Styles.TITLE_1);
