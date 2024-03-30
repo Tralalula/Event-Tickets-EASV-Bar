@@ -42,9 +42,10 @@ GO
 
 -- Create table order (reverse of drop order)
 CREATE TABLE dbo.Users (
-   id       INT PRIMARY KEY IDENTITY(1,1),
-   username NVARCHAR(50),
-   password NVARCHAR(200)
+    id        INT PRIMARY KEY IDENTITY(1,1),
+    username  NVARCHAR(50),
+    password  NVARCHAR(200),
+    imageName NVARCHAR(255)
 );
 GO
 
@@ -73,6 +74,7 @@ CREATE TABLE Ticket (
     title          NVARCHAR(255),
     classification NVARCHAR(50) CHECK (classification IN ('PAID', 'PROMOTIONAL')),
 );
+GO
 
 CREATE TABLE EventUser (
     EventId INT,
@@ -83,7 +85,6 @@ CREATE TABLE EventUser (
 );
 GO
 
-
 CREATE TABLE TicketEvent (
      id       INT PRIMARY KEY IDENTITY(1,1),
      ticketId INT,
@@ -93,6 +94,7 @@ CREATE TABLE TicketEvent (
      FOREIGN KEY (ticketId) REFERENCES Ticket(id),
      FOREIGN KEY (eventId) REFERENCES Event(id)
 );
+GO
 
 CREATE TABLE TicketGenerated (
     id         INT IDENTITY(1,1) PRIMARY KEY,
@@ -105,6 +107,7 @@ CREATE TABLE TicketGenerated (
     FOREIGN KEY (eventId) REFERENCES TicketEvent(id),
     -- FOREIGN KEY (customerId) REFERENCES Customer(id)
 );
+GO
 
 INSERT INTO Event (title, imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo)
 VALUES
@@ -131,9 +134,9 @@ VALUES
 GO
 
 -- Password: test
-INSERT INTO dbo.Users (username, password)
+INSERT INTO dbo.Users (username, password, imageName)
 VALUES
-    ('test', '$2a$10$CLYpJK6QyzLKEvKzgnYd4OgBDAhhI0tmlYb02HgWAmfo1icjo0nMy')
+    ('test', '$2a$10$CLYpJK6QyzLKEvKzgnYd4OgBDAhhI0tmlYb02HgWAmfo1icjo0nMy', 'profileImage.jpeg')
 GO
 
 INSERT INTO dbo.EventUser (EventId, UserId)
