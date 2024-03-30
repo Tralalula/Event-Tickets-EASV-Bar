@@ -2,15 +2,15 @@ package event.tickets.easv.bar.gui.component.events;
 
 import atlantafx.base.theme.Styles;
 import event.tickets.easv.bar.be.Event;
-import event.tickets.easv.bar.gui.common.EventModel;
-import event.tickets.easv.bar.gui.common.View;
-import event.tickets.easv.bar.gui.common.ViewHandler;
-import event.tickets.easv.bar.gui.common.ViewType;
+import event.tickets.easv.bar.gui.common.*;
 import event.tickets.easv.bar.gui.util.NodeUtils;
 import event.tickets.easv.bar.gui.util.StyleConfig;
 import event.tickets.easv.bar.gui.widgets.Images;
 import event.tickets.easv.bar.gui.widgets.Labels;
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.BooleanBinding;
+import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
@@ -33,9 +33,10 @@ public class ShowEventView implements View {
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE dd. MMMM HHmm", Locale.ENGLISH);
     private final EventModel model = EventModel.Empty();
     private final ImageView image;
-
+    private HBox coordinators;
 
     public ShowEventView() {
+        coordinators = new HBox(StyleConfig.STANDARD_SPACING * 8);
         image = new ImageView();
         image.setPreserveRatio(true);
         image.setPickOnBounds(true);
@@ -49,8 +50,29 @@ public class ShowEventView implements View {
                 PixelReader reader = img.getPixelReader();
                 WritableImage newImage = new WritableImage(reader, 0, 0, (int) img.getWidth(), 300);
                 image.setImage(newImage);
+
+                updateCoordinatorsView(model.users());
             }
         });
+    }
+
+    private void updateCoordinatorsView(ObservableList<UserModel> users) {
+        coordinators.getChildren().clear();
+
+        for (UserModel userModel : users) {
+            var circle = new Circle(24);
+            circle.getStyleClass().add(Styles.ELEVATED_3);
+
+            String imageName = userModel.id().get() + "/" + userModel.imageName().get();
+            System.out.println(imageName);
+            EventsView.loadImagePattern(circle, EventsView.getProfileImage(imageName));
+
+            var name = Labels.styledLabel(userModel.username(), Styles.TEXT_NORMAL);
+            var box = new VBox(StyleConfig.STANDARD_SPACING, circle, name);
+            box.setAlignment(Pos.CENTER);
+
+            coordinators.getChildren().add(box);
+        }
     }
 
 
@@ -76,27 +98,11 @@ public class ShowEventView implements View {
         var noteBox = new VBox(noteText, note);
 
         var coordinatorsText = Labels.styledLabel("Event coordinators", Styles.TITLE_3);
-        var coordinators = new HBox(StyleConfig.STANDARD_SPACING * 8);
-
-        for (int i = 6; i < 9; i++) {
-            var circle = new Circle(24);
-            circle.getStyleClass().add(Styles.ELEVATED_3);
-            var n = "";
-            if (i == 6) n = "Jel Chibuzo";
-            if (i == 7) n = "Opi Watihana";
-            if (i == 8) n = "Izabella Tabakova";
-            var name = Labels.styledLabel(n, Styles.TEXT_NORMAL);
-            EventsView.loadImagePattern(circle, EventsView.getProfileImage("profile" + i + ".jpeg"));
-            var box = new VBox(StyleConfig.STANDARD_SPACING, circle, name);
-            box.setAlignment(Pos.CENTER);
-            coordinators.getChildren().add(box);
-        }
-
         var coordinatorsBox = new VBox(coordinatorsText, coordinators);
 
         NodeUtils.bindVisibility(locationGuidanceBox, model.locationGuidance().isNotEmpty());
         NodeUtils.bindVisibility(noteBox, model.extraInfo().isNotEmpty());
-
+        NodeUtils.bindVisibility(coordinatorsBox, Bindings.isEmpty(coordinators.getChildren()).not());
 
         results.getChildren().addAll(headerBox, locationGuidanceBox, noteBox, coordinatorsBox);
 

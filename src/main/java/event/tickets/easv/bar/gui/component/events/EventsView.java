@@ -143,7 +143,6 @@ public class EventsView implements View {
 
                     card.setOnMouseClicked(e -> {
                         ViewHandler.changeView(ViewType.SHOW_EVENT, item);
-                        System.out.println(item.users());
                     });
 
                     setGraphic(card);

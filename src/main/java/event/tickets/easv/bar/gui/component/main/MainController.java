@@ -36,6 +36,7 @@ public class MainController {
 
         fetchEvents();
         fetchUsers();
+        fetchTickets();
     }
 
     private void syncAssociations() {
@@ -45,6 +46,8 @@ public class MainController {
                 FilteredList<UserModel> filteredUsers = new FilteredList<>(model.userModels(), userModel ->
                         eventToUsersMap.getOrDefault(eventModel.id().get(), Collections.emptyList()).contains(userModel.id().get()));
                 eventModel.setUsers(filteredUsers);
+/*                System.out.println("id: " + eventModel.id());
+                System.out.println("users: " + eventModel.users());*/
             }
 
             for (UserModel userModel : model.userModels()) {
@@ -53,13 +56,11 @@ public class MainController {
                 userModel.setEvents(filteredEvents);
             }
 
+
             // Clear temp storage association maps; otherwise they take up a shit ton of memory
             eventToUsersMap.clear();
             userToEventsMap.clear();
         }
-
-        fetchEvents();
-        fetchTickets();
     }
 
     public void fetchTickets() {
@@ -104,7 +105,7 @@ public class MainController {
                 model.eventModels().setAll(convertToEventModels(s.result()));
                 model.eventsFetchedProperty().set(true);
             }
-            case Failure<List<Event>> f -> System.out.println("Error dghdfg: " + f.cause());
+            case Failure<List<Event>> f -> System.out.println("Error: " + f.cause());
         }
     }
 
