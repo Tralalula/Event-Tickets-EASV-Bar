@@ -15,10 +15,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.MenuButton;
-import javafx.scene.control.MenuItem;
+import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import org.kordamp.ikonli.feather.Feather;
 import org.kordamp.ikonli.javafx.FontIcon;
@@ -100,17 +97,22 @@ public class MainView implements View {
 
     private Region content() {
         NodeUtils.bindVisibility(authView, ViewHandler.activeWindowProperty().isEqualTo(WindowType.AUTH));
-
         NodeUtils.bindVisibility(dashboardView, ViewHandler.activeViewProperty().isEqualTo(ViewType.DASHBOARD));
         NodeUtils.bindVisibility(eventsView, ViewHandler.activeViewProperty().isEqualTo(ViewType.EVENTS));
         NodeUtils.bindVisibility(showEventView, ViewHandler.activeViewProperty().isEqualTo(ViewType.SHOW_EVENT));
-
         NodeUtils.bindVisibility(ticketsView, ViewHandler.activeViewProperty().isEqualTo(ViewType.TICKETS));
         NodeUtils.bindVisibility(addTicketView, ViewHandler.activeViewProperty().isEqualTo(ViewType.ADD_TICKET));
         NodeUtils.bindVisibility(showTicketView, ViewHandler.activeViewProperty().isEqualTo(ViewType.SHOW_TICKET));
         NodeUtils.bindVisibility(addTicketEventView, ViewHandler.activeViewProperty().isEqualTo(ViewType.ADD_TICKET_EVENT));
 
-        return new StackPane(authView, dashboardView, eventsView, showEventView, ticketsView, addTicketView, showTicketView, addTicketEventView);
+        var content = new StackPane(authView, dashboardView, eventsView, showEventView, ticketsView, addTicketView, showTicketView, addTicketEventView);
+
+        var scrollPane = new ScrollPane(content);
+        scrollPane.setFitToHeight(true);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        return scrollPane;
     }
 
     private Region createCrumbs() {
