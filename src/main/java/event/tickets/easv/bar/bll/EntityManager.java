@@ -3,11 +3,8 @@ package event.tickets.easv.bar.bll;
 import event.tickets.easv.bar.be.Entity;
 import event.tickets.easv.bar.be.Event;
 import event.tickets.easv.bar.be.User;
-import event.tickets.easv.bar.dal.dao.DAO;
-import event.tickets.easv.bar.dal.dao.EventDAO;
-import event.tickets.easv.bar.dal.dao.EventUserDAO;
+import event.tickets.easv.bar.dal.dao.*;
 import event.tickets.easv.bar.dal.dao.Ticket.*;
-import event.tickets.easv.bar.dal.dao.UserDAO;
 import event.tickets.easv.bar.dal.database.EntityAssociation;
 import event.tickets.easv.bar.be.Ticket.Ticket;
 import event.tickets.easv.bar.be.Ticket.TicketEvent;
@@ -41,6 +38,7 @@ public class EntityManager {
 
         // Associations
         registerAssociation(Event.class, User.class, new EventUserDAO());
+        registerAssociation(Event.class, TicketEvent.class, new EventTicketDAO());
         registerAssociation(Ticket.class, TicketEvent.class, new TicketEventAssociationDAO());
         registerAssociation(TicketEvent.class, TicketGenerated.class, new TicketEventGeneratedDAO());
     }

@@ -1,5 +1,8 @@
 package event.tickets.easv.bar.be;
 
+import event.tickets.easv.bar.be.Ticket.Ticket;
+import event.tickets.easv.bar.be.Ticket.TicketEvent;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -21,6 +24,7 @@ public class Event implements Entity<Event> {
     private String extraInfo;
 
     private List<User> users = new ArrayList<>();
+    private List<TicketEvent> tickets = new ArrayList<>();
 
     private void checkRep() {
         assert title != null : "title must not be null";
@@ -98,6 +102,10 @@ public class Event implements Entity<Event> {
         if (first instanceof User) {
             this.users = (List<User>) associations;
         }
+
+        if (first instanceof TicketEvent) {
+            this.tickets = (List<TicketEvent>) associations;
+        }
     }
 
     public String title() {
@@ -147,6 +155,7 @@ public class Event implements Entity<Event> {
         return users;
     }
 
+    public List<TicketEvent> tickets() { return tickets; }
 
     // Setters
     public void setId(int id) {

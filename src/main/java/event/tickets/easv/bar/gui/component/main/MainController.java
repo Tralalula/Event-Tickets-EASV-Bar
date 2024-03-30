@@ -125,6 +125,7 @@ public class MainController {
 
         for (Event event : events) {
             eventModels.add(EventModel.fromEntity(event));
+            System.out.println("MainController.convertToEventModels() - event.tickets(): " + event.tickets());
             List<Integer> userIds = event.users().stream().map(User::id).toList();
             eventToUsersMap.put(event.id(), userIds);
         }
