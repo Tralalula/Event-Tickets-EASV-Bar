@@ -8,6 +8,7 @@ import event.tickets.easv.bar.gui.common.View;
 import event.tickets.easv.bar.gui.common.ViewHandler;
 import event.tickets.easv.bar.gui.common.ViewType;
 import event.tickets.easv.bar.gui.util.NodeUtils;
+import event.tickets.easv.bar.gui.util.StyleConfig;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
@@ -20,6 +21,7 @@ import org.kordamp.ikonli.feather.Feather;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.kordamp.ikonli.javafx.Icon;
 
+import javax.swing.text.Style;
 import java.io.IOException;
 
 public class AuthView implements View {
@@ -83,7 +85,7 @@ public class AuthView implements View {
 
     private HBox forgotPasswordLabel() {
         Label forgotPasswordLabel = new Label("Forgot password?");
-        forgotPasswordLabel.getStyleClass().addAll("actionable", "underline_hover");
+        forgotPasswordLabel.getStyleClass().addAll(StyleConfig.ACTIONABLE, StyleConfig.UNDERLINE_HOVER);
         forgotPasswordLabel.setOnMouseClicked(e -> ViewHandler.changeView(ViewType.FORGOT_PASSWORD));
 
         HBox forgotPasswordBox = new HBox(forgotPasswordLabel);
@@ -201,7 +203,7 @@ public class AuthView implements View {
         VBox main = mainBox();
         Label text = new Label("Didnt get the code?");
         Label resend = new Label("Resend");
-        resend.getStyleClass().addAll(Styles.TEXT_UNDERLINED, "actionable");
+        resend.getStyleClass().addAll(Styles.TEXT_UNDERLINED, StyleConfig.ACTIONABLE);
 
         HBox box = new HBox(2);
         box.getChildren().addAll(text, resend);
@@ -226,7 +228,7 @@ public class AuthView implements View {
 
         Label back = new Label("Return to login");
         back.setOnMouseClicked(e -> ViewHandler.changeView(ViewType.LOGIN));
-        back.getStyleClass().addAll("actionable", "underline_hover");
+        back.getStyleClass().addAll(StyleConfig.ACTIONABLE, StyleConfig.UNDERLINE_HOVER);
 
         HBox box = new HBox(back);
         box.setAlignment(Pos.CENTER_LEFT);

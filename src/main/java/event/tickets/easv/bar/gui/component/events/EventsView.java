@@ -4,6 +4,8 @@ import atlantafx.base.controls.Card;
 import atlantafx.base.theme.Styles;
 import event.tickets.easv.bar.gui.common.EventModel;
 import event.tickets.easv.bar.gui.common.View;
+import event.tickets.easv.bar.gui.common.ViewHandler;
+import event.tickets.easv.bar.gui.common.ViewType;
 import event.tickets.easv.bar.gui.util.NodeUtils;
 import event.tickets.easv.bar.gui.util.StyleConfig;
 import event.tickets.easv.bar.gui.widgets.Images;
@@ -139,7 +141,10 @@ public class EventsView implements View {
                     startDateTime.textProperty().bind(dateTimeBinding(item.startDate(), item.startTime(), "Starts", formatter));
                     endDateTime.textProperty().bind(dateTimeBinding(item.endDate(), item.endTime(), "Ends", formatter));
 
-                    card.setOnMouseClicked(event -> System.out.println(item.users()));
+                    card.setOnMouseClicked(e -> {
+                        ViewHandler.changeView(ViewType.SHOW_EVENT, item);
+                        System.out.println(item.users());
+                    });
 
                     setGraphic(card);
                 }

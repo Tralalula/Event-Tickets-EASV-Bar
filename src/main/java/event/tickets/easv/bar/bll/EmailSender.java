@@ -17,7 +17,6 @@ import java.util.Properties;
 public class EmailSender {
 
     private Resend resend;
-
     public EmailSender() throws IOException {
         this(AppConfig.CONFIG_FILE);
     }

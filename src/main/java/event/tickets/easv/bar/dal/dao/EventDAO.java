@@ -137,6 +137,7 @@ class EventInsertParameterSetter implements InsertParameterSetter<Event> {
 class EventUpdateParameterSetter implements UpdateParameterSetter<Event> {
     @Override
     public void setParameters(PreparedStatement stmt, Event original, Event updatedData) throws SQLException {
+        // Same as EventInsertParameterSetters.setParameters()
         stmt.setString(1, updatedData.title());
         stmt.setString(2, updatedData.imageName());
         stmt.setString(3, updatedData.location());
@@ -157,6 +158,8 @@ class EventUpdateParameterSetter implements UpdateParameterSetter<Event> {
 
         stmt.setString(8, updatedData.locationGuidance());
         stmt.setString(9, updatedData.extraInfo());
+
+        // Only difference is here:
         stmt.setInt(10, original.id());
     }
 }

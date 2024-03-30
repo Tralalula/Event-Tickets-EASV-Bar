@@ -2,7 +2,6 @@ package event.tickets.easv.bar.bll;
 
 import event.tickets.easv.bar.be.Entity;
 import event.tickets.easv.bar.be.Event;
-import event.tickets.easv.bar.be.Ticket;
 import event.tickets.easv.bar.be.User;
 import event.tickets.easv.bar.dal.dao.DAO;
 import event.tickets.easv.bar.dal.dao.EventDAO;
@@ -30,7 +29,7 @@ class EntityManagerTest {
 
     static class UnregisteredEntity implements Entity<UnregisteredEntity> {
         @Override
-        public void update(UnregisteredEntity updatedDate) {}
+        public void update(UnregisteredEntity updatedData) {}
 
         @Override
         public int id() {
@@ -227,7 +226,7 @@ class EntityManagerTest {
         when(mockEventDAO.all()).thenReturn(Success.of(expected));
 
         // Call
-        Result<List<Event>> result = entityManager.get(Event.class).fetch();
+        Result<List<Event>> result = entityManager.getAll(Event.class).fetch();
 
         // Check
         assertThat(result).isInstanceOf(Success.class);
@@ -255,7 +254,7 @@ class EntityManagerTest {
         when(mockEventUserAssociation.findAssociatesOf(any(Event.class))).thenReturn(Success.of(userForEvent1));
 
         // Call
-        Result<List<Event>> result = entityManager.get(Event.class)
+        Result<List<Event>> result = entityManager.getAll(Event.class)
                 .withAssociation(User.class)
                 .fetch();
 

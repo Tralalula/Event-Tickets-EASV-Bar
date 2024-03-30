@@ -6,18 +6,35 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import event.tickets.easv.bar.gui.common.TicketModel;
+import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 public class MainModel {
     private final ObservableList<EventModel> eventModels = FXCollections.observableArrayList();
     private final ObservableList<UserModel> userModels = FXCollections.observableArrayList();
+
     private final BooleanProperty fetchingEvents = new SimpleBooleanProperty(false);
     private final BooleanProperty fetchingUsers = new SimpleBooleanProperty(false);
+    private final BooleanProperty fetchingTickets = new SimpleBooleanProperty(false);
     private final BooleanProperty eventsFetched = new SimpleBooleanProperty(false);
     private final BooleanProperty usersFetched = new SimpleBooleanProperty(false);
+    private final BooleanProperty ticketsFetched = new SimpleBooleanProperty(false);
 
     private final StringProperty username = new SimpleStringProperty();
+
+
+    private final ObservableList<TicketModel> ticketModels = FXCollections.observableArrayList();
+    private final ObjectProperty<TicketModel> ticketModelProperty = new SimpleObjectProperty<>();
+
+    public ObservableList<TicketModel> ticketModels() {
+        return ticketModels;
+    }
+
+    public ObjectProperty<TicketModel> ticketModelProperty() {
+        return ticketModelProperty;
+    }
 
     public ObservableList<EventModel> eventModels() {
         return eventModels;
@@ -35,6 +52,10 @@ public class MainModel {
         return fetchingUsers;
     }
 
+    public BooleanProperty fetchingTicketsProperty() {
+        return fetchingTickets;
+    }
+
     public BooleanProperty eventsFetchedProperty() {
         return eventsFetched;
     }
@@ -43,7 +64,7 @@ public class MainModel {
         return usersFetched;
     }
 
-    public StringProperty getUsername() {
-        return username;
+    public BooleanProperty ticketsFetchedProperty() {
+        return ticketsFetched;
     }
 }

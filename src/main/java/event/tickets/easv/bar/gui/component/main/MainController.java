@@ -2,9 +2,12 @@ package event.tickets.easv.bar.gui.component.main;
 
 import event.tickets.easv.bar.be.Event;
 import event.tickets.easv.bar.be.User;
+import event.tickets.easv.bar.be.Ticket.Ticket;
 import event.tickets.easv.bar.bll.EntityManager;
+import event.tickets.easv.bar.bll.TicketManager;
 import event.tickets.easv.bar.gui.common.EventModel;
 import event.tickets.easv.bar.gui.common.UserModel;
+import event.tickets.easv.bar.gui.common.TicketModel;
 import event.tickets.easv.bar.gui.util.BackgroundExecutor;
 import event.tickets.easv.bar.util.Result;
 import event.tickets.easv.bar.util.Result.Success;
@@ -53,6 +56,17 @@ public class MainController {
             eventToUsersMap.clear();
             userToEventsMap.clear();
         }
+
+        fetchEvents();
+        fetchTickets();
+    }
+
+    public void fetchTickets() {
+        model.fetchingTicketsProperty().set(true);
+        BackgroundExecutor.performBackgroundTask(
+                () -> manager.all(Ticket.class),
+                this::processTicketResult
+        );
     }
 
     public void fetchEvents() {
@@ -69,6 +83,18 @@ public class MainController {
                 () -> manager.allWithAssociations(User.class),
                 this::processUsers
         );
+    }
+
+
+    private void processTicketResult(Result<List<Ticket>> result) {
+        model.fetchingTicketsProperty().set(false);
+        switch (result) {
+            case Success<List<Ticket>> s -> {
+                model.ticketModels().setAll(convertToTicketModels(s.result()));
+                model.ticketsFetchedProperty().set(true);
+            }
+            case Failure<List<Ticket>> f -> System.out.println("Error: " + f.cause());
+        }
     }
 
     private void processEvents(Result<List<Event>> result) {
@@ -115,5 +141,15 @@ public class MainController {
         }
 
         return userModels;
+    }
+
+    private List<TicketModel> convertToTicketModels(List<Ticket> tickets) {
+        List<TicketModel> ticketModels = new ArrayList<>();
+
+        for (var ticket : tickets) {
+            ticketModels.add(TicketModel.fromEntity(ticket));
+        }
+
+        return ticketModels;
     }
 }

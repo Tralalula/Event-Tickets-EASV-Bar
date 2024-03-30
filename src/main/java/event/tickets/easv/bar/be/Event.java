@@ -73,16 +73,16 @@ public class Event implements Entity<Event> {
     }
 
     @Override
-    public void update(Event updatedDate) {
-        setTitle(updatedDate.title());
-        setImageName(updatedDate.imageName());
-        setLocation(updatedDate.location());
-        setStartDate(updatedDate.startDate());
-        setEndDate(updatedDate.endDate());
-        setStartTime(updatedDate.startTime());
-        setEndTime(updatedDate.endTime());
-        setLocationGuidance(updatedDate.locationGuidance());
-        setExtraInfo(updatedDate.extraInfo());
+    public void update(Event updatedData) {
+        setTitle(updatedData.title());
+        setImageName(updatedData.imageName());
+        setLocation(updatedData.location());
+        setStartDate(updatedData.startDate());
+        setEndDate(updatedData.endDate());
+        setStartTime(updatedData.startTime());
+        setEndTime(updatedData.endTime());
+        setLocationGuidance(updatedData.locationGuidance());
+        setExtraInfo(updatedData.extraInfo());
     }
 
     public int id() {

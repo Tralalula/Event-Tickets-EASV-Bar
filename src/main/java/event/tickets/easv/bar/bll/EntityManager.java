@@ -2,19 +2,23 @@ package event.tickets.easv.bar.bll;
 
 import event.tickets.easv.bar.be.Entity;
 import event.tickets.easv.bar.be.Event;
-import event.tickets.easv.bar.be.Ticket;
 import event.tickets.easv.bar.be.User;
 import event.tickets.easv.bar.dal.dao.DAO;
 import event.tickets.easv.bar.dal.dao.EventDAO;
 import event.tickets.easv.bar.dal.dao.EventUserDAO;
 import event.tickets.easv.bar.dal.dao.UserDAO;
 import event.tickets.easv.bar.dal.database.EntityAssociation;
+import event.tickets.easv.bar.be.Ticket.Ticket;
+import event.tickets.easv.bar.be.Ticket.TicketEvent;
+import event.tickets.easv.bar.be.Ticket.TicketGenerated;
+import event.tickets.easv.bar.dal.dao.*;
 import event.tickets.easv.bar.util.Result;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Processes and manages entities.
@@ -27,6 +31,9 @@ public class EntityManager {
         // DAOs
         registerDao(Event.class, new EventDAO());
         registerDao(User.class, new UserDAO());
+        registerDao(Ticket.class, new TicketDAO());
+        registerDao(TicketGenerated.class, new TicketGeneratedDAO());
+        registerDao(TicketEvent.class, new TicketEventDAO());
 
         // Associations
         registerAssociation(Event.class, User.class, new EventUserDAO());
@@ -48,7 +55,14 @@ public class EntityManager {
         associations.add(new EntityAssociationDescriptor<>(entityA, entityB, entityAssociation));
     }
 
-    public <T extends Entity<T>> QueryBuilder<T> get(Class<T> entityClass) {
+    @SuppressWarnings("unchecked")
+    public <T> Result<Optional<T>> get(Class<T> entity, int id) {
+        DAO<T> dao = (DAO<T>) daos.get(entity);
+        if (dao == null) throw new IllegalArgumentException("Unknown entity type: " + entity);
+        return dao.get(id);
+    }
+
+    public <T extends Entity<T>> QueryBuilder<T> getAll(Class<T> entityClass) {
         return new QueryBuilder<>(this, entityClass);
     }
 

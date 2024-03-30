@@ -3,17 +3,16 @@ package event.tickets.easv.bar.gui.common;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ObservableValue;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 /**
  * A Singleton handler for managing views and their navigation history within an application.
  */
 public class ViewHandler {
     private static final ViewHandler INSTANCE = new ViewHandler();
+    private final ObjectProperty<Object> currentViewData = new SimpleObjectProperty<>();
     private final ObjectProperty<WindowType> activeWindow = new SimpleObjectProperty<>(WindowType.NONE);
     private final ObjectProperty<ViewType> activeView = new SimpleObjectProperty<>(ViewType.NO_VIEW);
     private final ObjectProperty<ViewType> previousView = new SimpleObjectProperty<>(ViewType.NO_VIEW);
@@ -53,6 +52,17 @@ public class ViewHandler {
     public static void changeView(ViewType newView) {
         if (newView == null) throw new IllegalArgumentException("newView must not be null");
         INSTANCE.changeViewInstance(newView);
+    }
+
+    public static void changeView(ViewType newView, Object data) {
+        if (newView == null) throw new IllegalArgumentException("newView must not be null");
+        if (data != null) INSTANCE.currentViewData.set(data);
+
+        INSTANCE.changeViewInstance(newView);
+    }
+
+    public static ObservableValue<Object> currentViewDataProperty() {
+        return INSTANCE.currentViewData;
     }
 
     /**

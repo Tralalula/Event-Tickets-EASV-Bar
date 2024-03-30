@@ -49,9 +49,9 @@ public class User implements Entity<User> {
     }
 
     @Override
-    public void update(User updatedDate) {
-        this.username = updatedDate.getUsername();
-        this.password = updatedDate.getPassword();
+    public void update(User updatedData) {
+        this.username = updatedData.getUsername();
+        this.password = updatedData.getPassword();
     }
 
     @Override
