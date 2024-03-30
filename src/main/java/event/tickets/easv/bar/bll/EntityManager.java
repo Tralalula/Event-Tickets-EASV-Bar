@@ -131,6 +131,14 @@ public class EntityManager {
     }
 
     @SuppressWarnings("unchecked")
+    public <T> Result<Boolean> update(T entity, T updatedData) {
+        if (entity == null || updatedData == null) return Failure.of(FailureType.INVALID_ENTITY_TYPE, "Entity cannot be null");
+        DAO<T> dao = (DAO<T>) daos.get(entity.getClass());
+        if (dao == null) return Failure.of(FailureType.INVALID_ENTITY_TYPE, "Unexpected entity: " + entity.getClass());
+        return dao.update(entity, updatedData);
+    }
+
+    @SuppressWarnings("unchecked")
     private <A extends Entity<A>, B extends Entity<B>> EntityAssociation<A, B> getEntityAssociation(Class<A> entityAClass, Class<B> entityBClass) {
         for (EntityAssociationDescriptor<?, ?> descriptor : associations) {
             if (descriptor.entityA().equals(entityAClass) && descriptor.entityB().equals(entityBClass)) {

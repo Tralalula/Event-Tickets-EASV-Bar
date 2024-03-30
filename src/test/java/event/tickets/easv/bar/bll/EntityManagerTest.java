@@ -416,4 +416,50 @@ class EntityManagerTest {
         assertThat(result).isInstanceOf(Failure.class);
         verify(mockEventUserAssociation).addAssociation(event, user);
     }
+
+    @Test
+    void updateEntitySuccess() {
+        // Setup
+        Event event = new Event(1, "Original Event", "original.png", "Original Location", LocalDate.now(), null, LocalTime.now(), null, "", "");
+        Event updatedEvent = new Event(1, "Updated Event", "updated.png", "Updated Location", LocalDate.now(), null, LocalTime.now(), null, "", "");
+        when(mockEventDAO.update(event, updatedEvent)).thenReturn(Success.of(true));
+
+        // Call
+        Result<Boolean> result = entityManager.update(event, updatedEvent);
+
+        // Check
+        assertThat(result).isInstanceOf(Success.class);
+        Success<Boolean> success = (Success<Boolean>) result;
+        assertThat(success.result()).isTrue();
+        verify(mockEventDAO).update(event, updatedEvent);
+    }
+
+    @Test
+    void updateEntityWithNulls() {
+        // Setup
+        Event event = new Event(1, "Original Event", "original.png", "Original Location", LocalDate.now(), null, LocalTime.now(), null, "", "");
+
+        // Call & check
+        Result<Boolean> resultWithNullOriginal = entityManager.update(null, event);
+        assertThat(resultWithNullOriginal).isInstanceOf(Failure.class);
+
+        // Call & check
+        Result<Boolean> resultWithNullUpdated = entityManager.update(event, null);
+        assertThat(resultWithNullUpdated).isInstanceOf(Failure.class);
+    }
+
+    @Test
+    void updateUnsupportedEntityType() {
+        // Setup
+        UnregisteredEntity originalEntity = new UnregisteredEntity();
+        UnregisteredEntity updatedEntity = new UnregisteredEntity();
+
+        // Call
+        Result<Boolean> result = entityManager.update(originalEntity, updatedEntity);
+
+        // Check
+        assertThat(result).isInstanceOf(Failure.class);
+        Failure<Boolean> failure = (Failure<Boolean>) result;
+        assertThat(failure.message()).contains("Unexpected entity");
+    }
 }
