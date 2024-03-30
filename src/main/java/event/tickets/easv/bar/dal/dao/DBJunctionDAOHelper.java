@@ -90,7 +90,12 @@ public class DBJunctionDAOHelper<A extends Entity<A>, B extends Entity<B>> imple
                 results.add(resultSetMapperB.map(rs));
             }
         } catch (SQLException e) {
-            return Failure.of(FailureType.DB_DATA_RETRIEVAL_FAILURE, "DBJunctionDAOHelper.findAssociatesOfA() - Failed to find associates of: " + entityA.getClass().getName(), e);
+            return Failure.of(FailureType.DB_DATA_RETRIEVAL_FAILURE,
+                    "DBJunctionDAOHelper.findAssociatesOfA() - Failed to find associates of: " + entityA.getClass().getName() + "\n" +
+                            "Tried to retrieve a List of " + classB.getSimpleName() + " for " + classA.getSimpleName() + "\n" +
+                            "Check selectBForASQL method in: " + sqlTemplate.getClass().getName() + "\n",
+                    e
+            );
         }
 
         return Success.of(results);
@@ -113,8 +118,13 @@ public class DBJunctionDAOHelper<A extends Entity<A>, B extends Entity<B>> imple
                 results.add(resultSetMapperA.map(rs));
             }
         } catch (SQLException e) {
-            return Failure.of(FailureType.DB_DATA_RETRIEVAL_FAILURE, "DBJunctionDAOHelper.findAssociatesOfB() - Failed to find associates of: " + entityB.getClass().getName(), e);        }
-
+            return Failure.of(FailureType.DB_DATA_RETRIEVAL_FAILURE,
+                    "DBJunctionDAOHelper.findAssociatesOfA() - Failed to find associates of: " + entityB.getClass().getName() + "\n" +
+                            "Tried to retrieve a List of " + classA.getSimpleName() + " for " + classB.getSimpleName() + "\n" +
+                            "Check selectAForBSQL method in: " + sqlTemplate.getClass().getName() + "\n",
+                    e
+            );
+        }
         return Success.of(results);
     }
 

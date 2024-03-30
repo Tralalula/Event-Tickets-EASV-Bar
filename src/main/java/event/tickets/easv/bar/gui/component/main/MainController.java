@@ -104,7 +104,7 @@ public class MainController {
                 model.eventModels().setAll(convertToEventModels(s.result()));
                 model.eventsFetchedProperty().set(true);
             }
-            case Failure<List<Event>> f -> System.out.println("Error: " + f.cause());
+            case Failure<List<Event>> f -> System.out.println("Error dghdfg: " + f.cause());
         }
     }
 
