@@ -177,7 +177,7 @@ public class EventsView implements View {
         return img;
     }
 
-    private static void loadImagePattern(Circle circle, Image image) {
+    public static void loadImagePattern(Circle circle, Image image) {
         if (image.getProgress() == 1.0) {
             circle.setFill(new ImagePattern(image));
             return;
