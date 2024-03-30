@@ -16,6 +16,7 @@ import org.junit.jupiter.api.Test;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 
 import static com.google.common.truth.Truth.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -53,6 +54,96 @@ class EntityManagerTest {
     }
 
     @Test
+    void getEventSuccess() {
+        // Setup
+        var imageName = "sample.png";
+        var location = "6700, Esbjerg";
+        var startDate = LocalDate.now();
+        LocalDate endDate = null;
+        var startTime = LocalTime.now();
+        LocalTime endTime = null;
+
+        var event = new Event(1, "a", imageName, location, startDate, endDate, startTime, endTime, "", "");
+        when(mockEventDAO.get(1)).thenReturn(Success.of(Optional.of(event)));
+
+        // Call
+        Result<Optional<Event>> result = entityManager.get(Event.class, 1);
+
+        // Check
+        assertThat(result).isInstanceOf(Success.class);
+        var success = (Success<Optional<Event>>) result;
+        assertThat(success.result()).isEqualTo(Optional.of(event));
+        verify(mockEventDAO).get(1);
+    }
+
+    @Test
+    void getEventSuccessEmpty() {
+        // Setup
+        when(mockEventDAO.get(1)).thenReturn(Success.of(Optional.empty()));
+
+        // Call
+        Result<Optional<Event>> result = entityManager.get(Event.class, 1);
+
+        // Check
+        assertThat(result).isInstanceOf(Success.class);
+        var success = (Success<Optional<Event>>) result;
+        assertThat(success.result()).isEqualTo(Optional.empty());
+        verify(mockEventDAO).get(1);
+    }
+
+    @Test
+    void getEventWithAssociationsSuccess() {
+        // Setup
+        var imageName = "sample.png";
+        var location = "6700, Esbjerg";
+        var startDate = LocalDate.now();
+        LocalDate endDate = null;
+        var startTime = LocalTime.now();
+        LocalTime endTime = null;
+
+        var event = new Event(1, "a", imageName, location, startDate, endDate, startTime, endTime, "", "");
+        when(mockEventDAO.get(1)).thenReturn(Success.of(Optional.of(event)));
+        when(mockEventUserAssociation.findAssociatesOf(event)).thenReturn(Success.of(List.of()));
+
+        // Call
+        Result<Optional<Event>> result = entityManager.getWithAssociations(Event.class, 1);
+
+        // Check
+        assertThat(result).isInstanceOf(Success.class);
+        var success = (Success<Optional<Event>>) result;
+        assertThat(success.result()).isEqualTo(Optional.of(event));
+        verify(mockEventDAO).get(1);
+        verify(mockEventUserAssociation).findAssociatesOf(event);
+    }
+
+    @Test
+    void getEventWithAssociationsUsers() {
+        // Setup
+        var imageName = "sample.png";
+        var location = "6700, Esbjerg";
+        var startDate = LocalDate.now();
+        LocalDate endDate = null;
+        var startTime = LocalTime.now();
+        LocalTime endTime = null;
+
+        var event = new Event(1, "a", imageName, location, startDate, endDate, startTime, endTime, "", "");
+        when(mockEventDAO.get(1)).thenReturn(Success.of(Optional.of(event)));
+        List<User> usersForEvent = List.of(new User(1, "User1"), new User(2, "User2"));
+        when(mockEventUserAssociation.findAssociatesOf(event)).thenReturn(Success.of(usersForEvent));
+
+        // Call
+        Result<Optional<Event>> result = entityManager.getWithAssociations(Event.class, 1);
+
+        // Check
+        assertThat(result).isInstanceOf(Success.class);
+        var success = (Success<Optional<Event>>) result;
+        assertThat(success.result()).isEqualTo(Optional.of(event));
+        assertThat(success.result().get().users()).isEqualTo(usersForEvent);
+        verify(mockEventDAO).get(1);
+        verify(mockEventUserAssociation).findAssociatesOf(event);
+    }
+
+    @Test
     void allEventSuccess() {
         // Setup
         var imageName = "sample.png";
@@ -71,6 +162,7 @@ class EntityManagerTest {
         // Call
         Result<List<Event>> result = entityManager.all(Event.class);
 
+        // Check
         assertThat(result).isInstanceOf(Success.class);
         var success = (Success<List<Event>>) result;
         assertThat(success.result()).isEqualTo(expected);
@@ -124,6 +216,7 @@ class EntityManagerTest {
         var success = (Success<List<Event>>) result;
         assertThat(success.result()).isEqualTo(expected);
         verify(mockEventDAO).all();
+        expected.forEach(event -> verify(mockEventUserAssociation).findAssociatesOf(event));
     }
 
     @Test
@@ -143,6 +236,7 @@ class EntityManagerTest {
         var success = (Success<List<User>>) result;
         assertThat(success.result()).isEqualTo(expected);
         verify(mockUserDAO).all();
+        expected.forEach(user -> verify(mockEventUserAssociation).findAssociatesOf(user));
     }
 
     @Test

@@ -14,6 +14,7 @@ import event.tickets.easv.bar.be.Ticket.TicketGenerated;
 import event.tickets.easv.bar.dal.dao.*;
 import event.tickets.easv.bar.util.Result;
 
+import javax.swing.text.html.Option;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -56,10 +57,21 @@ public class EntityManager {
     }
 
     @SuppressWarnings("unchecked")
-    public <T> Result<Optional<T>> get(Class<T> entity, int id) {
-        DAO<T> dao = (DAO<T>) daos.get(entity);
-        if (dao == null) throw new IllegalArgumentException("Unexpected entity: " + entity);
+    public <T> Result<Optional<T>> get(Class<T> entityClass, int id) {
+        DAO<T> dao = (DAO<T>) daos.get(entityClass);
+        if (dao == null) throw new IllegalArgumentException("Unexpected entity: " + entityClass);
         return dao.get(id);
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T extends Entity<T>> Result<Optional<T>> getWithAssociations(Class<T> entityClass, int id) {
+        DAO<T> dao = (DAO<T>) daos.get(entityClass);
+        if (dao == null) throw new IllegalArgumentException("Unexpected entity: " + entityClass);
+        Result<Optional<T>> result = dao.get(id);
+
+        result.ifSuccess(entity -> entity.ifPresent(this::processEntityAssociation));
+
+        return result;
     }
 
     /**
@@ -73,7 +85,7 @@ public class EntityManager {
     @SuppressWarnings("unchecked")
     public <T> Result<List<T>> all(Class<T> entityClass) {
         DAO<T> dao = (DAO<T>) daos.get(entityClass);
-        if (dao == null) throw new IllegalArgumentException("Unknown entity type: " + entityClass);
+        if (dao == null) throw new IllegalArgumentException("Unexpected entity: " + entityClass);
         return dao.all();
     }
 
@@ -91,14 +103,13 @@ public class EntityManager {
     private <T extends Entity<T>> void processEntityAssociation(T entity) {
         Class<?> entityClass = entity.getClass();
         associations.stream()
-                .filter(descriptor -> descriptor.entityA().equals(entityClass) || descriptor.entityB().equals(entityClass))
-                .forEach(descriptor -> findAndSetAssociations(descriptor.entityAssociation(), entity));
+                    .filter(descriptor -> descriptor.entityA().equals(entityClass) || descriptor.entityB().equals(entityClass))
+                    .forEach(descriptor -> findAndSetAssociations(descriptor.entityAssociation(), entity));
     }
 
     private void findAndSetAssociations(EntityAssociation<?, ?> association, Entity<?> entity) {
         Result<List<?>> associatesResult = association.findAssociatesOf(entity);
-        if (associatesResult == null) throw new IllegalArgumentException("associatesResult must not be null");
-        associatesResult.ifSuccess(entity::setAssociations);
+        if (associatesResult != null) associatesResult.ifSuccess(entity::setAssociations);
     }
 
     /**
