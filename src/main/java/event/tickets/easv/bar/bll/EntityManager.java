@@ -114,6 +114,26 @@ public class EntityManager {
         return dao.add(entity);
     }
 
+    @SuppressWarnings("unchecked")
+    public <A extends Entity<A>, B extends Entity<B>> Result<Boolean> addAssociations(A entityA, List<B> entitiesB) {
+        for (B entityB : entitiesB) {
+            EntityAssociation<A, B> association = getEntityAssociation(entityA.getClass(), entityB.getClass());
+            Result<Boolean> result = association.addAssociation(entityA, entityB);
+            if (result instanceof Failure) return result; // We return early on failure
+        }
+        return Success.of(true);
+    }
+
+    @SuppressWarnings("unchecked")
+    private <A extends Entity<A>, B extends Entity<B>> EntityAssociation<A, B> getEntityAssociation(Class<A> entityAClass, Class<B> entityBClass) {
+        for (EntityAssociationDescriptor<?, ?> descriptor : associations) {
+            if (descriptor.entityA().equals(entityAClass) && descriptor.entityB().equals(entityBClass)) {
+                return (EntityAssociation<A, B>) descriptor.entityAssociation();
+            }
+        }
+        throw new IllegalArgumentException("No association found for given entity types");
+    }
+
     private <T extends Entity<T>> void processEntityAssociation(T entity) {
         Class<?> entityClass = entity.getClass();
         associations.stream()
@@ -124,6 +144,14 @@ public class EntityManager {
     private void findAndSetAssociations(EntityAssociation<?, ?> association, Entity<?> entity) {
         Result<List<?>> associatesResult = association.findAssociatesOf(entity);
         if (associatesResult != null) associatesResult.ifSuccess(entity::setAssociations);
+    }
+
+    /**
+     * For testing purposes only
+     */
+    void purge() {
+        daos.clear();
+        associations.clear();
     }
 
     /**

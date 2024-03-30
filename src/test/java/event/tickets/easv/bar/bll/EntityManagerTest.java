@@ -46,9 +46,12 @@ class EntityManagerTest {
     @BeforeEach
     void setup() {
         entityManager = new EntityManager();
+        entityManager.purge();
+
         mockEventDAO = mock(EventDAO.class);
         mockUserDAO = mock(UserDAO.class);
         mockEventUserAssociation = mock(EventUserDAO.class);
+
 
         entityManager.registerDao(Event.class, mockEventDAO);
         entityManager.registerDao(User.class, mockUserDAO);
@@ -346,5 +349,41 @@ class EntityManagerTest {
         Success<Event> success = (Success<Event>) result;
         assertThat(success.result()).isEqualTo(event);
         verify(mockEventDAO).add(event);
+    }
+
+    @Test
+    void addAssociationsSuccess() {
+        // Setup
+        Event event = new Event(1, "Test Event", "sample.png", "6700, Esbjerg", LocalDate.now(), null, LocalTime.now(), null, "", "");
+        List<User> users = List.of(new User(1, "User1"), new User(2, "User2"));
+        when(mockEventUserAssociation.addAssociation(eq(event), any(User.class))).thenReturn(Success.of(true));
+
+        // Call
+        Result<Boolean> result = entityManager.addAssociations(event, users);
+
+        // Check
+        assertThat(result).isInstanceOf(Success.class);
+        Success<Boolean> success = (Success<Boolean>) result;
+        assertThat(success.result()).isTrue();
+        users.forEach(user -> verify(mockEventUserAssociation).addAssociation(event, user));
+    }
+
+    @Test
+    void addAssociationsFailure() {
+        // Setup
+        Event event = new Event(1, "Test Event", "sample.png", "6700, Esbjerg", LocalDate.now(), null, LocalTime.now(), null, "", "");
+        List<User> users = List.of(new User(1, "User1"));
+        when(mockEventUserAssociation.addAssociation(eq(event), any(User.class)))
+                                     .thenReturn(Failure.of(FailureType.DB_INSERTION_FAILURE, "Failed to add association"));
+
+        // Call
+        Result<Boolean> result = entityManager.addAssociations(event, users);
+
+        // Check
+        assertThat(result).isInstanceOf(Failure.class);
+        Failure<Boolean> failure = (Failure<Boolean>) result;
+        assertThat(failure.type()).isEqualTo(FailureType.DB_INSERTION_FAILURE);
+        assertThat(failure.message()).contains("Failed to add association");
+        verify(mockEventUserAssociation).addAssociation(eq(event), any(User.class));
     }
 }
