@@ -1,6 +1,7 @@
 package event.tickets.easv.bar.gui.common;
 
 import event.tickets.easv.bar.be.Event;
+import event.tickets.easv.bar.gui.component.tickets.TicketEventModel;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -20,6 +21,7 @@ public class EventModel {
     private final StringProperty locationGuidance = new SimpleStringProperty();
     private final StringProperty extraInfo = new SimpleStringProperty();
     private ObservableList<UserModel> users = FXCollections.observableArrayList();
+    private ObservableList<TestModel> tests = FXCollections.observableArrayList();
 
     public EventModel() {
 
@@ -59,6 +61,7 @@ public class EventModel {
         this.locationGuidance.set(eventModel.locationGuidance.get());
         this.extraInfo.set(eventModel.extraInfo.get());
         this.users = eventModel.users;
+        this.tests = eventModel.tests;
     }
 
     public Event toEntity() {
@@ -123,4 +126,8 @@ public class EventModel {
     public ObservableList<UserModel> users() {
         return users;
     }
+
+    public void setTests(ObservableList<TestModel> tests) { this.tests = tests; }
+
+    public ObservableList<TestModel> tests() { return tests; }
 }

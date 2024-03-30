@@ -16,6 +16,8 @@ import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelReader;
@@ -33,10 +35,15 @@ public class ShowEventView implements View {
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE dd. MMMM HHmm", Locale.ENGLISH);
     private final EventModel model = EventModel.Empty();
     private final ImageView image;
-    private HBox coordinators;
+    private final HBox coordinators;
+    private final TableView<TestModel> eventTicketsTableView;
 
     public ShowEventView() {
         coordinators = new HBox(StyleConfig.STANDARD_SPACING * 8);
+        eventTicketsTableView = new TableView<>();
+
+        initializeTableView();
+
         image = new ImageView();
         image.setPreserveRatio(true);
         image.setPickOnBounds(true);
@@ -52,8 +59,33 @@ public class ShowEventView implements View {
                 image.setImage(newImage);
 
                 updateCoordinatorsView(model.users());
+                eventTicketsTableView.setItems(model.tests());
             }
         });
+    }
+
+    private void initializeTableView() {
+        TableColumn<TestModel, String> titleCol = new TableColumn<>("Title");
+        titleCol.setCellValueFactory(cdf -> cdf.getValue().title);
+        eventTicketsTableView.getColumns().add(titleCol);
+
+        TableColumn<TestModel, String> typeCol = new TableColumn<>("Type");
+        typeCol.setCellValueFactory(cdf -> cdf.getValue().type);
+        eventTicketsTableView.getColumns().add(typeCol);
+
+        TableColumn<TestModel, String> quantityCol = new TableColumn<>("Quantity");
+        quantityCol.setCellValueFactory(cdf -> cdf.getValue().quantity);
+        eventTicketsTableView.getColumns().add(quantityCol);
+
+        TableColumn<TestModel, String> priceCol = new TableColumn<>("Price");
+        priceCol.setCellValueFactory(cdf -> cdf.getValue().price);
+        eventTicketsTableView.getColumns().add(priceCol);
+
+        var placeHolder = new Label("Trying to get data. Please wait.");
+        placeHolder.setAlignment(Pos.CENTER);
+        eventTicketsTableView.setPlaceholder(placeHolder);
+
+        eventTicketsTableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
     }
 
     private void updateCoordinatorsView(ObservableList<UserModel> users) {
@@ -100,11 +132,14 @@ public class ShowEventView implements View {
         var coordinatorsText = Labels.styledLabel("Event coordinators", Styles.TITLE_3);
         var coordinatorsBox = new VBox(coordinatorsText, coordinators);
 
+        var ticketsText = Labels.styledLabel("Tickets", Styles.TITLE_3);
+        var ticketsBox = new VBox(ticketsText, eventTicketsTableView);
+
         NodeUtils.bindVisibility(locationGuidanceBox, model.locationGuidance().isNotEmpty());
         NodeUtils.bindVisibility(noteBox, model.extraInfo().isNotEmpty());
         NodeUtils.bindVisibility(coordinatorsBox, Bindings.isEmpty(coordinators.getChildren()).not());
 
-        results.getChildren().addAll(headerBox, locationGuidanceBox, noteBox, coordinatorsBox);
+        results.getChildren().addAll(headerBox, locationGuidanceBox, noteBox, coordinatorsBox, ticketsBox);
 
         return results;
     }

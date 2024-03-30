@@ -7,12 +7,14 @@ import event.tickets.easv.bar.be.Ticket.Ticket;
 import event.tickets.easv.bar.bll.EntityManager;
 import event.tickets.easv.bar.bll.TicketManager;
 import event.tickets.easv.bar.gui.common.EventModel;
+import event.tickets.easv.bar.gui.common.TestModel;
 import event.tickets.easv.bar.gui.common.UserModel;
 import event.tickets.easv.bar.gui.common.TicketModel;
 import event.tickets.easv.bar.gui.util.BackgroundExecutor;
 import event.tickets.easv.bar.util.Result;
 import event.tickets.easv.bar.util.Result.Success;
 import event.tickets.easv.bar.util.Result.Failure;
+import javafx.collections.FXCollections;
 import javafx.collections.transformation.FilteredList;
 
 import java.util.ArrayList;
@@ -124,7 +126,15 @@ public class MainController {
         List<EventModel> eventModels = new ArrayList<>();
 
         for (Event event : events) {
-            eventModels.add(EventModel.fromEntity(event));
+            var eventModel = EventModel.fromEntity(event);
+            eventModel.setTests(FXCollections.observableArrayList(
+                    new TestModel("VIP", "Paid", "250", "DKK 250,-"),
+                    new TestModel("1st row", "Paid", "100", "DKK 150,-"),
+                    new TestModel("1 free beer", "Promotional", "1500 printed", ""),
+                    new TestModel("1 free cocio", "Promotional", "2750 printed", ""))
+            );
+
+            eventModels.add(eventModel);
             System.out.println("MainController.convertToEventModels() - event.tickets(): " + event.tickets());
             List<Integer> userIds = event.users().stream().map(User::id).toList();
             eventToUsersMap.put(event.id(), userIds);
