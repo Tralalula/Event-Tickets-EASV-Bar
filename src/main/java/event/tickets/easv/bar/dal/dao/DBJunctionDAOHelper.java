@@ -42,7 +42,7 @@ public class DBJunctionDAOHelper<A extends Entity<A>, B extends Entity<B>> imple
         try {
             setupDBConnector();
         } catch (IOException e) {
-            return Failure.of(FailureType.IO_FAILURE, "Failed to read from the data source", e);
+            return Failure.of(FailureType.IO_FAILURE, "DBJunctionDAOHelper.addAssociation() - Failed to read from the data source", e);
         }
 
         try (Connection conn = dbConnector.connection();
@@ -51,7 +51,7 @@ public class DBJunctionDAOHelper<A extends Entity<A>, B extends Entity<B>> imple
             int rowsAffected = stmt.executeUpdate();
             return Success.of(rowsAffected > 0);
         } catch (SQLException e) {
-            return Failure.of(FailureType.DB_DATA_RETRIEVAL_FAILURE, "Failed to access the database", e);
+            return Failure.of(FailureType.DB_DATA_RETRIEVAL_FAILURE, "DBJunctionDAOHelper.addAssociation() - Failed to add association between: " + entityA.getClass().getName() + " and " + entityB.getClass().getName() , e);
         }
     }
 
@@ -60,7 +60,7 @@ public class DBJunctionDAOHelper<A extends Entity<A>, B extends Entity<B>> imple
         try {
             setupDBConnector();
         } catch (IOException e) {
-            return Failure.of(FailureType.IO_FAILURE, "Failed to read from the data source", e);
+            return Failure.of(FailureType.IO_FAILURE, "DBJunctionDAOHelper.removeAssociation() - Failed to read from the data source", e);
         }
 
         try (Connection conn = dbConnector.connection();
@@ -69,7 +69,7 @@ public class DBJunctionDAOHelper<A extends Entity<A>, B extends Entity<B>> imple
             int rowsAffected = stmt.executeUpdate();
             return Success.of(rowsAffected > 0);
         } catch (SQLException e) {
-            return Failure.of(FailureType.DB_DATA_RETRIEVAL_FAILURE, "Failed to access the database", e);
+            return Failure.of(FailureType.DB_DATA_RETRIEVAL_FAILURE, "DBJunctionDAOHelper.removeAssociation() - Failed to remove association between: " + entityA.getClass().getName() + " and " + entityB.getClass().getName() , e);
         }
     }
 
@@ -78,7 +78,7 @@ public class DBJunctionDAOHelper<A extends Entity<A>, B extends Entity<B>> imple
         try {
             setupDBConnector();
         } catch (IOException e) {
-            return Failure.of(FailureType.IO_FAILURE, "Failed to read from the data source", e);
+            return Failure.of(FailureType.IO_FAILURE, "DBJunctionDAOHelper.findAssociatesOfA() - Failed to read from the data source", e);
         }
 
         List<B> results = new ArrayList<>();
@@ -90,7 +90,7 @@ public class DBJunctionDAOHelper<A extends Entity<A>, B extends Entity<B>> imple
                 results.add(resultSetMapperB.map(rs));
             }
         } catch (SQLException e) {
-            return Failure.of(FailureType.DB_DATA_RETRIEVAL_FAILURE, "Failed to access the database", e);
+            return Failure.of(FailureType.DB_DATA_RETRIEVAL_FAILURE, "DBJunctionDAOHelper.findAssociatesOfA() - Failed to find associates of: " + entityA.getClass().getName(), e);
         }
 
         return Success.of(results);
@@ -101,7 +101,7 @@ public class DBJunctionDAOHelper<A extends Entity<A>, B extends Entity<B>> imple
         try {
             setupDBConnector();
         } catch (IOException e) {
-            return Failure.of(FailureType.IO_FAILURE, "Failed to read from the data source", e);
+            return Failure.of(FailureType.IO_FAILURE, "DBJunctionDAOHelper.findAssociatesOfB() - Failed to read from the data source", e);
         }
 
         List<A> results = new ArrayList<>();
@@ -113,8 +113,7 @@ public class DBJunctionDAOHelper<A extends Entity<A>, B extends Entity<B>> imple
                 results.add(resultSetMapperA.map(rs));
             }
         } catch (SQLException e) {
-            return Failure.of(FailureType.DB_DATA_RETRIEVAL_FAILURE, "Failed to access the database", e);
-        }
+            return Failure.of(FailureType.DB_DATA_RETRIEVAL_FAILURE, "DBJunctionDAOHelper.findAssociatesOfB() - Failed to find associates of: " + entityB.getClass().getName(), e);        }
 
         return Success.of(results);
     }
@@ -127,7 +126,7 @@ public class DBJunctionDAOHelper<A extends Entity<A>, B extends Entity<B>> imple
         } else if (entity.getClass().equals(classB)) {
             return Success.of(findAssociatesOfB((B) entity).get());
         } else {
-            return Failure.of(FailureType.INVALID_ENTITY_TYPE, "Entity does not match expected types A or B");
+            return Failure.of(FailureType.INVALID_ENTITY_TYPE, "DBJunctionDAOHelper.findAssociatesOf() - Entity does not match expected types A or B: " + entity.getClass().getName());
         }
     }
 
@@ -154,7 +153,7 @@ public class DBJunctionDAOHelper<A extends Entity<A>, B extends Entity<B>> imple
             int rowsAffected = stmt.executeUpdate();
             return Success.of(rowsAffected > 0);
         } catch (SQLException e) {
-            return Failure.of(FailureType.DB_DATA_RETRIEVAL_FAILURE, "Failed to access the database", e);
+            return Failure.of(FailureType.DB_DATA_RETRIEVAL_FAILURE, "DBJunctionDAOHelper.executeDelete() - failed to delete associations", e);
         }
     }
 

@@ -11,12 +11,14 @@ import javafx.collections.ObservableList;
 public class UserModel {
     private final IntegerProperty id = new SimpleIntegerProperty();
     private final StringProperty username = new SimpleStringProperty();
+    private final StringProperty imageName = new SimpleStringProperty();
     private ObservableList<EventModel> events = FXCollections.observableArrayList();
 
     public UserModel(User user) {
         // Don't want events here to ensure we initialize an empty ObservableList
         id.set(user.id());
         username.set(user.getUsername());
+        imageName.set(user.imageName());
     }
 
     public static UserModel fromEntity(User user) {
@@ -24,7 +26,11 @@ public class UserModel {
     }
 
     public User toEntity() {
-        return new User(id.get(), username.get());
+        return new User(
+                id.get(),
+                username.get(),
+                imageName.get()
+        );
     }
 
     public IntegerProperty id() {
@@ -33,6 +39,10 @@ public class UserModel {
 
     public StringProperty username() {
         return username;
+    }
+
+    public StringProperty imageName() {
+        return imageName;
     }
 
     public void setEvents(ObservableList<EventModel> events) {

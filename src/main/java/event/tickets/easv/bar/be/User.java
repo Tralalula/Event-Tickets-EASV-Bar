@@ -8,18 +8,20 @@ import java.util.Objects;
 
 public class User implements Entity<User> {
     private int id;
-    private String username, password;
+    private String username, password, imageName;
     private List<Event> events = new ArrayList<>();
 
-    public User(int id, String username) {
+    public User(int id, String username, String imageName) {
         this.id = id;
         this.username = username;
+        this.imageName = imageName;
     }
 
-    public User(int id, String username, String password) {
+    public User(int id, String username, String password, String imageName) {
         this.id = id;
         this.username = username;
         this.password = password;
+        this.imageName = imageName;
     }
 
     public User(String username, String password) {
@@ -38,6 +40,10 @@ public class User implements Entity<User> {
 
     public String getPassword() {
         return password;
+    }
+
+    public String imageName() {
+        return imageName;
     }
 
     public int getID() {

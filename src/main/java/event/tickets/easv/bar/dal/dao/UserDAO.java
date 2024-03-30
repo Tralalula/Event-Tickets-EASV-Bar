@@ -63,8 +63,8 @@ class UserSQLTemplate implements SQLTemplate<User> {
     @Override
     public String insertSQL() {
         return """
-               INSERT INTO dbo.Users (username, password)
-               VALUES (?, ?);
+               INSERT INTO dbo.Users (username, password, imageName)
+               VALUES (?, ?, ?);
                """;
     }
 
@@ -72,7 +72,7 @@ class UserSQLTemplate implements SQLTemplate<User> {
     public String updateSQL() {
         return """
                UPDATE dbo.Users
-               SET username = ?, password = ?
+               SET username = ?, password = ?, imageName = ?
                WHERE id = ?;
                """;
     }
@@ -88,8 +88,9 @@ class UserResultSetMapper implements ResultSetMapper<User> {
     public User map(@NotNull ResultSet rs) throws SQLException {
         int id = rs.getInt("id");
         String username = rs.getString("username");
+        String imageName = rs.getString("imageName");
 
-        return new User(id, username);
+        return new User(id, username, imageName);
     }
 }
 
@@ -98,6 +99,7 @@ class UserInsertParameterSetter implements InsertParameterSetter<User> {
     public void setParameters(PreparedStatement stmt, User entity) throws SQLException {
         stmt.setString(1, entity.getUsername());
         stmt.setString(2, entity.getPassword());
+        stmt.setString(3, entity.imageName());
     }
 }
 
@@ -106,13 +108,14 @@ class UserUpdateParameterSetter implements UpdateParameterSetter<User> {
     public void setParameters(PreparedStatement stmt, User original, User updatedData) throws SQLException {
         stmt.setString(1, updatedData.getUsername());
         stmt.setString(2, updatedData.getPassword());
-        stmt.setInt(3, original.id());
+        stmt.setString(3, updatedData.imageName());
+        stmt.setInt(4, original.id());
     }
 }
 
 class UserIdSetter implements IdSetter<User> {
     @Override
     public User setId(User entity, int id) {
-        return new User(id, entity.getUsername());
+        return new User(id, entity.getUsername(), entity.imageName());
     }
 }
