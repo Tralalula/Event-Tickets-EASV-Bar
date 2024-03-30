@@ -7,15 +7,10 @@ import event.tickets.easv.bar.gui.common.*;
 import event.tickets.easv.bar.gui.component.dashboard.DashboardView;
 import event.tickets.easv.bar.gui.component.events.EventsView;
 import event.tickets.easv.bar.gui.component.events.ShowEventView;
-import event.tickets.easv.bar.gui.component.tickets.AddTicketView;
-import event.tickets.easv.bar.gui.component.tickets.ShowTicketView;
-import event.tickets.easv.bar.gui.component.tickets.TicketsModel;
-import event.tickets.easv.bar.gui.component.tickets.TicketsView;
+import event.tickets.easv.bar.gui.component.tickets.*;
 import event.tickets.easv.bar.gui.util.StyleConfig;
 import event.tickets.easv.bar.gui.util.*;
 import event.tickets.easv.bar.util.SessionManager;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -45,6 +40,7 @@ public class MainView implements View {
     private final Region ticketsView;
     private final Region addTicketView;
     private final Region showTicketView;
+    private final Region addTicketEventView;
 
     private Breadcrumbs<String> crumbs;
 
@@ -63,8 +59,9 @@ public class MainView implements View {
         this.showEventView = new ShowEventView().getView();
 
         this.ticketsView = new TicketsView(model, model.ticketModels(), model.fetchingTicketsProperty()).getView();
-        this.addTicketView = new AddTicketView(new TicketsModel(model.eventModels()), model).getView();
-        this.showTicketView = new ShowTicketView(new TicketsModel(model.eventModels())).getView();
+        this.addTicketView = new AddTicketView(new TicketsModel(model), model).getView();
+        this.showTicketView = new ShowTicketView().getView();
+        this.addTicketEventView = new AddTicketEventView(model).getView();
     }
 
     @Override
@@ -111,8 +108,9 @@ public class MainView implements View {
         NodeUtils.bindVisibility(ticketsView, ViewHandler.activeViewProperty().isEqualTo(ViewType.TICKETS));
         NodeUtils.bindVisibility(addTicketView, ViewHandler.activeViewProperty().isEqualTo(ViewType.ADD_TICKET));
         NodeUtils.bindVisibility(showTicketView, ViewHandler.activeViewProperty().isEqualTo(ViewType.SHOW_TICKET));
+        NodeUtils.bindVisibility(addTicketEventView, ViewHandler.activeViewProperty().isEqualTo(ViewType.ADD_TICKET_EVENT));
 
-        return new StackPane(authView, dashboardView, eventsView, showEventView, ticketsView, addTicketView, showTicketView);
+        return new StackPane(authView, dashboardView, eventsView, showEventView, ticketsView, addTicketView, showTicketView, addTicketEventView);
     }
 
     private Region createCrumbs() {

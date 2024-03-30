@@ -10,6 +10,7 @@ import event.tickets.easv.bar.bll.TicketManager;
 import event.tickets.easv.bar.gui.common.EventModel;
 import event.tickets.easv.bar.gui.common.TicketModel;
 import event.tickets.easv.bar.gui.component.main.MainModel;
+import event.tickets.easv.bar.util.Result;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -19,46 +20,38 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class TicketsModel {
-    ObservableList<EventModel> model;
-    private TicketManager ticketManager;
+    private MainModel model;
 
     private EntityManager entityManager;
 
-    public TicketsModel(ObservableList<EventModel> model) {
+    public TicketsModel(MainModel model) {
         this.model = model;
-        this.ticketManager = new TicketManager();
-
         this.entityManager = new EntityManager();
     }
 
     public Ticket add(Ticket ticket) {
-        return ticketManager.add(ticket);
+        Result<Ticket> result = entityManager.add(ticket);
+
+        switch (result) {
+            case Result.Success<Ticket> s -> {
+                model.ticketModels().add(TicketModel.fromEntity(s.result()));
+                return s.result();
+            }
+            case Result.Failure<Ticket> f -> System.out.println("Error: " + f.cause());
+        }
+        return null;
     }
 
-    public ObservableList<EventModel> getEventModelsForEventTicket(TicketEvent ticket) {
-        return model.filtered(eventModel -> eventModel.id().get() == ticket.getEventId());
-    }
+    public List<TicketEvent> addToEvent(int ticketId, int price, int total, List<Integer> eventIds) {
+        List<TicketEvent> newEntries = new ArrayList<>();
 
-    public List<TicketEvent> getTickets(Ticket ticket) {
-        return ticketManager.getAllTicketsForTicket(ticket);
-    }
-
-    public List<TicketEventModel> getTicketsForEvent(Ticket ticket) {
-        List<TicketEventModel> ticketModels = new ArrayList<>();
-        List<TicketEvent> ticketEvents = getTickets(ticket);
-
-        System.out.println(ticketEvents.size());
-
-        for (TicketEvent ticketEvent : ticketEvents) {
-            ObservableList<EventModel> filteredEvents = getEventModelsForEventTicket(ticketEvent);
-
-            for (EventModel event : filteredEvents) {
-               // TicketEventModel ticketModel = TicketEventModel.fromEntity(ticketEvent, event.toEntity());
-                TicketEventModel ticketModel = TicketEventModel.fromEntity(ticketEvent);
-                ticketModels.add(ticketModel);
+        for (int i : eventIds) {
+            Result<TicketEvent> result = entityManager.add(new TicketEvent(ticketId, i, price, total));
+            switch (result) {
+                case Result.Success<TicketEvent> s -> newEntries.add(s.result());
+                case Result.Failure<TicketEvent> f -> System.out.println("Error: " + f.cause());
             }
         }
-
-        return ticketModels;
+        return newEntries;
     }
 }

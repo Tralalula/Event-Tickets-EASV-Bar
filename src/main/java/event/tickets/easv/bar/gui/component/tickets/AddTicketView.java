@@ -55,7 +55,7 @@ public class AddTicketView implements View {
         var button = new Button("Add ticket");
         button.setOnAction(e -> {
             Ticket createdTicket = ticketsModel.add(new Ticket(tf.getText(), type.getValue()));
-            model.ticketModels().add(TicketModel.fromEntity(createdTicket));
+            //model.ticketModels().add(TicketModel.fromEntity(createdTicket));
         });
         //main.getChildren().addAll(title, tf,  typeTitle, type, new Label("Select for events"), mutliCombo());
         main.getChildren().addAll(title, tf,  typeTitle, type, button);

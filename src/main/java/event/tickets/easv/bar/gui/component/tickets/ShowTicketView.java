@@ -24,7 +24,6 @@ import java.util.List;
 
 public class ShowTicketView implements View {
 
-    private TicketsModel ticketsModel;
     private final ObservableList<TicketEventModel> ticketEventModels = FXCollections.observableArrayList();
 
     private final TicketModel model = TicketModel.Empty();
@@ -34,10 +33,7 @@ public class ShowTicketView implements View {
     private final Label defaultQuantity = new Label();
     private final Label events = new Label();
 
-
-    public ShowTicketView(TicketsModel ticketsModel) {
-        this.ticketsModel = ticketsModel;
-
+    public ShowTicketView() {
         ViewHandler.currentViewDataProperty().subscribe((oldData, newData) -> {
             if (newData instanceof TicketModel) {
                 model.update((TicketModel) newData);
@@ -64,6 +60,9 @@ public class ShowTicketView implements View {
         defaultPrice.setText("Default price: 250 DKK,-");
 
         var associate = new Button("Add");
+        associate.setOnAction(e -> {
+            ViewHandler.changeView(ViewType.ADD_TICKET_EVENT, model);
+        });
 
         box.getChildren().addAll(titleLabel, type, defaultPrice, associate, createTicketTableView());
         return box;

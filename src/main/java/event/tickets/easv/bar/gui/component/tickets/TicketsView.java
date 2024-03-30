@@ -20,10 +20,14 @@ public class TicketsView implements View {
     private final ObservableList<TicketModel> model;
     private final BooleanProperty fetchingData;
 
+    private TicketsModel ticketsModel;
+
     public TicketsView(MainModel mainModel, ObservableList<TicketModel> model, BooleanProperty fetchingData) {
         this.mainModel = mainModel;
         this.model = model;
         this.fetchingData = fetchingData;
+
+        ticketsModel = new TicketsModel(mainModel);
     }
 
     @Override
@@ -80,6 +84,7 @@ public class TicketsView implements View {
         TableColumn<TicketModel, Void> col4 = new TableColumn<>("");
         col4.setCellFactory(param -> new TableCell<>() {
             private final Button editButton = new Button(null, new FontIcon(Feather.EDIT));
+            private final Button deleteButton = new Button(null, new FontIcon(Feather.TRASH));
             {
                 editButton.getStyleClass().addAll(
                         Styles.BUTTON_ICON, Styles.FLAT, Styles.ACCENT, Styles.TITLE_4
@@ -89,12 +94,26 @@ public class TicketsView implements View {
                     TicketModel rowData = getTableView().getItems().get(getIndex());
                     ViewHandler.changeView(ViewType.SHOW_TICKET, rowData);
                 });
+
+                deleteButton.getStyleClass().addAll(
+                        Styles.BUTTON_ICON, Styles.FLAT, Styles.ACCENT, Styles.TITLE_4
+                );
+
+                deleteButton.setOnAction(event -> {
+                    // intet endnu
+                });
             }
 
             @Override
             protected void updateItem(Void item, boolean empty) {
                 super.updateItem(item, empty);
-                setGraphic(empty ? null : editButton);
+                if (empty) {
+                    setGraphic(null);
+                } else {
+                    HBox buttons = new HBox(editButton, deleteButton);
+                    buttons.setSpacing(20);
+                    setGraphic(buttons);
+                }
             }
         });
 

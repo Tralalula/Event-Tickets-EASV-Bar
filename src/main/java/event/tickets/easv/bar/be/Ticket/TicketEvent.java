@@ -18,13 +18,15 @@ public class TicketEvent implements Entity<TicketEvent> {
     private List<TicketGenerated> tickets = new ArrayList<>();
     private Event connectedEvent;
 
-    // ???????????????
-    private EntityManager entityManager;
-
     public TicketEvent(int id, int ticketId, int eventId, float price, int quantity) {
-        entityManager = new EntityManager();
-
         this.id = id;
+        this.ticketId = ticketId;
+        this.eventId = eventId;
+        this.price = price;
+        this.quantity = quantity;
+    }
+
+    public TicketEvent(int ticketId, int eventId, float price, int quantity) {
         this.ticketId = ticketId;
         this.eventId = eventId;
         this.price = price;
@@ -82,25 +84,6 @@ public class TicketEvent implements Entity<TicketEvent> {
     public Event getConnectedEvent() {
         return connectedEvent;
     }
-
-    // TODO: Håndter et andet sted end i entiteten selv
-    /*
-    public void setTickets(int eventId) {
-        if (this.tickets.isEmpty()) {
-            Result<List<TicketGenerated>> result = entityManager.all(TicketGenerated.class);
-            switch (result) {
-                case Result.Success<List<TicketGenerated>> s -> {
-                    List<TicketGenerated> allTickets = s.result();
-                    List<TicketGenerated> filteredTickets = allTickets.stream()
-                            .filter(ticket -> ticket.getId() == eventId)
-                            .collect(Collectors.toList());
-
-                    this.tickets.addAll(filteredTickets);
-                }
-                case Result.Failure<List<TicketGenerated>> f -> System.out.println("Error: " + f.cause());
-            }
-        }
-    }*/
 
     public void setTickets(List<TicketGenerated> tickets) {
         this.tickets.addAll(tickets);
