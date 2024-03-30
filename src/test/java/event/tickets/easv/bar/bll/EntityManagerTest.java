@@ -386,4 +386,34 @@ class EntityManagerTest {
         assertThat(failure.message()).contains("Failed to add association");
         verify(mockEventUserAssociation).addAssociation(eq(event), any(User.class));
     }
+
+    @Test
+    void addSingleAssociationSuccess() {
+        //Setup
+        Event event = new Event(1, "Event", "image.png", "Some Location", LocalDate.now(), null, LocalTime.now(), null, "", "");
+        User user = new User(1, "User1");
+        when(mockEventUserAssociation.addAssociation(event, user)).thenReturn(Success.of(true));
+
+        // Call
+        Result<Boolean> result = entityManager.addAssociation(event, user);
+
+        // Check
+        assertThat(result).isInstanceOf(Success.class);
+        verify(mockEventUserAssociation).addAssociation(event, user);
+    }
+
+    @Test
+    void addSingleAssociationFailure() {
+        // Setup
+        Event event = new Event(1, "Event", "image.png", "Some Location", LocalDate.now(), null, LocalTime.now(), null, "", "");
+        User user = new User(1, "User1");
+        when(mockEventUserAssociation.addAssociation(event, user)).thenReturn(Failure.of(FailureType.DB_INSERTION_FAILURE, "Error"));
+
+        // Call
+        Result<Boolean> result = entityManager.addAssociation(event, user);
+
+        // Check
+        assertThat(result).isInstanceOf(Failure.class);
+        verify(mockEventUserAssociation).addAssociation(event, user);
+    }
 }

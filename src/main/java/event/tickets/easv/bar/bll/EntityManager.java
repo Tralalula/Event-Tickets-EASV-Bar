@@ -125,6 +125,12 @@ public class EntityManager {
     }
 
     @SuppressWarnings("unchecked")
+    public <A extends Entity<A>, B extends Entity<B>> Result<Boolean> addAssociation(A entityA, B entityB) {
+        EntityAssociation<A, B> association = getEntityAssociation(entityA.getClass(), entityB.getClass());
+        return association.addAssociation(entityA, entityB);
+    }
+
+    @SuppressWarnings("unchecked")
     private <A extends Entity<A>, B extends Entity<B>> EntityAssociation<A, B> getEntityAssociation(Class<A> entityAClass, Class<B> entityBClass) {
         for (EntityAssociationDescriptor<?, ?> descriptor : associations) {
             if (descriptor.entityA().equals(entityAClass) && descriptor.entityB().equals(entityBClass)) {
