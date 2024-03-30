@@ -8,8 +8,10 @@ import event.tickets.easv.bar.dal.dao.EventDAO;
 import event.tickets.easv.bar.dal.dao.EventUserDAO;
 import event.tickets.easv.bar.dal.dao.UserDAO;
 import event.tickets.easv.bar.dal.database.EntityAssociation;
+import event.tickets.easv.bar.util.FailureType;
 import event.tickets.easv.bar.util.Result;
 import event.tickets.easv.bar.util.Result.Success;
+import event.tickets.easv.bar.util.Result.Failure;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -301,5 +303,48 @@ class EntityManagerTest {
 
         verify(mockEventDAO).all();
         events.forEach(event -> verify(mockEventUserAssociation).findAssociatesOf(event));
+    }
+
+    @Test
+    void addEntityIsNull() {
+        // Call
+        Result<Event> result = entityManager.add(null);
+
+        // Check
+        assertThat(result).isInstanceOf(Failure.class);
+        Failure<Event> failure = (Failure<Event>) result;
+        assertThat(failure.type()).isEqualTo(FailureType.INVALID_ENTITY_TYPE);
+        assertThat(failure.message()).isEqualTo("Entity cannot be null");
+    }
+
+    @Test
+    void addEntityUnexpectedEntity() {
+        // Setup
+        var entity = new UnregisteredEntity();
+
+        // Call
+        Result<UnregisteredEntity> result = entityManager.add(entity);
+
+        // Check
+        assertThat(result).isInstanceOf(Failure.class);
+        Failure<UnregisteredEntity> failure = (Failure<UnregisteredEntity>) result;
+        assertThat(failure.type()).isEqualTo(FailureType.INVALID_ENTITY_TYPE);
+        assertThat(failure.message()).contains("Unexpected entity");
+    }
+
+    @Test
+    void addEntitySuccess() {
+        // Setup
+        var event = new Event(1, "Test Event", "sample.png", "6700, Esbjerg", LocalDate.now(), null, LocalTime.now(), null, "", "");
+        when(mockEventDAO.add(event)).thenReturn(Success.of(event));
+
+        // Call
+        Result<Event> result = entityManager.add(event);
+
+        // Check
+        assertThat(result).isInstanceOf(Success.class);
+        Success<Event> success = (Success<Event>) result;
+        assertThat(success.result()).isEqualTo(event);
+        verify(mockEventDAO).add(event);
     }
 }

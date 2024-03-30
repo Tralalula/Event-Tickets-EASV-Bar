@@ -12,7 +12,11 @@ import event.tickets.easv.bar.be.Ticket.Ticket;
 import event.tickets.easv.bar.be.Ticket.TicketEvent;
 import event.tickets.easv.bar.be.Ticket.TicketGenerated;
 import event.tickets.easv.bar.dal.dao.*;
+import event.tickets.easv.bar.util.FailureType;
 import event.tickets.easv.bar.util.Result;
+import event.tickets.easv.bar.util.Result.Failure;
+import event.tickets.easv.bar.util.Result.Success;
+
 
 import javax.swing.text.html.Option;
 import java.util.ArrayList;
@@ -98,6 +102,16 @@ public class EntityManager {
         result.ifSuccess(entities -> entities.forEach(this::processEntityAssociation));
 
         return result;
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> Result<T> add(T entity) {
+        if (entity == null) return Failure.of(FailureType.INVALID_ENTITY_TYPE, "Entity cannot be null");
+        DAO<T> dao = (DAO<T>) daos.get(entity.getClass());
+
+        if (dao == null) return Failure.of(FailureType.INVALID_ENTITY_TYPE, "Unexpected entity: " + entity.getClass());
+
+        return dao.add(entity);
     }
 
     private <T extends Entity<T>> void processEntityAssociation(T entity) {
