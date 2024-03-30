@@ -111,9 +111,9 @@ GO
 
 INSERT INTO Event (title, imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo)
 VALUES
-    ('International Food Festival', 'card1.jpg', '6700, Esbjerg', '2024-04-05', '2024-04-05',' 10:00', '20:00', '', ''),
-    ('Vegan Cooking Workshop', 'card2.jpg', '6700, Esbjerg', '2024-05-10', '2024-05-10', '09:00', '12:00', '', ''),
-    ('Farm to Table Dinner', 'card3.jpg', '6700, Esbjerg', '2024-06-15', '2024-06-17', '18:00', NULL, '', ''),
+    ('International Food Festival', 'card1.jpg', '6700, Esbjerg', '2024-04-05', '2024-04-05',' 10:00', '20:00', 'Go through the head entrance, take a right and look for the big stairs going down to the basement.', 'Prepare the food at 1200'),
+    ('Vegan Cooking Workshop', 'card2.jpg', '6700, Esbjerg', '2024-05-10', '2024-05-10', '09:00', '12:00', 'Go through the head entrance, take a right and look for the big stairs going down to the basement.', ''),
+    ('Farm to Table Dinner', 'card3.jpg', '6700, Esbjerg', '2024-06-15', '2024-06-17', '18:00', NULL, '', 'Prepare the food at 1200'),
     ('Wine and Cheese Night', 'card4.jpg', '6700, Esbjerg', '2024-07-20', '2024-07-20', '17:00', '21:00', '', ''),
     ('Italian Pasta Making Class', 'card5.jpg', '6700, Esbjerg', '2024-08-25', '2024-08-25', '11:00', '14:00', '', ''),
     ('French Cuisine Tasting', 'card6.jpg', '6700, Esbjerg', '2024-09-30', NULL, '16:00', '21:00', '', ''),
