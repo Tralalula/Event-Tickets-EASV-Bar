@@ -25,8 +25,8 @@ public class TicketManager {
         this.ticketDAO = new TicketDAO();
     }
 
-    public void add(Ticket ticket) {
-        ticketDAO.add(ticket);
+    public Ticket add(Ticket ticket) {
+        return ticketDAO.add(ticket).get();
     }
 
     public List<TicketEvent> getAllEventTickets() {

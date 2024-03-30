@@ -2,6 +2,7 @@ package event.tickets.easv.bar.gui.component.tickets;
 
 import event.tickets.easv.bar.be.Ticket.Ticket;
 import event.tickets.easv.bar.gui.common.EventModel;
+import event.tickets.easv.bar.gui.common.TicketModel;
 import event.tickets.easv.bar.gui.common.View;
 import event.tickets.easv.bar.gui.component.main.MainModel;
 import javafx.beans.property.BooleanProperty;
@@ -20,10 +21,13 @@ import java.util.ArrayList;
 
 public class AddTicketView implements View {
     private final static int PREF_WIDTH = 200;
-    private TicketsModel ticketsModel;
 
-    public AddTicketView(TicketsModel ticketsModel) {
+    private TicketsModel ticketsModel;
+    private MainModel model;
+
+    public AddTicketView(TicketsModel ticketsModel, MainModel model) {
         this.ticketsModel = ticketsModel;
+        this.model = model;
     }
 
     @Override
@@ -50,7 +54,8 @@ public class AddTicketView implements View {
 
         var button = new Button("Add ticket");
         button.setOnAction(e -> {
-            ticketsModel.add(new Ticket(tf.getText(), type.getValue()));
+            Ticket createdTicket = ticketsModel.add(new Ticket(tf.getText(), type.getValue()));
+            model.ticketModels().add(TicketModel.fromEntity(createdTicket));
         });
         //main.getChildren().addAll(title, tf,  typeTitle, type, new Label("Select for events"), mutliCombo());
         main.getChildren().addAll(title, tf,  typeTitle, type, button);

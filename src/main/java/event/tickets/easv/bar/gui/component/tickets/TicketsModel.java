@@ -31,8 +31,8 @@ public class TicketsModel {
         this.entityManager = new EntityManager();
     }
 
-    public void add(Ticket ticket) {
-        ticketManager.add(ticket);
+    public Ticket add(Ticket ticket) {
+        return ticketManager.add(ticket);
     }
 
     public ObservableList<EventModel> getEventModelsForEventTicket(TicketEvent ticket) {
