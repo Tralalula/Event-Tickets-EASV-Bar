@@ -21,6 +21,10 @@ public class EventModel {
     private final StringProperty extraInfo = new SimpleStringProperty();
     private ObservableList<UserModel> users = FXCollections.observableArrayList();
 
+    public EventModel() {
+
+    }
+
     public EventModel(Event event) {
         // Don't want users here to ensure we initialize an empty ObservableList
         id.set(event.id());
@@ -37,6 +41,24 @@ public class EventModel {
 
     public static EventModel fromEntity(Event event) {
         return new EventModel(event);
+    }
+
+    public static EventModel Empty() {
+        return new EventModel();
+    }
+
+    public void update(EventModel eventModel) {
+        this.id.set(eventModel.id.get());
+        this.title.set(eventModel.title.get());
+        this.imageName.set(eventModel.imageName.get());
+        this.location.set(eventModel.location.get());
+        this.startDate.set(eventModel.startDate.get());
+        this.endDate.set(eventModel.endDate.get());
+        this.startTime.set(eventModel.startTime.get());
+        this.endTime.set(eventModel.endTime.get());
+        this.locationGuidance.set(eventModel.locationGuidance.get());
+        this.extraInfo.set(eventModel.extraInfo.get());
+        this.users = eventModel.users;
     }
 
     public Event toEntity() {
