@@ -42,10 +42,19 @@ GO
 
 -- Create table order (reverse of drop order)
 CREATE TABLE dbo.Users (
-    id        INT PRIMARY KEY IDENTITY(1,1),
-    username  NVARCHAR(50),
-    password  NVARCHAR(200),
-    imageName NVARCHAR(255)
+    id          INT PRIMARY KEY IDENTITY(1,1),
+    username    NVARCHAR(50)  NOT NULL UNIQUE,
+    mail        NVARCHAR(255) NOT NULL UNIQUE,
+    password    NVARCHAR(255) NOT NULL,
+    firstName   NVARCHAR(50)  NOT NULL,
+    lastName    NVARCHAR(50),
+    location    NVARCHAR(255),
+    phoneNumber NVARCHAR(30),
+    imageName   NVARCHAR(255),
+    rank        NVARCHAR(50) NOT NULL DEFAULT 'EventCoordinator' CHECK (rank in ('Admin', 'Event Coordinator')),
+    theme       NVARCHAR(50) NOT NULL DEFAULT 'Light' CHECK (theme in ('Light', 'Dark')),
+    language    NVARCHAR(50) NOT NULL DEFAULT 'en-GB' CHECK (language in ('en-GB', 'da-DK')),
+    fontSize    INT          NOT NULL DEFAULT 14 CHECK (fontSize BETWEEN 8 and 24)
 );
 GO
 
@@ -134,9 +143,9 @@ VALUES
 GO
 
 -- Password: test
-INSERT INTO dbo.Users (username, password, imageName)
+INSERT INTO dbo.Users (username, mail, password, firstName, lastName, location, phoneNumber, imageName, rank, theme, language, fontSize)
 VALUES
-    ('test', '$2a$10$CLYpJK6QyzLKEvKzgnYd4OgBDAhhI0tmlYb02HgWAmfo1icjo0nMy', 'profileImage.jpeg')
+    ('test', 'test@test.dk', '$2a$10$CLYpJK6QyzLKEvKzgnYd4OgBDAhhI0tmlYb02HgWAmfo1icjo0nMy', 'Test fornavn', 'Test efternavn', '6700, Esbjerg', '+4512345678', 'profileImage.jpeg', 'Admin', 'Light', 'en-GB', 14);
 GO
 
 INSERT INTO dbo.EventUser (EventId, UserId)
