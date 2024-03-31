@@ -33,12 +33,13 @@ import java.util.Locale;
 
 public class ShowEventView implements View {
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE dd. MMMM HHmm", Locale.ENGLISH);
-    private final EventModel model = EventModel.Empty();
+    private final EventModel model;
     private final ImageView image;
     private final HBox coordinators;
     private final TableView<TestModel> eventTicketsTableView;
 
-    public ShowEventView() {
+    public ShowEventView(EventModel model) {
+        this.model = model;
         coordinators = new HBox(StyleConfig.STANDARD_SPACING * 8);
         eventTicketsTableView = new TableView<>();
 

@@ -50,12 +50,15 @@ public class MainController {
                 eventModel.setUsers(filteredUsers);
 /*                System.out.println("id: " + eventModel.id());
                 System.out.println("users: " + eventModel.users());*/
+                System.out.println("whoaa?");
             }
 
             for (UserModel userModel : model.userModels()) {
                 FilteredList<EventModel> filteredEvents = new FilteredList<>(model.eventModels(), eventModel ->
                         userToEventsMap.getOrDefault(userModel.id().get(), Collections.emptyList()).contains(eventModel.id().get()));
                 userModel.setEvents(filteredEvents);
+                System.out.println("what???: " + userModel.id().get());
+                System.out.println("what???: " + filteredEvents);
             }
 
 
@@ -63,6 +66,8 @@ public class MainController {
             eventToUsersMap.clear();
             userToEventsMap.clear();
         }
+
+        System.out.println(model.userModels().getFirst().events());
     }
 
     public void fetchTickets() {

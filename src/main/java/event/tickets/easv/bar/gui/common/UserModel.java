@@ -14,11 +14,25 @@ public class UserModel {
     private final StringProperty imageName = new SimpleStringProperty();
     private ObservableList<EventModel> events = FXCollections.observableArrayList();
 
+    public UserModel() {}
+
     public UserModel(User user) {
         // Don't want events here to ensure we initialize an empty ObservableList
         id.set(user.id());
         username.set(user.getUsername());
         imageName.set(user.imageName());
+    }
+
+    public void update(UserModel userModel) {
+        this.id.set(userModel.id.get());
+        this.username.set(userModel.username.get());
+        this.imageName.set(userModel.imageName.get());
+        this.events = userModel.events;
+    }
+
+
+    public static UserModel Empty() {
+        return new UserModel();
     }
 
     public static UserModel fromEntity(User user) {

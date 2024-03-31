@@ -8,6 +8,7 @@ import event.tickets.easv.bar.gui.common.ViewHandler;
 import event.tickets.easv.bar.gui.common.ViewType;
 import event.tickets.easv.bar.gui.util.NodeUtils;
 import event.tickets.easv.bar.gui.util.StyleConfig;
+import event.tickets.easv.bar.gui.widgets.Buttons;
 import event.tickets.easv.bar.gui.widgets.Images;
 import event.tickets.easv.bar.util.AppConfig;
 import javafx.beans.binding.Bindings;
@@ -15,7 +16,9 @@ import javafx.beans.binding.StringBinding;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.collections.ObservableList;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.image.Image;
@@ -25,6 +28,7 @@ import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
 import org.controlsfx.control.GridCell;
 import org.controlsfx.control.GridView;
+import org.kordamp.ikonli.material2.Material2AL;
 
 import java.nio.file.Paths;
 import java.time.LocalDate;
@@ -52,6 +56,13 @@ public class EventsView implements View {
 
     @Override
     public Region getView() {
+
+        var spacer = new Region();
+        Button add = Buttons.actionIconButton(Material2AL.ADD, e -> ViewHandler.changeView(ViewType.CREATE_EVENT), StyleConfig.ACTIONABLE);
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+        var header = new HBox(add, spacer);
+        header.setAlignment(Pos.TOP_RIGHT);
+        header.setPadding(new Insets(0, 10, 10, 10));
         ProgressIndicator progressIndicator = new ProgressIndicator();
         NodeUtils.bindVisibility(progressIndicator, fetchingData);
 
@@ -60,8 +71,13 @@ public class EventsView implements View {
         gridview.setCellWidth(CARD_WIDTH);
         gridview.setCellHeight(CARD_HEIGHT);
         gridview.setCellFactory(cell -> eventCell());
+        gridview.setHorizontalCellSpacing(10);
+        gridview.setVerticalCellSpacing(10);
+        var content = new StackPane(gridview, progressIndicator);
 
-        return new StackPane(gridview, progressIndicator);
+        gridview.setPadding(new Insets(0, 10, 10, 0));
+        var results = new VBox(header, content);
+        return results;
     }
 
     private GridCell<EventModel> eventCell() {
@@ -119,6 +135,7 @@ public class EventsView implements View {
                 card.setSubHeader(imageView);
                 card.setBody(content);
                 card.setFooter(footer);
+                System.out.println(card.getPadding());
             }
 
             @Override

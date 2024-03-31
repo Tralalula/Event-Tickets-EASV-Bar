@@ -5,12 +5,18 @@ import atlantafx.base.controls.CustomTextField;
 import atlantafx.base.theme.Styles;
 import event.tickets.easv.bar.gui.common.*;
 import event.tickets.easv.bar.gui.component.dashboard.DashboardView;
+import event.tickets.easv.bar.gui.component.events.CreateEventView;
 import event.tickets.easv.bar.gui.component.events.EventsView;
 import event.tickets.easv.bar.gui.component.events.ShowEventView;
 import event.tickets.easv.bar.gui.component.tickets.*;
 import event.tickets.easv.bar.gui.util.StyleConfig;
 import event.tickets.easv.bar.gui.util.*;
 import event.tickets.easv.bar.util.SessionManager;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -33,6 +39,7 @@ public class MainView implements View {
     private final Region authView;
     private final Region dashboardView;
     private final Region eventsView;
+    private final Region createEventView;
     private final Region showEventView;
     private final Region ticketsView;
     private final Region addTicketView;
@@ -53,7 +60,8 @@ public class MainView implements View {
 
         this.dashboardView = new DashboardView().getView();
         this.eventsView = new EventsView(model.eventModels(), model.fetchingEventsProperty()).getView();
-        this.showEventView = new ShowEventView().getView();
+        this.createEventView = new CreateEventView().getView();
+        this.showEventView = new ShowEventView(EventModel.Empty()).getView();
 
         this.ticketsView = new TicketsView(model, model.ticketModels(), model.fetchingTicketsProperty()).getView();
         this.addTicketView = new AddTicketView(new TicketsModel(model), model).getView();
@@ -99,13 +107,14 @@ public class MainView implements View {
         NodeUtils.bindVisibility(authView, ViewHandler.activeWindowProperty().isEqualTo(WindowType.AUTH));
         NodeUtils.bindVisibility(dashboardView, ViewHandler.activeViewProperty().isEqualTo(ViewType.DASHBOARD));
         NodeUtils.bindVisibility(eventsView, ViewHandler.activeViewProperty().isEqualTo(ViewType.EVENTS));
+        NodeUtils.bindVisibility(createEventView, ViewHandler.activeViewProperty().isEqualTo(ViewType.CREATE_EVENT));
         NodeUtils.bindVisibility(showEventView, ViewHandler.activeViewProperty().isEqualTo(ViewType.SHOW_EVENT));
         NodeUtils.bindVisibility(ticketsView, ViewHandler.activeViewProperty().isEqualTo(ViewType.TICKETS));
         NodeUtils.bindVisibility(addTicketView, ViewHandler.activeViewProperty().isEqualTo(ViewType.ADD_TICKET));
         NodeUtils.bindVisibility(showTicketView, ViewHandler.activeViewProperty().isEqualTo(ViewType.SHOW_TICKET));
         NodeUtils.bindVisibility(addTicketEventView, ViewHandler.activeViewProperty().isEqualTo(ViewType.ADD_TICKET_EVENT));
 
-        var content = new StackPane(authView, dashboardView, eventsView, showEventView, ticketsView, addTicketView, showTicketView, addTicketEventView);
+        var content = new StackPane(authView, dashboardView, eventsView, createEventView, showEventView, ticketsView, addTicketView, showTicketView, addTicketEventView);
 
         var scrollPane = new ScrollPane(content);
         scrollPane.setFitToHeight(true);
