@@ -3,6 +3,9 @@ package event.tickets.easv.bar.gui.component.events.createevent;
 import event.tickets.easv.bar.be.Event;
 import event.tickets.easv.bar.bll.EntityManager;
 import event.tickets.easv.bar.gui.common.EventModel;
+import event.tickets.easv.bar.util.AppConfig;
+import event.tickets.easv.bar.util.FailureType;
+import event.tickets.easv.bar.util.FileManagementService;
 import event.tickets.easv.bar.util.Result;
 import event.tickets.easv.bar.util.Result.Success;
 import event.tickets.easv.bar.util.Result.Failure;
@@ -12,7 +15,11 @@ import javafx.scene.image.Image;
 import javafx.stage.FileChooser;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -53,6 +60,7 @@ public class CreateEventController {
 
     private boolean createEvent() {
         String title = model.eventTitleProperty().get();
+        String imageName = model.imageNameProperty().get();
         String location = model.locationProperty().get();
         LocalTime startTime = model.startTimeProperty().get();
         LocalTime endTime = model.endTimeProperty().get();
@@ -61,12 +69,28 @@ public class CreateEventController {
         String extraInfo = model.extraInfoProperty().get();
         String locationGuidance = model.locationGuidanceProperty().get();
 
-        var event = new Event(title, "", location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo);
+        // todo: rimelig grim kode her med billeder og try/catch, må fiks senere
+        try {
+            FileManagementService.copyImageToDir(model.imagePathProperty().get(), AppConfig.EVENT_TEMP_IMAGE_DIR, imageName);
+        } catch (IOException e) {
+            System.out.println("Error saving image to temp directory: " + e.getMessage());
+            return false;
+        }
+
+        var event = new Event(title, imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo);
         Result<Event> result = new EntityManager().add(event);
         switch (result) {
             case Success<Event> s -> {
-                System.out.println(s.result());
-                return true;
+                try {
+                    // todo: gør så det bliver resized?
+                    var finalDir = AppConfig.EVENT_IMAGES_DIR2 + "\\" + s.result().id();
+                    Files.createDirectories(Paths.get(finalDir));
+                    Files.move(Paths.get(AppConfig.EVENT_TEMP_IMAGE_DIR, imageName), Paths.get(finalDir, imageName), StandardCopyOption.REPLACE_EXISTING);
+                    return true;
+                } catch (IOException e) {
+                    System.out.println("Error moving image to final directory: " + e.getMessage());
+                    return false;
+                }
             }
             case Failure<Event> f -> {
                 System.out.println(f.message());
@@ -80,10 +104,11 @@ public class CreateEventController {
         FileChooser.ExtensionFilter filter = new FileChooser.ExtensionFilter("Image files", "*.jpg", "*.jpeg", "*.png");
         chooser.getExtensionFilters().add(filter);
 
-        var files = chooser.showOpenMultipleDialog(null);
-        if (files != null) {
-            var paths = files.stream().map(File::toURI).map(URI::toString).toList();
-            model.imagePathProperty().set(paths.getFirst());
+        var file = chooser.showOpenDialog(null);
+        if (file != null) {
+            var path = file.toURI().toString();
+            model.imagePathProperty().set(path);
+            model.imageNameProperty().set(file.getName());
             model.imageProperty().set(new Image(model.imagePathProperty().get(), true));
         }
     }
