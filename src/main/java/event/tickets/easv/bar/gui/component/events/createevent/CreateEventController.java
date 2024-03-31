@@ -22,6 +22,7 @@ public class CreateEventController {
                 this::isDataValid,
                 model.eventTitleProperty(),
                 model.locationProperty(),
+                model.startDateProperty(),
                 model.extraInfoProperty()
         ));
     }
@@ -48,9 +49,12 @@ public class CreateEventController {
     private boolean createEvent() {
         String title = model.eventTitleProperty().get();
         String location = model.locationProperty().get();
-        String locationGuidance = model.locationGuidanceProperty().get();
+        LocalDate startDate = model.startDateProperty().get();
+        LocalDate endDate = model.endDateProperty().get();
         String extraInfo = model.extraInfoProperty().get();
-        var event = new Event(title, "", location, LocalDate.now(), null, LocalTime.now(), null, locationGuidance, extraInfo);
+        String locationGuidance = model.locationGuidanceProperty().get();
+
+        var event = new Event(title, "", location, startDate, endDate, LocalTime.now(), null, locationGuidance, extraInfo);
         Result<Event> result = new EntityManager().add(event);
         switch (result) {
             case Success<Event> s -> {
@@ -67,14 +71,15 @@ public class CreateEventController {
     private boolean isDataValid() {
         // Title (required)
         // Location (required)
-        // Location guidance (optional)
         // Start time (required), End time (optional)
         // Start date (required), End date (optional)
         // Image (optional)
         // Extra info (required)
+        // Location guidance (optional)
 
         return !model.eventTitleProperty().get().isEmpty() &&
                 !model.locationProperty().get().isEmpty() &&
+                model.startDateProperty().get() != null &&
                 !model.extraInfoProperty().get().isEmpty();
     }
 }

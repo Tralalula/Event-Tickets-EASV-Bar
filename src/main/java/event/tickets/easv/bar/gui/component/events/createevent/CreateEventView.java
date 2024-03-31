@@ -3,6 +3,7 @@ package event.tickets.easv.bar.gui.component.events.createevent;
 import atlantafx.base.theme.Styles;
 import event.tickets.easv.bar.gui.common.View;
 import event.tickets.easv.bar.gui.util.StyleConfig;
+import event.tickets.easv.bar.gui.widgets.DatePickers;
 import event.tickets.easv.bar.gui.widgets.Labels;
 import event.tickets.easv.bar.gui.widgets.TextFields;
 import javafx.geometry.Insets;
@@ -67,21 +68,6 @@ public class CreateEventView implements View {
         return new VBox(title, field);
     }
 
-    private Node titledDatePicker(String text, boolean defaultPrompt) {
-        var title = Labels.styledLabel(text, Styles.TEXT_NORMAL);
-        var datepicker = new DatePicker();
-        if (defaultPrompt) {
-            datepicker.setValue(LocalDate.now(ZoneId.systemDefault()));
-            datepicker.setPromptText("dd-MM-yyyy");
-        } else {
-            datepicker.setPromptText("");
-        }
-        datepicker.setEditable(false);
-        datepicker.setShowWeekNumbers(true);
-        datepicker.setMaxWidth(Double.MAX_VALUE);
-        return new VBox(title, datepicker);
-    }
-
     private Node doubleField(String text1, String text2) {
         var field1 = titledField(text1);
         var field2 = titledField(text2);
@@ -94,8 +80,8 @@ public class CreateEventView implements View {
 
 
     private Node doubleDatePicker(String text1, String text2) {
-        var field1 = titledDatePicker(text1, true);
-        var field2 = titledDatePicker(text2, false);
+        var field1 = DatePickers.promptedDatePicker(text1, model.startDateProperty());
+        var field2 = DatePickers.promptedDatePicker(text2, model.endDateProperty());
         var results = new HBox(StyleConfig.STANDARD_SPACING, field1, field2);
         results.setMaxWidth(Double.MAX_VALUE);
         HBox.setHgrow(field1, Priority.ALWAYS);

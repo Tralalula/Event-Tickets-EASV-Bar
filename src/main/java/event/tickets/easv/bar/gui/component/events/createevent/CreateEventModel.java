@@ -2,15 +2,17 @@ package event.tickets.easv.bar.gui.component.events.createevent;
 
 import javafx.beans.property.*;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.ZoneId;
 
 public class CreateEventModel {
     private final StringProperty eventTitle = new SimpleStringProperty("");
     private final StringProperty location = new SimpleStringProperty("");
     private final StringProperty startTime = new SimpleStringProperty("");
     private final StringProperty endTime = new SimpleStringProperty("");
-    private final StringProperty startDate = new SimpleStringProperty("");
-    private final StringProperty endDate = new SimpleStringProperty("");
+    private final ObjectProperty<LocalDate> startDate = new SimpleObjectProperty<>(LocalDate.now(ZoneId.systemDefault()));
+    private final ObjectProperty<LocalDate> endDate = new SimpleObjectProperty<>();
     private final StringProperty imageName = new SimpleStringProperty("");
     private final StringProperty imagePath = new SimpleStringProperty("");
     private final StringProperty extraInfo = new SimpleStringProperty("");
@@ -36,14 +38,12 @@ public class CreateEventModel {
         return endTime;
     }
 
-
-
-    public StringProperty startDateProperty() {
+    public ObjectProperty<LocalDate> startDateProperty() {
         return startDate;
     }
 
 
-    public StringProperty endDateProperty() {
+    public ObjectProperty<LocalDate> endDateProperty() {
         return endDate;
     }
 
