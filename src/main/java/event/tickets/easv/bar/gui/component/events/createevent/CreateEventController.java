@@ -12,13 +12,17 @@ import javafx.concurrent.Task;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+
+
 public class CreateEventController {
     private final CreateEventModel model;
     public CreateEventController(CreateEventModel model) {
         this.model = model;
         model.okToCreateProperty().bind(Bindings.createBooleanBinding(
                 this::isDataValid,
-                model.eventTitleProperty()
+                model.eventTitleProperty(),
+                model.locationProperty(),
+                model.extraInfoProperty()
         ));
     }
 
@@ -43,7 +47,10 @@ public class CreateEventController {
 
     private boolean createEvent() {
         String title = model.eventTitleProperty().get();
-        var event = new Event(title, "", "", LocalDate.now(), null, LocalTime.now(), null, "", "");
+        String location = model.locationProperty().get();
+        String locationGuidance = model.locationGuidanceProperty().get();
+        String extraInfo = model.extraInfoProperty().get();
+        var event = new Event(title, "", location, LocalDate.now(), null, LocalTime.now(), null, locationGuidance, extraInfo);
         Result<Event> result = new EntityManager().add(event);
         switch (result) {
             case Success<Event> s -> {
@@ -58,6 +65,16 @@ public class CreateEventController {
     }
 
     private boolean isDataValid() {
-        return !model.eventTitleProperty().get().isEmpty();
+        // Title (required)
+        // Location (required)
+        // Location guidance (optional)
+        // Start time (required), End time (optional)
+        // Start date (required), End date (optional)
+        // Image (optional)
+        // Extra info (required)
+
+        return !model.eventTitleProperty().get().isEmpty() &&
+                !model.locationProperty().get().isEmpty() &&
+                !model.extraInfoProperty().get().isEmpty();
     }
 }
