@@ -8,7 +8,11 @@ import event.tickets.easv.bar.util.Result.Success;
 import event.tickets.easv.bar.util.Result.Failure;
 import javafx.beans.binding.Bindings;
 import javafx.concurrent.Task;
+import javafx.scene.image.Image;
+import javafx.stage.FileChooser;
 
+import java.io.File;
+import java.net.URI;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -68,6 +72,19 @@ public class CreateEventController {
                 System.out.println(f.message());
                 return false;
             }
+        }
+    }
+
+    void findImage() {
+        var chooser = new FileChooser();
+        FileChooser.ExtensionFilter filter = new FileChooser.ExtensionFilter("Image files", "*.jpg", "*.jpeg", "*.png");
+        chooser.getExtensionFilters().add(filter);
+
+        var files = chooser.showOpenMultipleDialog(null);
+        if (files != null) {
+            var paths = files.stream().map(File::toURI).map(URI::toString).toList();
+            model.imagePathProperty().set(paths.getFirst());
+            model.imageProperty().set(new Image(model.imagePathProperty().get(), true));
         }
     }
 

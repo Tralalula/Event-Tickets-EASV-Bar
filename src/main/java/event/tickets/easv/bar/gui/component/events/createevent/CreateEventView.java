@@ -2,8 +2,10 @@ package event.tickets.easv.bar.gui.component.events.createevent;
 
 import atlantafx.base.theme.Styles;
 import event.tickets.easv.bar.gui.common.View;
+import event.tickets.easv.bar.gui.util.NodeUtils;
 import event.tickets.easv.bar.gui.util.StyleConfig;
 import event.tickets.easv.bar.gui.widgets.DatePickers;
+import event.tickets.easv.bar.gui.widgets.Images;
 import event.tickets.easv.bar.gui.widgets.Labels;
 import event.tickets.easv.bar.gui.widgets.TextFields;
 import javafx.geometry.Insets;
@@ -12,6 +14,7 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 
 public class CreateEventView implements View {
@@ -80,23 +83,37 @@ public class CreateEventView implements View {
     }
 
     private Node titledImageUpload(String text) {
+        int uploadAreaWidth = 200;
+        int uploadAreHeight = 150;
+        int imageWidth = uploadAreaWidth * 2;
+        int imageHeight = uploadAreHeight * 2;
+
         var title = Labels.styledLabel(text, Styles.TEXT_NORMAL);
 
         var uploadArea = new StackPane();
-        uploadArea.setMinSize(200, 150);
-        uploadArea.setPrefSize(200, 150);
+        uploadArea.setMinSize(uploadAreaWidth, uploadAreHeight);
 
         var promptText = new Label("Click here to browse");
 
-        uploadArea.getChildren().add(promptText);
-/*        uploadArea.setStyle(
-                "-fx-border-width: 2; " +
-                "-fx-border-style: dashed; " +
-                "-fx-border-radius: 10; "
-        );*/
+        var imageView = new ImageView();
+        imageView.setPreserveRatio(true);
+        imageView.setFitHeight(imageHeight);
+        imageView.setFitWidth(imageWidth);
+        imageView.imageProperty().bind(model.imageProperty());
 
-        uploadArea.getStyleClass().addAll(StyleConfig.ROUNDING_DEFAULT, StyleConfig.ACTIONABLE, Styles.BG_NEUTRAL_MUTED);
-        StackPane.setAlignment(promptText, Pos.CENTER);
+        imageView.imageProperty().subscribe(() -> uploadArea.setMinSize(imageWidth, imageHeight));
+
+        NodeUtils.bindVisibility(imageView, model.imageProperty().isNotNull());
+
+        var container = new VBox(StyleConfig.STANDARD_SPACING, imageView, promptText);
+        container.setAlignment(Pos.CENTER);
+
+        uploadArea.getChildren().add(container);
+
+        uploadArea.setOnMouseClicked(evt -> controller.findImage());
+
+        uploadArea.getStyleClass().addAll(StyleConfig.ROUNDING_DEFAULT, StyleConfig.PADDING_DEFAULT, StyleConfig.ACTIONABLE, Styles.BG_NEUTRAL_MUTED);
+        StackPane.setAlignment(container, Pos.CENTER);
 
         return new VBox(title, uploadArea);
     }
