@@ -33,7 +33,8 @@ public enum ViewType {
     ADD_TICKET_EVENT(WindowType.MAIN_APP, SHOW_TICKET),
 
     // Users
-    USERS(WindowType.MAIN_APP);
+    USERS(WindowType.MAIN_APP),
+    CREATE_USER(WindowType.MAIN_APP, USERS);
 
     private final WindowType windowType;
     private final ViewType parent;

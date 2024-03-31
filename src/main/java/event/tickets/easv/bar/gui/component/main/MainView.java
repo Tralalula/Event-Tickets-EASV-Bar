@@ -9,6 +9,7 @@ import event.tickets.easv.bar.gui.component.events.createevent.CreateEventView;
 import event.tickets.easv.bar.gui.component.events.EventsView;
 import event.tickets.easv.bar.gui.component.events.ShowEventView;
 import event.tickets.easv.bar.gui.component.tickets.*;
+import event.tickets.easv.bar.gui.component.users.createuser.CreateUserView;
 import event.tickets.easv.bar.gui.util.StyleConfig;
 import event.tickets.easv.bar.gui.util.*;
 import event.tickets.easv.bar.util.SessionManager;
@@ -39,6 +40,7 @@ public class MainView implements View {
     private final Region addTicketView;
     private final Region showTicketView;
     private final Region addTicketEventView;
+    private final Region createUserView;
 
     private Breadcrumbs<String> crumbs;
 
@@ -61,6 +63,8 @@ public class MainView implements View {
         this.addTicketView = new AddTicketView(new TicketsModel(model), model).getView();
         this.showTicketView = new ShowTicketView().getView();
         this.addTicketEventView = new AddTicketEventView(model).getView();
+
+        this.createUserView = new CreateUserView(model.userModels()).getView();
     }
 
     @Override
@@ -107,8 +111,9 @@ public class MainView implements View {
         NodeUtils.bindVisibility(addTicketView, ViewHandler.activeViewProperty().isEqualTo(ViewType.ADD_TICKET));
         NodeUtils.bindVisibility(showTicketView, ViewHandler.activeViewProperty().isEqualTo(ViewType.SHOW_TICKET));
         NodeUtils.bindVisibility(addTicketEventView, ViewHandler.activeViewProperty().isEqualTo(ViewType.ADD_TICKET_EVENT));
+        NodeUtils.bindVisibility(createUserView, ViewHandler.activeViewProperty().isEqualTo(ViewType.CREATE_USER));
 
-        var content = new StackPane(authView, dashboardView, eventsView, createEventView, showEventView, ticketsView, addTicketView, showTicketView, addTicketEventView);
+        var content = new StackPane(authView, dashboardView, eventsView, createEventView, showEventView, ticketsView, addTicketView, showTicketView, addTicketEventView, createUserView);
 
         var scrollPane = new ScrollPane(content);
         scrollPane.setFitToHeight(true);
@@ -235,6 +240,7 @@ public class MainView implements View {
         events.setOnAction(e -> ViewHandler.changeView(ViewType.EVENTS));
         tickets.setOnAction(e -> ViewHandler.changeView(ViewType.TICKETS));
         login.setOnAction(e -> ViewHandler.changeView(ViewType.LOGIN));
+        users.setOnAction(e -> ViewHandler.changeView(ViewType.CREATE_USER));
 
         return results;
     }

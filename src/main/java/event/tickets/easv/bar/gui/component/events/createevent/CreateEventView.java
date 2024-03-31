@@ -32,7 +32,7 @@ public class CreateEventView implements View {
     public Region getView() {
         var results = new VBox(StyleConfig.STANDARD_SPACING * 2);
 
-        var title = Labels.styledLabel("Create Event", Styles.TITLE_1);
+        var title = Labels.styledLabel("Create event", Styles.TITLE_1);
         title.setAlignment(Pos.CENTER);
         title.setMaxWidth(Double.MAX_VALUE);
 

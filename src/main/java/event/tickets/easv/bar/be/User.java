@@ -13,7 +13,7 @@ public class User implements Entity<User> {
 
     public enum Rank {
         ADMIN,
-        COORDINATOR
+        EVENT_COORDINATOR
     }
 
     public User(int id, String username, String imageName) {
