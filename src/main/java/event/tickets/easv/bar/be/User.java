@@ -11,6 +11,11 @@ public class User implements Entity<User> {
     private String username, password, imageName;
     private List<Event> events = new ArrayList<>();
 
+    public enum Rank {
+        ADMIN,
+        COORDINATOR
+    }
+
     public User(int id, String username, String imageName) {
         this.id = id;
         this.username = username;
