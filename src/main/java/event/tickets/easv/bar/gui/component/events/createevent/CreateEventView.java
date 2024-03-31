@@ -10,13 +10,9 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
-import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.*;
-
-import java.time.LocalDate;
-import java.time.ZoneId;
 
 public class CreateEventView implements View {
     private final CreateEventModel model;
@@ -37,7 +33,7 @@ public class CreateEventView implements View {
 
         var eventTitle = TextFields.promptedTextField("Event title", model.eventTitleProperty());
         var location = TextFields.promptedTextField("Location", model.locationProperty());
-        var startEndTime = doubleField("Start time", "End time");
+        var startEndTime = doubleTimeField("Start time", "End time");
         var startEndDate = doubleDatePicker("Start date", "End date");
         var image = titledImageUpload("Event image");
         var extraInfo = TextFields.promptedTextField("Extra info", model.extraInfoProperty());
@@ -62,15 +58,9 @@ public class CreateEventView implements View {
         return saveButton;
     }
 
-    private Node titledField(String text) {
-        var title = Labels.styledLabel(text, Styles.TEXT_NORMAL);
-        var field = new TextField();
-        return new VBox(title, field);
-    }
-
-    private Node doubleField(String text1, String text2) {
-        var field1 = titledField(text1);
-        var field2 = titledField(text2);
+    private Node doubleTimeField(String text1, String text2) {
+        var field1 = TextFields.promptedTimeField(text1, model.startTimeProperty());
+        var field2 = TextFields.promptedTimeField(text2, model.endTimeProperty());
         var results = new HBox(StyleConfig.STANDARD_SPACING, field1, field2);
         results.setMaxWidth(Double.MAX_VALUE);
         HBox.setHgrow(field1, Priority.ALWAYS);

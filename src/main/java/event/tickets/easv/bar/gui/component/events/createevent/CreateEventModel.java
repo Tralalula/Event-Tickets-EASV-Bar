@@ -9,8 +9,8 @@ import java.time.ZoneId;
 public class CreateEventModel {
     private final StringProperty eventTitle = new SimpleStringProperty("");
     private final StringProperty location = new SimpleStringProperty("");
-    private final StringProperty startTime = new SimpleStringProperty("");
-    private final StringProperty endTime = new SimpleStringProperty("");
+    private final ObjectProperty<LocalTime> startTime = new SimpleObjectProperty<>();
+    private final ObjectProperty<LocalTime> endTime = new SimpleObjectProperty<>();
     private final ObjectProperty<LocalDate> startDate = new SimpleObjectProperty<>(LocalDate.now(ZoneId.systemDefault()));
     private final ObjectProperty<LocalDate> endDate = new SimpleObjectProperty<>();
     private final StringProperty imageName = new SimpleStringProperty("");
@@ -29,12 +29,12 @@ public class CreateEventModel {
     }
 
 
-    public StringProperty startTimeProperty() {
+    public ObjectProperty<LocalTime> startTimeProperty() {
         return startTime;
     }
 
 
-    public StringProperty endTimeProperty() {
+    public ObjectProperty<LocalTime> endTimeProperty() {
         return endTime;
     }
 
