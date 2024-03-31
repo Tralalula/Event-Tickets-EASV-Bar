@@ -48,17 +48,12 @@ public class MainController {
                 FilteredList<UserModel> filteredUsers = new FilteredList<>(model.userModels(), userModel ->
                         eventToUsersMap.getOrDefault(eventModel.id().get(), Collections.emptyList()).contains(userModel.id().get()));
                 eventModel.setUsers(filteredUsers);
-/*                System.out.println("id: " + eventModel.id());
-                System.out.println("users: " + eventModel.users());*/
-                System.out.println("whoaa?");
             }
 
             for (UserModel userModel : model.userModels()) {
                 FilteredList<EventModel> filteredEvents = new FilteredList<>(model.eventModels(), eventModel ->
                         userToEventsMap.getOrDefault(userModel.id().get(), Collections.emptyList()).contains(eventModel.id().get()));
                 userModel.setEvents(filteredEvents);
-                System.out.println("what???: " + userModel.id().get());
-                System.out.println("what???: " + filteredEvents);
             }
 
 
@@ -140,7 +135,7 @@ public class MainController {
             );
 
             eventModels.add(eventModel);
-            System.out.println("MainController.convertToEventModels() - event.tickets(): " + event.tickets());
+//            System.out.println("MainController.convertToEventModels() - event.tickets(): " + event.tickets());
             List<Integer> userIds = event.users().stream().map(User::id).toList();
             eventToUsersMap.put(event.id(), userIds);
         }

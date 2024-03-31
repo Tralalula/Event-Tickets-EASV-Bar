@@ -135,7 +135,6 @@ public class EventsView implements View {
                 card.setSubHeader(imageView);
                 card.setBody(content);
                 card.setFooter(footer);
-                System.out.println(card.getPadding());
             }
 
             @Override
