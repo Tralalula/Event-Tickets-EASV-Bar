@@ -15,6 +15,8 @@ public class AuthHandler {
 
     public User loginUser(User user) throws Exception {
         User dbUser = authDAO.getUser(user);
+        System.out.println("user pw:" + user.getPassword());
+        System.out.println("dbUser pw:" + dbUser.getPassword());
         if (!BCrypt.checkpw(user.getPassword(), dbUser.getPassword()))
             throw new Exception("Incorrect login details");
 

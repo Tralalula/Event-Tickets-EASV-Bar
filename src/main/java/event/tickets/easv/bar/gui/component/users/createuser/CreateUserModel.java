@@ -5,7 +5,7 @@ import javafx.beans.property.*;
 
 public class CreateUserModel {
     // role?
-    private final ObjectProperty<User.Rank> rank = new SimpleObjectProperty<>();
+    private final ObjectProperty<User.Rank> rank = new SimpleObjectProperty<>(User.Rank.ADMIN);
     private final StringProperty firstName = new SimpleStringProperty("");
     private final StringProperty lastName = new SimpleStringProperty("");
     private final StringProperty username = new SimpleStringProperty("");
@@ -17,6 +17,7 @@ public class CreateUserModel {
 
     public ObjectProperty<User.Rank> rankProperty() {
         return rank;
+
     }
 
     public StringProperty firstNameProperty() {

@@ -27,7 +27,7 @@ public class AuthDAO {
                 String usr = rs.getString("username");
                 String pass = rs.getString("password");
 
-                return new User(id, usr, pass);
+                return new User(id, usr, pass, "");
             }
         }
         throw new Exception("User doesn't exist");

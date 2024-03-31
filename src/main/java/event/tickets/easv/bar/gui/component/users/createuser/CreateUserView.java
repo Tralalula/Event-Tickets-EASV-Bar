@@ -1,6 +1,7 @@
 package event.tickets.easv.bar.gui.component.users.createuser;
 
 import atlantafx.base.theme.Styles;
+import event.tickets.easv.bar.be.User;
 import event.tickets.easv.bar.gui.common.UserModel;
 import event.tickets.easv.bar.gui.common.View;
 import event.tickets.easv.bar.gui.util.StyleConfig;
@@ -54,13 +55,27 @@ public class CreateUserView implements View {
         var toggleGroup = new ToggleGroup();
 
         var adminRadio = new RadioButton("Admin");
+        adminRadio.setUserData(User.Rank.ADMIN);
         adminRadio.setToggleGroup(toggleGroup);
         styleRadioButton(adminRadio);
 
         var coordinatorRadio = new RadioButton("Event coordinator");
+        coordinatorRadio.setUserData(User.Rank.EVENT_COORDINATOR);
         coordinatorRadio.setToggleGroup(toggleGroup);
-        coordinatorRadio.setSelected(true);
         styleRadioButton(coordinatorRadio);
+
+        toggleGroup.selectToggle(model.rankProperty().get() == User.Rank.ADMIN ? adminRadio : coordinatorRadio);
+        toggleGroup.selectedToggleProperty().addListener((obs, ov, nv) -> {
+            if (nv != null) model.rankProperty().set((User.Rank) nv.getUserData());
+        });
+
+        model.rankProperty().addListener((obs, ov, nv) -> {
+            if (nv == User.Rank.ADMIN) {
+                toggleGroup.selectToggle(adminRadio);
+            } else if (nv == User.Rank.EVENT_COORDINATOR) {
+                toggleGroup.selectToggle(coordinatorRadio);
+            }
+        });
 
         var gridPane = new GridPane();
         gridPane.setMaxWidth(Double.MAX_VALUE);
@@ -107,6 +122,7 @@ public class CreateUserView implements View {
         saveButton.setOnAction(evt -> {
             saveButton.disableProperty().unbind();
             saveButton.setDisable(true);
+            controller.createUser(() -> saveButton.disableProperty().bind(model.okToCreateProperty().not()));
         });
 
         saveButton.getStyleClass().addAll(StyleConfig.ACTIONABLE, Styles.ACCENT);
