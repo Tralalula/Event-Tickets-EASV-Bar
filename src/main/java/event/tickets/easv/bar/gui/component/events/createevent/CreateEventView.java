@@ -1,9 +1,10 @@
-package event.tickets.easv.bar.gui.component.events;
+package event.tickets.easv.bar.gui.component.events.createevent;
 
 import atlantafx.base.theme.Styles;
 import event.tickets.easv.bar.gui.common.View;
 import event.tickets.easv.bar.gui.util.StyleConfig;
 import event.tickets.easv.bar.gui.widgets.Labels;
+import event.tickets.easv.bar.gui.widgets.TextFields;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -17,6 +18,14 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 
 public class CreateEventView implements View {
+    private final CreateEventModel model;
+    private final CreateEventController controller;
+
+    public CreateEventView() {
+        this.model = new CreateEventModel();
+        this.controller = new CreateEventController(model);
+    }
+
     @Override
     public Region getView() {
         var results = new VBox(StyleConfig.STANDARD_SPACING * 2);
@@ -25,30 +34,37 @@ public class CreateEventView implements View {
         title.setAlignment(Pos.CENTER);
         title.setMaxWidth(Double.MAX_VALUE);
 
-        var eventTitle = titledField("Event title");
-        var location = titledField("Location");
+        var eventTitle = TextFields.promptedTextField("Event title", model.eventTitleProperty());
+        var location = TextFields.promptedTextField("Location", model.locationProperty());
         var startEndTime = doubleField("Start time", "End time");
         var startEndDate = doubleDatePicker("Start date", "End date");
         var image = titledImageUpload("Event image");
-        var extraInfo = titledField("Extra info");
-        var locationGuidance = titledField("Location guidance");
-        var submit = createButton("Create event");
+        var extraInfo = TextFields.promptedTextField("Extra info", model.extraInfoProperty());
+        var locationGuidance = TextFields.promptedTextField("Location guidance", model.locationGuidanceProperty());
+        var submit = createSaveButton();
         results.getChildren().addAll(title, eventTitle, location, startEndTime, startEndDate, image, extraInfo, locationGuidance, submit);
         results.setPadding(new Insets(10));
         return results;
     }
 
-    private Node createButton(String text) {
-        var button = new Button(text);
-        button.getStyleClass().addAll(StyleConfig.ACTIONABLE, Styles.ACCENT);
-        button.setMaxWidth(Double.MAX_VALUE);
-        return button;
+    private Node createSaveButton() {
+        var saveButton = new Button("Create event");
+        saveButton.disableProperty().bind(model.okToCreateProperty().not());
+        saveButton.setOnAction(evt -> {
+            saveButton.disableProperty().unbind();
+            saveButton.setDisable(true);
+            controller.createEvent(() -> saveButton.disableProperty().bind(model.okToCreateProperty().not()));
+        });
+
+        saveButton.getStyleClass().addAll(StyleConfig.ACTIONABLE, Styles.ACCENT);
+        saveButton.setMaxWidth(Double.MAX_VALUE);
+        return saveButton;
     }
 
     private Node titledField(String text) {
         var title = Labels.styledLabel(text, Styles.TEXT_NORMAL);
         var field = new TextField();
-        return new VBox(StyleConfig.STANDARD_SPACING, title, field);
+        return new VBox(title, field);
     }
 
     private Node titledDatePicker(String text, boolean defaultPrompt) {
@@ -63,7 +79,7 @@ public class CreateEventView implements View {
         datepicker.setEditable(false);
         datepicker.setShowWeekNumbers(true);
         datepicker.setMaxWidth(Double.MAX_VALUE);
-        return new VBox(StyleConfig.STANDARD_SPACING, title, datepicker);
+        return new VBox(title, datepicker);
     }
 
     private Node doubleField(String text1, String text2) {
@@ -106,7 +122,7 @@ public class CreateEventView implements View {
         uploadArea.getStyleClass().addAll(StyleConfig.ROUNDING_DEFAULT, StyleConfig.ACTIONABLE, Styles.BG_NEUTRAL_MUTED);
         StackPane.setAlignment(promptText, Pos.CENTER);
 
-        return new VBox(StyleConfig.STANDARD_SPACING, title, uploadArea);
+        return new VBox(title, uploadArea);
     }
 
 }
