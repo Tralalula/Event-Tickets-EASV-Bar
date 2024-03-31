@@ -1,6 +1,7 @@
 package event.tickets.easv.bar.gui.component.events.createevent;
 
 import atlantafx.base.theme.Styles;
+import event.tickets.easv.bar.gui.common.EventModel;
 import event.tickets.easv.bar.gui.common.View;
 import event.tickets.easv.bar.gui.util.NodeUtils;
 import event.tickets.easv.bar.gui.util.StyleConfig;
@@ -8,6 +9,7 @@ import event.tickets.easv.bar.gui.widgets.DatePickers;
 import event.tickets.easv.bar.gui.widgets.Images;
 import event.tickets.easv.bar.gui.widgets.Labels;
 import event.tickets.easv.bar.gui.widgets.TextFields;
+import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -21,9 +23,9 @@ public class CreateEventView implements View {
     private final CreateEventModel model;
     private final CreateEventController controller;
 
-    public CreateEventView() {
+    public CreateEventView(ObservableList<EventModel> models) {
         this.model = new CreateEventModel();
-        this.controller = new CreateEventController(model);
+        this.controller = new CreateEventController(model, models);
     }
 
     @Override

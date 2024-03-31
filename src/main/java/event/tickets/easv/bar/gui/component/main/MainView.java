@@ -54,7 +54,7 @@ public class MainView implements View {
 
         this.dashboardView = new DashboardView().getView();
         this.eventsView = new EventsView(model.eventModels(), model.fetchingEventsProperty()).getView();
-        this.createEventView = new CreateEventView().getView();
+        this.createEventView = new CreateEventView(model.eventModels()).getView();
         this.showEventView = new ShowEventView(EventModel.Empty()).getView();
 
         this.ticketsView = new TicketsView(model, model.ticketModels(), model.fetchingTicketsProperty()).getView();

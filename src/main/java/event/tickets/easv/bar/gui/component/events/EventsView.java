@@ -144,7 +144,7 @@ public class EventsView implements View {
                 if (empty || item == null) {
                     setGraphic(null);
                 } else {
-                    Image img = getImage(item.imageName().get());
+                    Image img = getImage(item.id().get() + "/" + item.imageName().get());
 
                     imageView.setImage(img);
 

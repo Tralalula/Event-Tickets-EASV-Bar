@@ -9,7 +9,9 @@ import event.tickets.easv.bar.util.FileManagementService;
 import event.tickets.easv.bar.util.Result;
 import event.tickets.easv.bar.util.Result.Success;
 import event.tickets.easv.bar.util.Result.Failure;
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
+import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.scene.image.Image;
 import javafx.stage.FileChooser;
@@ -27,8 +29,11 @@ import java.time.LocalTime;
 
 public class CreateEventController {
     private final CreateEventModel model;
-    public CreateEventController(CreateEventModel model) {
+    private final ObservableList<EventModel> models;
+
+    public CreateEventController(CreateEventModel model, ObservableList<EventModel> models) {
         this.model = model;
+        this.models = models;
         model.okToCreateProperty().bind(Bindings.createBooleanBinding(
                 this::isDataValid,
                 model.eventTitleProperty(),
@@ -83,9 +88,11 @@ public class CreateEventController {
             case Success<Event> s -> {
                 try {
                     // todo: gør så det bliver resized?
-                    var finalDir = AppConfig.EVENT_IMAGES_DIR2 + "\\" + s.result().id();
+                    var addedEvent = s.result();
+                    var finalDir = AppConfig.EVENT_IMAGES_DIR2 + "\\" + addedEvent.id();
                     Files.createDirectories(Paths.get(finalDir));
                     Files.move(Paths.get(AppConfig.EVENT_TEMP_IMAGE_DIR, imageName), Paths.get(finalDir, imageName), StandardCopyOption.REPLACE_EXISTING);
+                    Platform.runLater(() -> models.add(EventModel.fromEntity(addedEvent))); // todo: skal ikke gøres her, skal løses et andet sted så vi ikke prøver at tilføje til model fra bg tråd.
                     return true;
                 } catch (IOException e) {
                     System.out.println("Error moving image to final directory: " + e.getMessage());
