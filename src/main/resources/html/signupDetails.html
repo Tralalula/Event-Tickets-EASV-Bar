@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>EASV Mail</title>
+    <style>
+        [[${cssContent}]]
+    </style>
+</head>
+<body>
+<table role="presentation" border="0" cellpadding="0" cellspacing="0" class="body">
+    <tr>
+        <td>&nbsp;</td>
+        <td class="container">
+            <div class="content">
+
+                <!-- Preview tekst på mail system -->
+                <span class="preheader">Password request code</span>
+                <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="main">
+
+                    <!-- START MAIN CONTENT AREA -->
+                    <tr>
+                        <td class="wrapper" style="text-align: center;">
+                            <p style="font-size: 24px;"><strong>Hello,</strong> [[${name}]]</p>
+                            <p>Welcome</p>
+                            <hr class="solid">
+                            <p>To reset your password, use the code below.</br>The code is unavailable after 10 minutes.</p>
+
+                            <!-- Button Container -->
+                            <!-- Table Container -->
+                            <table role="presentation" border="0" cellpadding="0" cellspacing="0">
+                                <tbody>
+                                <tr>
+                                    <td align="center">
+                                        <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="code-table">
+                                            <tbody>
+                                            <tr>
+                                                <td style="background-color: #f0f0f0; border-radius: 8px; text-align: center; padding: 12px 24px;"><strong>[[${generatedCode}]]</strong></td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                            <p>If you did not want to change your password or didn't request a reset, you can ignore and delete this email.</p>
+                        </td>
+                    </tr>
+
+                    <!-- END MAIN CONTENT AREA -->
+                </table>
+
+                <!-- START FOOTER -->
+                <div class="footer">
+                    <table role="presentation" border="0" cellpadding="0" cellspacing="0">
+                        <tr>
+                            <td class="content-block">
+                                <span class="apple-link">EASV Event System 1.0</span>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+                <!-- END FOOTER -->
+
+                <!-- END CENTERED WHITE CONTAINER --></div>
+        </td>
+        <td>&nbsp;</td>
+    </tr>
+</table>
+</body>
+</html>

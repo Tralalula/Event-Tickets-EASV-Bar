@@ -5,6 +5,7 @@ import event.tickets.easv.bar.be.enums.Rank;
 import event.tickets.easv.bar.bll.EntityManager;
 import event.tickets.easv.bar.bll.cryptographic.BCrypt;
 import event.tickets.easv.bar.gui.common.UserModel;
+import event.tickets.easv.bar.util.Generator;
 import event.tickets.easv.bar.util.Result;
 import event.tickets.easv.bar.util.Result.Success;
 import event.tickets.easv.bar.util.Result.Failure;
@@ -56,7 +57,9 @@ public class CreateUserController {
         String location = model.locationProperty().get();
         String phoneNumber = model.phoneNumberProperty().get();
 
-        var user = new User(username, mail, "test", firstName, lastName, location, phoneNumber, rank);
+        String password = Generator.generatePassword(8);
+        System.out.println("password: " + password);
+        var user = new User(username, mail, password, firstName, lastName, location, phoneNumber, rank);
         Result<User> result = new EntityManager().add(user);
         switch (result) {
             case Success<User> s -> {
