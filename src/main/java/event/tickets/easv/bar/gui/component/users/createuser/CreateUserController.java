@@ -1,16 +1,21 @@
 package event.tickets.easv.bar.gui.component.users.createuser;
 
+import com.resend.core.exception.ResendException;
 import event.tickets.easv.bar.be.User;
 import event.tickets.easv.bar.be.enums.Rank;
+import event.tickets.easv.bar.bll.EmailSender;
 import event.tickets.easv.bar.bll.EntityManager;
 import event.tickets.easv.bar.bll.cryptographic.BCrypt;
 import event.tickets.easv.bar.gui.common.UserModel;
+import event.tickets.easv.bar.util.Generator;
 import event.tickets.easv.bar.util.Result;
 import event.tickets.easv.bar.util.Result.Success;
 import event.tickets.easv.bar.util.Result.Failure;
 import javafx.beans.binding.Bindings;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
+
+import java.io.IOException;
 
 public class CreateUserController {
     private final CreateUserModel model;
@@ -56,11 +61,21 @@ public class CreateUserController {
         String location = model.locationProperty().get();
         String phoneNumber = model.phoneNumberProperty().get();
 
-        var user = new User(username, mail, "test", firstName, lastName, location, phoneNumber, rank);
+        String password = Generator.generatePassword(8);
+        System.out.println("password: " + password);
+        var user = new User(username, mail, password, firstName, lastName, location, phoneNumber, rank);
         Result<User> result = new EntityManager().add(user);
         switch (result) {
             case Success<User> s -> {
                 System.out.println("lol");
+                try {
+                    EmailSender emailSender = new EmailSender();
+                    emailSender.sendPassword(mail, firstName, username, password);
+                } catch (IOException e) {
+                    System.out.println("fejl ved at læse prop fil til email sending... " + e);
+                } catch (ResendException e) {
+                    System.out.println("fejl ved at sende mail... " + e);
+                }
                 return true;
             }
             case Failure<User> f -> {

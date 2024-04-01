@@ -79,4 +79,17 @@ public class EmailSender {
         sendEmail(recipient, "EASV Password Reset Request", emailContent);
     }
 
+    public void sendPassword(String recipient, String name, String username, String temporaryPassword) throws ResendException {
+        Context context = new Context();
+        context.setVariable("name", name);
+        context.setVariable("username", username);
+        context.setVariable("temporaryPassword", temporaryPassword);
+
+        String emailContent = templateEngine().process("signupDetails", context);
+        sendEmail(recipient, "EASV Password Reset Request", emailContent);
+    }
+
+    public static void main(String[] args) throws IOException, ResendException {
+        var mail = new EmailSender();
+    }
 }
