@@ -61,7 +61,7 @@ public class MainView implements View {
 
         this.ticketsView = new TicketsView(model, model.ticketModels(), model.fetchingTicketsProperty()).getView();
         this.addTicketView = new AddTicketView(new TicketsModel(model), model).getView();
-        this.showTicketView = new ShowTicketView().getView();
+        this.showTicketView = new ShowTicketView(model.ticketEventsFetchedProperty()).getView();
         this.addTicketEventView = new AddTicketEventView(model).getView();
 
         this.createUserView = new CreateUserView(model.userModels()).getView();

@@ -6,6 +6,7 @@ import event.tickets.easv.bar.be.Ticket.TicketEvent;
 import event.tickets.easv.bar.bll.TicketManager;
 import event.tickets.easv.bar.gui.common.*;
 import event.tickets.easv.bar.gui.util.StyleConfig;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.FloatProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -33,7 +34,10 @@ public class ShowTicketView implements View {
     private final Label defaultQuantity = new Label();
     private final Label events = new Label();
 
-    public ShowTicketView() {
+    private BooleanProperty fetchingData;
+    public ShowTicketView(BooleanProperty fetchingData) {
+        this.fetchingData = fetchingData;
+
         ViewHandler.currentViewDataProperty().subscribe((oldData, newData) -> {
             if (newData instanceof TicketModel) {
                 model.update((TicketModel) newData);
@@ -68,7 +72,13 @@ public class ShowTicketView implements View {
 
     public TableView<TicketEventModel> createTicketTableView() {
         TableColumn<TicketEventModel, String> col1 = new TableColumn<>("Title");
-       // col1.setCellValueFactory(c -> c.getValue().title());
+
+        col1.setCellValueFactory(cellData -> {
+            if (cellData.getValue().event() != null)
+                return cellData.getValue().event().get().title();
+
+                return new SimpleStringProperty("suckadoi");
+        });
 
         TableColumn<TicketEventModel, String> col2 = new TableColumn<>("Total");
         col2.setCellValueFactory(cellData -> {

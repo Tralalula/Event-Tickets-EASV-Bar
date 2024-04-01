@@ -104,6 +104,6 @@ class TicketEventAssociationParameterSetter implements AssociationParameterSette
     @Override
     public void setParameters(PreparedStatement stmt, Ticket entityA, TicketEvent entityB) throws SQLException {
         stmt.setInt(1, entityA.id());
-       // stmt.setInt(2, entityB.id());
+        stmt.setInt(2, entityB.id());
     }
 }

@@ -99,13 +99,10 @@ class TicketEventResultSetMapper implements ResultSetMapper<TicketEvent> {
 class TicketEventInsertParameterSetter implements InsertParameterSetter<TicketEvent> {
     @Override
     public void setParameters(PreparedStatement stmt, TicketEvent entity) throws SQLException {
-        System.out.println(entity.getTicketId() + " " + entity.getEventId() + " " + entity.getPrice() + " " + entity.getQuantity());
         stmt.setInt(1, entity.getTicketId());
         stmt.setInt(2, entity.getEventId());
         stmt.setFloat(3, entity.getPrice());
         stmt.setInt(4, entity.getQuantity());
-
-
     }
 }
 

@@ -16,7 +16,7 @@ public class TicketEvent implements Entity<TicketEvent> {
     private int quantity;
 
     private List<TicketGenerated> tickets = new ArrayList<>();
-    private Event connectedEvent;
+    private Event event;
 
     public TicketEvent(int id, int ticketId, int eventId, float price, int quantity) {
         this.id = id;
@@ -77,13 +77,6 @@ public class TicketEvent implements Entity<TicketEvent> {
         this.quantity = quantity;
     }
 
-    public void setConnectedEvent(Event event) {
-        this.connectedEvent = event;
-    }
-
-    public Event getConnectedEvent() {
-        return connectedEvent;
-    }
 
     public void setTickets(List<TicketGenerated> tickets) {
         this.tickets.addAll(tickets);
@@ -91,6 +84,10 @@ public class TicketEvent implements Entity<TicketEvent> {
 
     public List<TicketGenerated> getTickets() {
         return tickets;
+    }
+
+    public Event getEvent() {
+        return event;
     }
 
     public int getLeft() {
@@ -123,6 +120,7 @@ public class TicketEvent implements Entity<TicketEvent> {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void setAssociations(List<?> associations) {
         if (associations.isEmpty()) return;
 

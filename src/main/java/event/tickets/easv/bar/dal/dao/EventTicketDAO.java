@@ -70,7 +70,11 @@ class EventTicketSQLTemplate implements AssociationSQLTemplate<Event, TicketEven
     @Override
     public String selectAForBSQL() {
         return """
-               """;
+                 SELECT event.id, title, imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo
+                 FROM dbo.Event event
+                 JOIN dbo.TicketEvent ON event.id = TicketEvent.eventId
+                 WHERE event.id = ?;
+                """;
     }
 
     @Override

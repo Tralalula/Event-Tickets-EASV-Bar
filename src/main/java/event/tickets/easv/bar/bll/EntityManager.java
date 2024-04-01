@@ -39,6 +39,7 @@ public class EntityManager {
         // Associations
         registerAssociation(Event.class, User.class, new EventUserDAO());
         registerAssociation(Event.class, TicketEvent.class, new EventTicketDAO());
+
         registerAssociation(Ticket.class, TicketEvent.class, new TicketEventAssociationDAO());
         registerAssociation(TicketEvent.class, TicketGenerated.class, new TicketEventGeneratedDAO());
     }

@@ -14,6 +14,8 @@ public class TicketGenerated implements Entity<TicketGenerated> {
     String barcode;
     String qrcode;
 
+    private List<TicketEvent> ticketEvents;
+
     public TicketGenerated(int id, int eventId, int customerId,
                            boolean assigned, boolean used, String barcode, String qrcode)
     {
@@ -111,7 +113,13 @@ public class TicketGenerated implements Entity<TicketGenerated> {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void setAssociations(List<?> associations) {
-        throw new UnsupportedOperationException("Er ikke implementeret. TicketGenerated.setAssociations()");
+        if (associations.isEmpty()) return;
+
+        Object first = associations.getFirst();
+        if (first instanceof TicketEvent) {
+            this.ticketEvents = (List<TicketEvent>) associations;
+        }
     }
 }

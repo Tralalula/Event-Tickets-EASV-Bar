@@ -2,6 +2,7 @@ package event.tickets.easv.bar.gui.component.main;
 
 import event.tickets.easv.bar.gui.common.EventModel;
 import event.tickets.easv.bar.gui.common.UserModel;
+import event.tickets.easv.bar.gui.component.tickets.TicketEventModel;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -21,19 +22,20 @@ public class MainModel {
     private final BooleanProperty eventsFetched = new SimpleBooleanProperty(false);
     private final BooleanProperty usersFetched = new SimpleBooleanProperty(false);
     private final BooleanProperty ticketsFetched = new SimpleBooleanProperty(false);
+    private final BooleanProperty ticketEventsFetched = new SimpleBooleanProperty(false);
 
     private final StringProperty username = new SimpleStringProperty();
 
 
     private final ObservableList<TicketModel> ticketModels = FXCollections.observableArrayList();
-    private final ObjectProperty<TicketModel> ticketModelProperty = new SimpleObjectProperty<>();
+    private final ObservableList<TicketEventModel> ticketEventModels = FXCollections.observableArrayList();
 
     public ObservableList<TicketModel> ticketModels() {
         return ticketModels;
     }
 
-    public ObjectProperty<TicketModel> ticketModelProperty() {
-        return ticketModelProperty;
+    public ObservableList<TicketEventModel> ticketEventModels() {
+        return ticketEventModels;
     }
 
     public ObservableList<EventModel> eventModels() {
@@ -56,6 +58,11 @@ public class MainModel {
         return fetchingTickets;
     }
 
+    public BooleanProperty fetchingTicketEventsProperty() {
+        return fetchingTickets;
+    }
+
+
     public BooleanProperty eventsFetchedProperty() {
         return eventsFetched;
     }
@@ -66,5 +73,9 @@ public class MainModel {
 
     public BooleanProperty ticketsFetchedProperty() {
         return ticketsFetched;
+    }
+
+    public BooleanProperty ticketEventsFetchedProperty() {
+        return ticketEventsFetched;
     }
 }

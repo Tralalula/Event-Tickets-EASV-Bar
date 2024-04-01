@@ -2,6 +2,7 @@ package event.tickets.easv.bar.gui.component.main;
 
 import event.tickets.easv.bar.be.Event;
 import event.tickets.easv.bar.be.Ticket.TicketEvent;
+import event.tickets.easv.bar.be.Ticket.TicketGenerated;
 import event.tickets.easv.bar.be.User;
 import event.tickets.easv.bar.be.Ticket.Ticket;
 import event.tickets.easv.bar.bll.EntityManager;
@@ -10,17 +11,23 @@ import event.tickets.easv.bar.gui.common.EventModel;
 import event.tickets.easv.bar.gui.common.TestModel;
 import event.tickets.easv.bar.gui.common.UserModel;
 import event.tickets.easv.bar.gui.common.TicketModel;
+import event.tickets.easv.bar.gui.component.tickets.TicketEventModel;
 import event.tickets.easv.bar.gui.util.BackgroundExecutor;
 import event.tickets.easv.bar.util.Result;
 import event.tickets.easv.bar.util.Result.Success;
 import event.tickets.easv.bar.util.Result.Failure;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public class MainController {
     private final EntityManager manager;
@@ -35,15 +42,20 @@ public class MainController {
 
         model.eventsFetchedProperty().addListener((obs, ov, nv) -> syncAssociations());
         model.usersFetchedProperty().addListener((obs, ov, nv) -> syncAssociations());
+        model.ticketEventsFetchedProperty().addListener((obs, ov, nv) -> syncAssociations());
 
         fetchEvents();
         fetchUsers();
+
         fetchTickets();
+        fetchTicketEvents();
     }
 
     private void syncAssociations() {
         // Need to make sure that both are finished processing before syncing
-        if (model.eventsFetchedProperty().get() && model.usersFetchedProperty().get()) {
+        if (model.eventsFetchedProperty().get() && model.usersFetchedProperty().get()
+                && model.ticketsFetchedProperty().get() && model.ticketEventsFetchedProperty().get()) {
+
             for (EventModel eventModel : model.eventModels()) {
                 FilteredList<UserModel> filteredUsers = new FilteredList<>(model.userModels(), userModel ->
                         eventToUsersMap.getOrDefault(eventModel.id().get(), Collections.emptyList()).contains(userModel.id().get()));
@@ -56,6 +68,21 @@ public class MainController {
                 userModel.setEvents(filteredEvents);
             }
 
+            // TODO: Omskriv nedenstående for loops
+            for (TicketModel ticketModel : model.ticketModels()) {
+                ObservableList<TicketEventModel> list = FXCollections.observableArrayList();
+                for (TicketEventModel tc : model.ticketEventModels())
+                    if (ticketModel.id().get() == tc.ticketId().get())
+                        list.add(tc);
+
+                ticketModel.setTicketEvents(list);
+            }
+
+            for (TicketEventModel ticketEventModel : model.ticketEventModels()) {
+                for (EventModel em : model.eventModels())
+                    if (ticketEventModel.eventId().get() == em.id().get())
+                        ticketEventModel.setEvent(em);
+            }
 
             // Clear temp storage association maps; otherwise they take up a shit ton of memory
             eventToUsersMap.clear();
@@ -73,6 +100,7 @@ public class MainController {
         );
     }
 
+
     public void fetchEvents() {
         model.fetchingEventsProperty().set(true);
         BackgroundExecutor.performBackgroundTask(
@@ -89,6 +117,14 @@ public class MainController {
         );
     }
 
+    public void fetchTicketEvents() {
+        model.fetchingTicketEventsProperty().set(true);
+        BackgroundExecutor.performBackgroundTask(
+                () -> manager.allWithAssociations(TicketEvent.class),
+                this::processTicketEventResult
+        );
+    }
+
     private void processTicketResult(Result<List<Ticket>> result) {
         model.fetchingTicketsProperty().set(false);
         switch (result) {
@@ -100,6 +136,18 @@ public class MainController {
         }
     }
 
+    /*
+    private void processTicketEventResult(Result<List<TicketEvent>> result) {
+        model.fetchingEventsProperty().set(false);
+        switch (result) {
+            case Success<List<TicketEvent>> s -> {
+                model.eventModels().setAll(convertToTicketModels(s.result()));
+                model.eventsFetchedProperty().set(true);
+            }
+            case Failure<List<TicketEvent>> f -> System.out.println("Error: " + f.cause());
+        }
+    }*/
+
     private void processEvents(Result<List<Event>> result) {
         model.fetchingEventsProperty().set(false);
         switch (result) {
@@ -108,6 +156,18 @@ public class MainController {
                 model.eventsFetchedProperty().set(true);
             }
             case Failure<List<Event>> f -> System.out.println("Error: " + f.cause());
+        }
+    }
+
+
+    private void processTicketEventResult(Result<List<TicketEvent>> result) {
+        model.fetchingTicketEventsProperty().set(false);
+        switch (result) {
+            case Success<List<TicketEvent>> s -> {
+                model.ticketEventModels().setAll(convertToTicketEventModels(s.result()));
+                model.ticketEventsFetchedProperty().set(true);
+            }
+            case Failure<List<TicketEvent>> f -> System.out.println("Error: " + f);
         }
     }
 
@@ -158,10 +218,22 @@ public class MainController {
     private List<TicketModel> convertToTicketModels(List<Ticket> tickets) {
         List<TicketModel> ticketModels = new ArrayList<>();
 
-        for (var ticket : tickets) {
+        for (var ticket : tickets)
             ticketModels.add(TicketModel.fromEntity(ticket));
+
+        return ticketModels;
+    }
+
+    private List<TicketEventModel> convertToTicketEventModels(List<TicketEvent> tickets) {
+        List<TicketEventModel> ticketModels = new ArrayList<>();
+
+        for (var ticket : tickets) {
+            TicketEventModel ticketEventModel = TicketEventModel.fromEntity(ticket);
+            ticketModels.add(ticketEventModel);
         }
 
         return ticketModels;
     }
+
+
 }

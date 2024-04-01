@@ -1,5 +1,6 @@
 package event.tickets.easv.bar.gui.common;
 
+import event.tickets.easv.bar.be.Event;
 import event.tickets.easv.bar.be.Ticket.Ticket;
 import event.tickets.easv.bar.be.Ticket.TicketEvent;
 import event.tickets.easv.bar.gui.component.tickets.TicketEventModel;
@@ -9,35 +10,31 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
-public record TicketModel(
-        IntegerProperty id,
-        StringProperty title,
-        StringProperty type,
-        ObservableList<TicketEventModel> ticketEvents
-) {
+public class TicketModel {
+    private final IntegerProperty id = new SimpleIntegerProperty();
+    private final StringProperty title = new SimpleStringProperty();
+    private final StringProperty type = new SimpleStringProperty();
+    private ObservableList<TicketEventModel> ticketEvents = FXCollections.observableArrayList();
+
+    public TicketModel() {
+
+    }
+
+    public TicketModel(Ticket ticket) {
+        id.set(ticket.getId());
+        title.set(ticket.getTitle());
+        type.set(ticket.getType());
+    }
+
     public static TicketModel fromEntity(Ticket ticket) {
-        ObservableList<TicketEventModel> temp = FXCollections.observableArrayList();
-
-        for (TicketEvent tc : ticket.getTicketEvent())
-            temp.add(TicketEventModel.fromEntity(tc));
-
-        return new TicketModel(
-                new SimpleIntegerProperty(ticket.getId()),
-                new SimpleStringProperty(ticket.getTitle()),
-                new SimpleStringProperty(ticket.getType()),
-                FXCollections.observableArrayList(temp)
-        );
+        return new TicketModel(ticket);
     }
 
     public static TicketModel Empty() {
-        return new TicketModel(
-                new SimpleIntegerProperty(),
-                new SimpleStringProperty(),
-                new SimpleStringProperty(),
-                FXCollections.observableArrayList()
-        );
+        return new TicketModel();
     }
 
     public void update(TicketModel ticketModel) {
@@ -55,4 +52,21 @@ public record TicketModel(
                 new ArrayList<>(ticketEvents)
         );
     }
+
+    public IntegerProperty id() {
+        return id;
+    }
+
+    public StringProperty title() {
+        return title;
+    }
+
+    public StringProperty type() {
+        return type;
+    }
+
+    public void setTicketEvents(ObservableList<TicketEventModel> tickets) { this.ticketEvents = tickets; }
+
+    public ObservableList<TicketEventModel> ticketEvents() { return ticketEvents; }
+
 }
