@@ -13,16 +13,19 @@ public class Generator {
     public static String generatePassword(int length) {
         if (length < 4) throw new IllegalArgumentException("Password length must be at least 4 characters long");
 
+        // get at least one of each character category
         StringBuilder password = new StringBuilder(length);
         password.append(UPPER_CASE.charAt(RANDOM.nextInt(UPPER_CASE.length())));
         password.append(LOWER_CASE.charAt(RANDOM.nextInt(LOWER_CASE.length())));
         password.append(DIGITS.charAt(RANDOM.nextInt(DIGITS.length())));
         password.append(SPECIAL_CHARACTERS.charAt(RANDOM.nextInt(SPECIAL_CHARACTERS.length())));
 
+        // pick from random categories for remaining
         for (int i = 4; i < length; i++) {
             password.append(ALL_ALLOWED_CHARS.charAt(RANDOM.nextInt(ALL_ALLOWED_CHARS.length())));
         }
 
+        // le shuffle here
         char[] passwordArray = password.toString().toCharArray();
         for (int i = 0; i < passwordArray.length; i++) {
             int randomIndex = RANDOM.nextInt(passwordArray.length);
