@@ -61,7 +61,7 @@ public class TicketEventGeneratedDAO implements EntityAssociation<TicketEvent, T
 class TicketEventGeneratedSQLTemplate implements AssociationSQLTemplate<TicketEvent, TicketGenerated> {
     @Override
     public String insertRelationSQL() {
-        return "INSERT INTO dbo.TicketEvent (ticketId, eventId, price, quantity) VALUES (?, ?, ?, ?);";
+        return "INSERT INTO dbo.TicketGenerated (ticketId, eventId, price, quantity) VALUES (?, ?, ?, ?);";
     }
 
     @Override

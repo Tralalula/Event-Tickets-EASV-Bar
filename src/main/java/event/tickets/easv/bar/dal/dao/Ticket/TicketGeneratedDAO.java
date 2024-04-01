@@ -100,8 +100,12 @@ class TicketGeneratedResultSetMapper implements ResultSetMapper<TicketGenerated>
 class TicketGeneratedInsertParameterSetter implements InsertParameterSetter<TicketGenerated> {
     @Override
     public void setParameters(PreparedStatement stmt, TicketGenerated entity) throws SQLException {
-        throw new UnsupportedOperationException("Er ikke implementeret. TicketGeneratedDAO: TicketGeneratedInsertParameterSetter.setParameters()");
-
+        stmt.setInt(1, entity.getEventId());
+        stmt.setInt(2, entity.getCustomerId());
+        stmt.setBoolean(3, entity.isAssigned());
+        stmt.setBoolean(4, entity.isUsed());
+        stmt.setString(5, entity.getBarcode());
+        stmt.setString(6, entity.getQrcode());
     }
 }
 

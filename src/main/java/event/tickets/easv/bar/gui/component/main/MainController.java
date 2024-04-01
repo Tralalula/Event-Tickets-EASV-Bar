@@ -12,6 +12,7 @@ import event.tickets.easv.bar.gui.common.TestModel;
 import event.tickets.easv.bar.gui.common.UserModel;
 import event.tickets.easv.bar.gui.common.TicketModel;
 import event.tickets.easv.bar.gui.component.tickets.TicketEventModel;
+import event.tickets.easv.bar.gui.component.tickets.TicketGeneratedModel;
 import event.tickets.easv.bar.gui.util.BackgroundExecutor;
 import event.tickets.easv.bar.util.Result;
 import event.tickets.easv.bar.util.Result.Success;
@@ -42,6 +43,7 @@ public class MainController {
 
         model.eventsFetchedProperty().addListener((obs, ov, nv) -> syncAssociations());
         model.usersFetchedProperty().addListener((obs, ov, nv) -> syncAssociations());
+        model.ticketsFetchedProperty().addListener((obs, ov, nv) -> syncAssociations());
         model.ticketEventsFetchedProperty().addListener((obs, ov, nv) -> syncAssociations());
 
         fetchEvents();
@@ -125,6 +127,14 @@ public class MainController {
         );
     }
 
+    public void fetchTicketsGenerated() {
+        model.fetchingTicketsGenerated().set(true);
+        BackgroundExecutor.performBackgroundTask(
+                () -> manager.allWithAssociations(TicketGenerated.class),
+                this::processTicketsGenerated
+        );
+    }
+
     private void processTicketResult(Result<List<Ticket>> result) {
         model.fetchingTicketsProperty().set(false);
         switch (result) {
@@ -168,6 +178,17 @@ public class MainController {
                 model.ticketEventsFetchedProperty().set(true);
             }
             case Failure<List<TicketEvent>> f -> System.out.println("Error: " + f);
+        }
+    }
+
+    private void processTicketsGenerated(Result<List<TicketGenerated>> result) {
+        model.fetchingTicketsGenerated().set(false);
+        switch (result) {
+            case Success<List<TicketGenerated>> s -> {
+                model.ticketGeneratedModels().setAll(convertToTicketsGeneratedModels(s.result()));
+                model.ticketEventsFetchedProperty().set(true);
+            }
+            case Failure<List<TicketGenerated>> f -> System.out.println("Error: " + f);
         }
     }
 
@@ -227,13 +248,19 @@ public class MainController {
     private List<TicketEventModel> convertToTicketEventModels(List<TicketEvent> tickets) {
         List<TicketEventModel> ticketModels = new ArrayList<>();
 
-        for (var ticket : tickets) {
-            TicketEventModel ticketEventModel = TicketEventModel.fromEntity(ticket);
-            ticketModels.add(ticketEventModel);
-        }
+        for (var ticket : tickets)
+            ticketModels.add(TicketEventModel.fromEntity(ticket));
 
         return ticketModels;
     }
 
+    private List<TicketGeneratedModel> convertToTicketsGeneratedModels(List<TicketGenerated> tickets) {
+        List<TicketGeneratedModel> ticketModels = new ArrayList<>();
+
+        for (var ticket : tickets)
+            ticketModels.add(TicketGeneratedModel.fromEntity(ticket));
+
+        return ticketModels;
+    }
 
 }
