@@ -85,9 +85,11 @@ public class MainController {
             for (TicketEventModel ticketEventModel : model.ticketEventModels()) {
                 ObservableList<TicketGeneratedModel> list = FXCollections.observableArrayList();
 
-                for (EventModel em : model.eventModels())
+                for (EventModel em : model.eventModels()) {
+                    System.out.println(ticketEventModel.eventId().get() + " " + em.id().get());
                     if (ticketEventModel.eventId().get() == em.id().get())
                         ticketEventModel.setEvent(em);
+                }
 
                 for (TicketGeneratedModel tg : model.ticketGeneratedModels())
                     if (ticketEventModel.id().get() == tg.eventId().get())

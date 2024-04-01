@@ -27,7 +27,7 @@ public class TicketEventModel {
     public TicketEventModel(TicketEvent ticketEvent) {
         id.set(ticketEvent.id());
         ticketId.set(ticketEvent.getTicketId());
-        eventId.set(ticketEvent.getId());
+        eventId.set(ticketEvent.getEventId());
         total.set(ticketEvent.getQuantity());
         left.set(ticketEvent.getLeft());
         bought.set(ticketEvent.getBought());

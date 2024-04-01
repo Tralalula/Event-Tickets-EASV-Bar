@@ -10,6 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.List;
 import java.util.Optional;
 
@@ -100,7 +101,11 @@ class TicketEventInsertParameterSetter implements InsertParameterSetter<TicketEv
     @Override
     public void setParameters(PreparedStatement stmt, TicketEvent entity) throws SQLException {
         stmt.setInt(1, entity.getTicketId());
-        stmt.setInt(2, entity.getEventId());
+
+        if (entity.getEventId() == 0)
+            stmt.setNull(2, Types.INTEGER);
+        else
+            stmt.setInt(2, entity.getEventId());
         stmt.setFloat(3, entity.getPrice());
         stmt.setInt(4, entity.getQuantity());
     }

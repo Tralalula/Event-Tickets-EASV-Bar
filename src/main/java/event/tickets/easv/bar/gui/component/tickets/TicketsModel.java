@@ -46,14 +46,27 @@ public class TicketsModel {
     public List<TicketEvent> addToEvent(int ticketId, int price, int total, List<Integer> eventIds) {
         List<TicketEvent> newEntries = new ArrayList<>();
 
-        for (int i : eventIds) {
-            Result<TicketEvent> result = entityManager.add(new TicketEvent(ticketId, i, price, total));
-            switch (result) {
-                case Result.Success<TicketEvent> s -> newEntries.add(s.result());
-                case Result.Failure<TicketEvent> f -> System.out.println("Error: " + f.cause());
+        if (!eventIds.isEmpty()) {
+            for (int i : eventIds) {
+                handleAddResult(entityManager.add(new TicketEvent(ticketId, i, price, total)), newEntries);
             }
-        }
+        } else
+            handleAddResult(entityManager.add(new TicketEvent(ticketId, 0, price, total)), newEntries);
+
+        //TODO: Refactor
+        for (TicketEvent ticketEvent : newEntries)
+            model.ticketEventModels().add(TicketEventModel.fromEntity(ticketEvent));
+
         return newEntries;
+    }
+
+    private List<TicketEvent> handleAddResult(Result<TicketEvent> result, List<TicketEvent> list) {
+        switch (result) {
+            case Result.Success<TicketEvent> s -> list.add(s.result());
+            case Result.Failure<TicketEvent> f -> System.out.println("Error: " + f.cause());
+        }
+
+        return list;
     }
 
     /** Sorts a TicketModel list to newest from integer list: 1, 2, 3, 4, 5 returns 5, 4, 3, 2, 1

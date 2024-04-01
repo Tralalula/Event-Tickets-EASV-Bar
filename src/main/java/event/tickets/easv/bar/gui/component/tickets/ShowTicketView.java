@@ -74,7 +74,7 @@ public class ShowTicketView implements View {
         TableColumn<TicketEventModel, String> col1 = new TableColumn<>("Title");
 
         col1.setCellValueFactory(cellData -> {
-            if (cellData.getValue().event() != null)
+            if (cellData.getValue().event() != null && cellData.getValue().event().get() != null)
                 return cellData.getValue().event().get().title();
 
                 return new SimpleStringProperty("suckadoi");

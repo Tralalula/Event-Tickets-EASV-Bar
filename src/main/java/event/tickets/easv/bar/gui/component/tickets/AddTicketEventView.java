@@ -116,10 +116,5 @@ public class AddTicketEventView implements View {
         int ticketId = model.id().get();
 
         List<TicketEvent> newEntries = ticketsModel.addToEvent(ticketId, total, price, getSelectedEventIds());
-       // List<TicketEventModel> newEntriesModels = newEntries.stream()
-       //         .map(ticketEvent -> TicketEventModel.fromEntity(ticketEvent))
-        //        .collect(Collectors.toList());
-
-      //  model.ticketEvents().addAll(newEntriesModels);
     }
 }
