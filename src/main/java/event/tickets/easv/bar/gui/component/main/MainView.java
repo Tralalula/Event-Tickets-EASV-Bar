@@ -2,6 +2,7 @@ package event.tickets.easv.bar.gui.component.main;
 
 import atlantafx.base.controls.Breadcrumbs;
 import atlantafx.base.controls.CustomTextField;
+import atlantafx.base.controls.ModalPane;
 import atlantafx.base.theme.Styles;
 import event.tickets.easv.bar.gui.common.*;
 import event.tickets.easv.bar.gui.component.dashboard.DashboardView;
@@ -72,11 +73,14 @@ public class MainView implements View {
 
     @Override
     public Region getView() {
-        var results = new BorderPane();
-//        results.getStylesheets().add(Objects.requireNonNull(this.getClass().getResource("/css/debug.css")).toExternalForm());
+        var results = new StackPane();
+        //        results.getStylesheets().add(Objects.requireNonNull(this.getClass().getResource("/css/debug.css")).toExternalForm());
         results.getStylesheets().add(Objects.requireNonNull(this.getClass().getResource("/css/style.css")).toExternalForm());
         results.getStyleClass().add(Styles.BG_SUBTLE);
-        results.getStyleClass().add("main");
+
+        var main = new BorderPane();
+
+        main.getStyleClass().add("main");
 
         var top = topbar();
         var left = sidebar();
@@ -88,10 +92,12 @@ public class MainView implements View {
         BorderPane.setMargin(top, new Insets(StyleConfig.STANDARD_SPACING));
         BorderPane.setMargin(left, new Insets(0, StyleConfig.STANDARD_SPACING, StyleConfig.STANDARD_SPACING, StyleConfig.STANDARD_SPACING));
 
-        results.setTop(top);
-        results.setLeft(left);
-        results.setCenter(center);
+        main.setTop(top);
+        main.setLeft(left);
+        main.setCenter(center);
 
+        results.getChildren().addAll(main, ViewHandler.overlay());
+        StackPane.setAlignment(main, Pos.TOP_LEFT);
         return results;
     }
 
@@ -248,5 +254,4 @@ public class MainView implements View {
 
         return results;
     }
-
 }

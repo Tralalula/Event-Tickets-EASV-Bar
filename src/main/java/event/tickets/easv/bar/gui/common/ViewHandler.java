@@ -1,9 +1,12 @@
 package event.tickets.easv.bar.gui.common;
 
+import atlantafx.base.controls.ModalPane;
+import event.tickets.easv.bar.gui.widgets.Dialog;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
+import javafx.scene.Node;
 
 import java.util.*;
 
@@ -12,6 +15,7 @@ import java.util.*;
  */
 public class ViewHandler {
     private static final ViewHandler INSTANCE = new ViewHandler();
+    private final ModalPane overlay = new ModalPane();
     private final ObjectProperty<Object> currentViewData = new SimpleObjectProperty<>();
     private final ObjectProperty<WindowType> activeWindow = new SimpleObjectProperty<>(WindowType.NONE);
     private final ObjectProperty<ViewType> activeView = new SimpleObjectProperty<>(ViewType.NO_VIEW);
@@ -59,6 +63,16 @@ public class ViewHandler {
         if (data != null) INSTANCE.currentViewData.set(data);
 
         INSTANCE.changeViewInstance(newView);
+    }
+
+    public static void showOverlay(Node node) {
+        INSTANCE.overlay.show(node);
+    }
+
+    public static void showOverlay(Node node, int width, int height) {
+        var dialog = new Dialog(width, height);
+        dialog.getChildren().setAll(node);
+        INSTANCE.overlay.show(dialog);
     }
 
     public static ObservableValue<Object> currentViewDataProperty() {
@@ -116,6 +130,10 @@ public class ViewHandler {
 
     public static ReadOnlyObjectProperty<WindowType> activeWindowProperty() {
         return INSTANCE.activeWindow;
+    }
+
+    public static ModalPane overlay() {
+        return INSTANCE.overlay;
     }
 
     private ViewHandler() {
