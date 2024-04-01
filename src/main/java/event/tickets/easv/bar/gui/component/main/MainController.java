@@ -51,12 +51,14 @@ public class MainController {
 
         fetchTickets();
         fetchTicketEvents();
+        fetchTicketsGenerated();
     }
 
     private void syncAssociations() {
         // Need to make sure that both are finished processing before syncing
         if (model.eventsFetchedProperty().get() && model.usersFetchedProperty().get()
-                && model.ticketsFetchedProperty().get() && model.ticketEventsFetchedProperty().get()) {
+                && model.ticketsFetchedProperty().get() && model.ticketEventsFetchedProperty().get()
+                && model.ticketsGeneratedProperty().get()) {
 
             for (EventModel eventModel : model.eventModels()) {
                 FilteredList<UserModel> filteredUsers = new FilteredList<>(model.userModels(), userModel ->
@@ -81,17 +83,26 @@ public class MainController {
             }
 
             for (TicketEventModel ticketEventModel : model.ticketEventModels()) {
+                ObservableList<TicketGeneratedModel> list = FXCollections.observableArrayList();
+
                 for (EventModel em : model.eventModels())
                     if (ticketEventModel.eventId().get() == em.id().get())
                         ticketEventModel.setEvent(em);
+
+                for (TicketGeneratedModel tg : model.ticketGeneratedModels())
+                    if (ticketEventModel.id().get() == tg.eventId().get())
+                        list.add(tg);
+
+                ticketEventModel.setTicketsGenerated(list);
             }
+
 
             // Clear temp storage association maps; otherwise they take up a shit ton of memory
             eventToUsersMap.clear();
             userToEventsMap.clear();
-        }
 
-        System.out.println(model.userModels().getFirst().events());
+            System.out.println(model.userModels().getFirst().events());
+        }
     }
 
     public void fetchTickets() {

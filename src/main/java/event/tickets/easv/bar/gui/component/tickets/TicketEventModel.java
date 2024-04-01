@@ -9,6 +9,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 public class TicketEventModel {
+    private final IntegerProperty id = new SimpleIntegerProperty();
     private final IntegerProperty ticketId = new SimpleIntegerProperty();
     private final IntegerProperty eventId = new SimpleIntegerProperty();
     private final IntegerProperty total = new SimpleIntegerProperty();
@@ -17,12 +18,14 @@ public class TicketEventModel {
     private final FloatProperty price = new SimpleFloatProperty();
 
     private SimpleObjectProperty<EventModel> event = new SimpleObjectProperty<>();
+    private ObservableList<TicketGeneratedModel> ticketsGenerated = FXCollections.observableArrayList();
 
     public TicketEventModel() {
 
     }
 
     public TicketEventModel(TicketEvent ticketEvent) {
+        id.set(ticketEvent.id());
         ticketId.set(ticketEvent.getTicketId());
         eventId.set(ticketEvent.getId());
         total.set(ticketEvent.getQuantity());
@@ -40,6 +43,7 @@ public class TicketEventModel {
     }
 
     public void update(TicketEventModel ticketEventModel) {
+        this.id.set(ticketEventModel.id.get());
         this.ticketId.set(ticketEventModel.ticketId.get());
         this.eventId.set(ticketEventModel.eventId.get());
         this.total.set(ticketEventModel.total.get());
@@ -47,6 +51,10 @@ public class TicketEventModel {
         this.bought.set(ticketEventModel.bought.get());
         this.price.set(ticketEventModel.price.get());
         this.event.set(ticketEventModel.event.get());
+    }
+
+    public IntegerProperty id() {
+        return id;
     }
 
     public IntegerProperty eventId() {
@@ -81,4 +89,7 @@ public class TicketEventModel {
 
     public SimpleObjectProperty<EventModel> event() { return event; }
 
+    public void setTicketsGenerated(ObservableList<TicketGeneratedModel> tickets) { this.ticketsGenerated = tickets; }
+
+    public ObservableList<TicketGeneratedModel> getTicketsGenerated() { return ticketsGenerated; }
 }

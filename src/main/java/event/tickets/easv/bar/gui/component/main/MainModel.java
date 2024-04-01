@@ -90,7 +90,7 @@ public class MainModel {
         return ticketEventsFetched;
     }
 
-    public BooleanProperty ticketsGenerated() {
+    public BooleanProperty ticketsGeneratedProperty() {
         return ticketEventsFetched;
     }
 

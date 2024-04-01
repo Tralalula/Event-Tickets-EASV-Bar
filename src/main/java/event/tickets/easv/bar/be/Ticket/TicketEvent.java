@@ -91,11 +91,11 @@ public class TicketEvent implements Entity<TicketEvent> {
     }
 
     public int getLeft() {
-        return quantity - getTickets().size();
+        return quantity - tickets.size();
     }
 
     public int getBought() {
-        return getTickets().size();
+        return tickets.size();
     }
 
     @Override

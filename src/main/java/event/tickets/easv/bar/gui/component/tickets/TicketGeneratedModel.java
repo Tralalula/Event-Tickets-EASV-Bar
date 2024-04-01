@@ -65,6 +65,10 @@ public class TicketGeneratedModel {
         return id;
     }
 
+    public IntegerProperty eventId() {
+        return eventId;
+    }
+
     public IntegerProperty customerId() {
         return customerId;
     }

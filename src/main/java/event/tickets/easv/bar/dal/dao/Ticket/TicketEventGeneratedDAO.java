@@ -75,7 +75,7 @@ class TicketEventGeneratedSQLTemplate implements AssociationSQLTemplate<TicketEv
                 SELECT ticket.id, ticketId, ticket.eventId, price, quantity
                 FROM dbo.TicketEvent ticketEvent
                 JOIN dbo.TicketGenerated ticket ON ticketEvent.id = ticket.id
-                WHERE ticket.eventId = = ?
+                WHERE ticket.eventId = ?
                 """;
     }
 
@@ -84,8 +84,8 @@ class TicketEventGeneratedSQLTemplate implements AssociationSQLTemplate<TicketEv
         return """
                 SELECT ticketGenerated.id, ticketGenerated.eventId, customerId, assigned, used, barcode, qrcode
                 FROM dbo.TicketGenerated ticketGenerated
-                JOIN dbo.ticketEvent ticketEvent ON ticketEvent.ticketId = ticketGenerated.id
-                WHERE ticketEvent.eventId = ?;
+                JOIN dbo.ticketEvent ticketEvent ON ticketEvent.id = ticketGenerated.eventId
+                WHERE ticketEvent.id = ?;
                 """;
     }
 
