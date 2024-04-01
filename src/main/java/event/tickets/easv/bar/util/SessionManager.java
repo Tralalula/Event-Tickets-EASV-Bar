@@ -39,7 +39,7 @@ public class SessionManager {
         String sessionId = generateSessionId();
         sessions.put(sessionId, user);
         loggedInUserSessionId = sessionId;
-        loggedInUsernameProperty.set(user.getUsername());
+        loggedInUsernameProperty.set(user.username());
         return sessionId;
     }
 

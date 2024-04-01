@@ -19,7 +19,7 @@ public class UserModel {
     public UserModel(User user) {
         // Don't want events here to ensure we initialize an empty ObservableList
         id.set(user.id());
-        username.set(user.getUsername());
+        username.set(user.username());
         imageName.set(user.imageName());
     }
 

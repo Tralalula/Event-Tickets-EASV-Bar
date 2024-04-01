@@ -2,6 +2,7 @@ package event.tickets.easv.bar.gui.component.users.createuser;
 
 import atlantafx.base.theme.Styles;
 import event.tickets.easv.bar.be.User;
+import event.tickets.easv.bar.be.enums.Rank;
 import event.tickets.easv.bar.gui.common.UserModel;
 import event.tickets.easv.bar.gui.common.View;
 import event.tickets.easv.bar.gui.util.StyleConfig;
@@ -55,24 +56,24 @@ public class CreateUserView implements View {
         var toggleGroup = new ToggleGroup();
 
         var adminRadio = new RadioButton("Admin");
-        adminRadio.setUserData(User.Rank.ADMIN);
+        adminRadio.setUserData(Rank.ADMIN);
         adminRadio.setToggleGroup(toggleGroup);
         styleRadioButton(adminRadio);
 
         var coordinatorRadio = new RadioButton("Event coordinator");
-        coordinatorRadio.setUserData(User.Rank.EVENT_COORDINATOR);
+        coordinatorRadio.setUserData(Rank.EVENT_COORDINATOR);
         coordinatorRadio.setToggleGroup(toggleGroup);
         styleRadioButton(coordinatorRadio);
 
-        toggleGroup.selectToggle(model.rankProperty().get() == User.Rank.ADMIN ? adminRadio : coordinatorRadio);
+        toggleGroup.selectToggle(model.rankProperty().get() == Rank.ADMIN ? adminRadio : coordinatorRadio);
         toggleGroup.selectedToggleProperty().addListener((obs, ov, nv) -> {
-            if (nv != null) model.rankProperty().set((User.Rank) nv.getUserData());
+            if (nv != null) model.rankProperty().set((Rank) nv.getUserData());
         });
 
         model.rankProperty().addListener((obs, ov, nv) -> {
-            if (nv == User.Rank.ADMIN) {
+            if (nv == Rank.ADMIN) {
                 toggleGroup.selectToggle(adminRadio);
-            } else if (nv == User.Rank.EVENT_COORDINATOR) {
+            } else if (nv == Rank.EVENT_COORDINATOR) {
                 toggleGroup.selectToggle(coordinatorRadio);
             }
         });

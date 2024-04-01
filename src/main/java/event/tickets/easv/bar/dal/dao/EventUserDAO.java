@@ -80,7 +80,7 @@ class EventUserSQLTemplate implements AssociationSQLTemplate<Event, User> {
     @Override
     public String selectBForASQL() {
         return """
-               SELECT id, username, imageName
+               SELECT users.id, users.username, users.mail, users.firstName, users.lastName, users.location, users.phoneNumber, users.imageName, users.rank, users.theme, users.language, users.fontSize
                FROM dbo.EventUser eventuser
                JOIN dbo.Users users ON eventuser.UserId = users.id
                WHERE eventuser.EventId = ?;

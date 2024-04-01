@@ -1,6 +1,9 @@
 package event.tickets.easv.bar.dal.dao;
 
 import event.tickets.easv.bar.be.User;
+import event.tickets.easv.bar.be.enums.Language;
+import event.tickets.easv.bar.be.enums.Rank;
+import event.tickets.easv.bar.be.enums.Theme;
 import event.tickets.easv.bar.dal.database.*;
 import event.tickets.easv.bar.util.Result;
 import org.jetbrains.annotations.NotNull;
@@ -52,19 +55,19 @@ public class UserDAO implements DAO<User> {
 class UserSQLTemplate implements SQLTemplate<User> {
     @Override
     public String getSelectSQL() {
-        return "SELECT * FROM dbo.Users WHERE id = ?";
+        return "SELECT id, username, mail, firstName, lastName, location, phoneNumber, imageName, rank, theme, language, fontSize FROM dbo.Users WHERE id = ?";
     }
 
     @Override
     public String allSelectSQL() {
-        return "SELECT * FROM dbo.Users";
+        return "SELECT id, username, mail, firstName, lastName, location, phoneNumber, imageName, rank, theme, language, fontSize FROM dbo.Users";
     }
 
     @Override
     public String insertSQL() {
         return """
-               INSERT INTO dbo.Users (username, password, imageName)
-               VALUES (?, ?, ?);
+               INSERT INTO dbo.Users (username, mail, password, firstName, lastName, location, phoneNumber, rank)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?);
                """;
     }
 
@@ -72,7 +75,7 @@ class UserSQLTemplate implements SQLTemplate<User> {
     public String updateSQL() {
         return """
                UPDATE dbo.Users
-               SET username = ?, password = ?, imageName = ?
+               SET username = ?, mail = ?, password = ?, firstName = ?, lastName = ?, location = ?, phoneNumber = ?, imageName = ?, rank = ?, theme = ?, language = ?, fontSize = ?
                WHERE id = ?;
                """;
     }
@@ -88,34 +91,57 @@ class UserResultSetMapper implements ResultSetMapper<User> {
     public User map(@NotNull ResultSet rs) throws SQLException {
         int id = rs.getInt("id");
         String username = rs.getString("username");
+        String mail = rs.getString("mail");
+        String firstName = rs.getString("firstName");
+        String lastName = rs.getString("lastName");
+        String location = rs.getString("location");
+        String phoneNumber = rs.getString("phoneNumber");
         String imageName = rs.getString("imageName");
+        Rank rank = Rank.fromDbValue(rs.getString("rank"));
+        Theme theme = Theme.fromDbValue(rs.getString("theme"));
+        Language language = Language.fromDbValue(rs.getString("language"));
+        int fontSize = rs.getInt("fontSize");
 
-        return new User(id, username, imageName);
+        return new User(id, username, mail, firstName, lastName, location, phoneNumber, imageName, rank, theme, language, fontSize);
     }
 }
 
 class UserInsertParameterSetter implements InsertParameterSetter<User> {
     @Override
     public void setParameters(PreparedStatement stmt, User entity) throws SQLException {
-        stmt.setString(1, entity.getUsername());
-        stmt.setString(2, entity.getPassword());
-        stmt.setString(3, entity.imageName());
+        stmt.setString(1, entity.username());
+        stmt.setString(2, entity.mail());
+        stmt.setString(3, entity.hashedPassword());
+        stmt.setString(4, entity.firstName());
+        stmt.setString(5, entity.lastName());
+        stmt.setString(6, entity.location());
+        stmt.setString(7, entity.phoneNumber());
+        stmt.setString(8, entity.rank().toDbValue());
     }
 }
 
 class UserUpdateParameterSetter implements UpdateParameterSetter<User> {
     @Override
     public void setParameters(PreparedStatement stmt, User original, User updatedData) throws SQLException {
-        stmt.setString(1, updatedData.getUsername());
-        stmt.setString(2, updatedData.getPassword());
-        stmt.setString(3, updatedData.imageName());
-        stmt.setInt(4, original.id());
+        stmt.setString(1, updatedData.username());
+        stmt.setString(2, updatedData.mail());
+        stmt.setString(3, updatedData.hashedPassword());
+        stmt.setString(4, updatedData.firstName());
+        stmt.setString(5, updatedData.lastName());
+        stmt.setString(6, updatedData.location());
+        stmt.setString(7, updatedData.phoneNumber());
+        stmt.setString(8, updatedData.imageName());
+        stmt.setString(9, updatedData.rank().toDbValue());
+        stmt.setString(10, updatedData.theme().toDbValue());
+        stmt.setString(11, updatedData.language().toDbValue());
+        stmt.setInt(12, updatedData.fontSize());
+        stmt.setInt(13, original.id());
     }
 }
 
 class UserIdSetter implements IdSetter<User> {
     @Override
     public User setId(User entity, int id) {
-        return new User(id, entity.getUsername(), entity.imageName());
+        return new User(id, entity);
     }
 }

@@ -1,6 +1,7 @@
 package event.tickets.easv.bar.gui.component.users.createuser;
 
 import event.tickets.easv.bar.be.User;
+import event.tickets.easv.bar.be.enums.Rank;
 import event.tickets.easv.bar.bll.EntityManager;
 import event.tickets.easv.bar.bll.cryptographic.BCrypt;
 import event.tickets.easv.bar.gui.common.UserModel;
@@ -51,19 +52,21 @@ public class CreateUserController {
         String mail = model.mailProperty().get();
         String password = psw("test");
         String imageName = "";
-        User.Rank rank = model.rankProperty().get();
+        Rank rank = model.rankProperty().get();
         String firstName = model.firstNameProperty().get();
         String lastName = model.lastNameProperty().get();
         String location = model.locationProperty().get();
         String phoneNumber = model.phoneNumberProperty().get();
 
-        var user = new User(username, password);
+        var user = new User(username, mail, password, firstName, lastName, location, phoneNumber, rank);
         Result<User> result = new EntityManager().add(user);
         switch (result) {
             case Success<User> s -> {
+                System.out.println("lol");
                 return true;
             }
             case Failure<User> f -> {
+                System.out.println(f);
                 return false;
             }
         }

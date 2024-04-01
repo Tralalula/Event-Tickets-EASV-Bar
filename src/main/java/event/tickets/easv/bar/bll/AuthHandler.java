@@ -15,16 +15,16 @@ public class AuthHandler {
 
     public User loginUser(User user) throws Exception {
         User dbUser = authDAO.getUser(user);
-        System.out.println("user pw:" + user.getPassword());
-        System.out.println("dbUser pw:" + dbUser.getPassword());
-        if (!BCrypt.checkpw(user.getPassword(), dbUser.getPassword()))
+        System.out.println("user pw:" + user.hashedPassword());
+        System.out.println("dbUser pw:" + dbUser.hashedPassword());
+        if (!BCrypt.checkpw(user.hashedPassword(), dbUser.hashedPassword()))
             throw new Exception("Incorrect login details");
 
         return dbUser;
     }
 
     public User createUser(User user) throws Exception {
-        user.setHashedPassword(user.getPassword());
+        user.setHashedPassword(user.hashedPassword());
 
         return authDAO.createUser(user);
     }

@@ -1,11 +1,12 @@
 package event.tickets.easv.bar.gui.component.users.createuser;
 
 import event.tickets.easv.bar.be.User;
+import event.tickets.easv.bar.be.enums.Rank;
 import javafx.beans.property.*;
 
 public class CreateUserModel {
     // role?
-    private final ObjectProperty<User.Rank> rank = new SimpleObjectProperty<>(User.Rank.ADMIN);
+    private final ObjectProperty<Rank> rank = new SimpleObjectProperty<>(Rank.ADMIN);
     private final StringProperty firstName = new SimpleStringProperty("");
     private final StringProperty lastName = new SimpleStringProperty("");
     private final StringProperty username = new SimpleStringProperty("");
@@ -15,7 +16,7 @@ public class CreateUserModel {
 
     private final BooleanProperty okToCreate = new SimpleBooleanProperty(false);
 
-    public ObjectProperty<User.Rank> rankProperty() {
+    public ObjectProperty<Rank> rankProperty() {
         return rank;
 
     }

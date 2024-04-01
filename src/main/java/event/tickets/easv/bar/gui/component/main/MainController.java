@@ -118,7 +118,7 @@ public class MainController {
                 model.userModels().setAll(convertToUserModels(s.result()));
                 model.usersFetchedProperty().set(true);
             }
-            case Failure<List<User>> f -> System.out.println("Error: " + f.cause());
+            case Failure<List<User>> f -> System.out.println("Error: " + f);
         }
     }
 

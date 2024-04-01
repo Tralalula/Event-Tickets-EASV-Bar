@@ -19,7 +19,7 @@ public class AuthDAO {
 
         try (Connection conn = databaseConnector.connection();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            stmt.setString(1, user.getUsername());
+            stmt.setString(1, user.username());
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
@@ -58,8 +58,8 @@ public class AuthDAO {
         try (Connection conn = databaseConnector.connection();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             // Bind parameters
-            stmt.setString(1, user.getUsername());
-            stmt.setString(2, user.getPassword());
+            stmt.setString(1, user.username());
+            stmt.setString(2, user.hashedPassword());
 
             // Run the specified SQL statement
             stmt.executeUpdate();
@@ -72,7 +72,7 @@ public class AuthDAO {
                 id = rs.getInt(1);
 
             // Create user object and send up the layers
-            User createdUser = new User(id, user.getUsername(), user.getPassword());
+            User createdUser = new User(id, user.username(), user.hashedPassword());
             return createdUser;
         } catch (SQLException ex) {
             throw new Exception("Could not create user", ex);

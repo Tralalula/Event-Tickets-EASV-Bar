@@ -56,7 +56,7 @@ public class DBDaoHelper<T extends Entity<T>> implements DAO<T> {
         try {
             setupDBConnector();
         } catch (IOException e) {
-            return Failure.of(FailureType.IO_FAILURE, "Failed to read from the data source", e);
+            return Failure.of(FailureType.IO_FAILURE, "DBDaoHelper.get() - Failed to read from the data source", e);
         }
 
         String sql = sqlTemplate.getSelectSQL();
@@ -71,7 +71,7 @@ public class DBDaoHelper<T extends Entity<T>> implements DAO<T> {
                 return Success.of(Optional.empty());
             }
         } catch (SQLException e) {
-            return Failure.of(FailureType.DB_DATA_RETRIEVAL_FAILURE, "Failed to retrieve data from the database", e);
+            return Failure.of(FailureType.DB_DATA_RETRIEVAL_FAILURE, "DBDaoHelper.get() - Failed to retrieve data from the database", e);
         }
     }
 
@@ -85,7 +85,7 @@ public class DBDaoHelper<T extends Entity<T>> implements DAO<T> {
         try {
             setupDBConnector();
         } catch (IOException e) {
-            return Failure.of(FailureType.IO_FAILURE, "Failed to read from the data source", e);
+            return Failure.of(FailureType.IO_FAILURE, "DBDaoHelper.all() - Failed to read from the data source", e);
         }
 
         List<T> results = new ArrayList<>();
@@ -99,7 +99,7 @@ public class DBDaoHelper<T extends Entity<T>> implements DAO<T> {
                 results.add(resultSetMapper.map(rs));
             }
         } catch (SQLException e) {
-            return Failure.of(FailureType.DB_DATA_RETRIEVAL_FAILURE, "Failed to retrieve data from the database", e);
+            return Failure.of(FailureType.DB_DATA_RETRIEVAL_FAILURE, "DBDaoHelper.all() - Failed to retrieve all entities", e);
         }
 
         return Success.of(results);
@@ -124,10 +124,10 @@ public class DBDaoHelper<T extends Entity<T>> implements DAO<T> {
                 int id = rs.getInt(1);
                 return Success.of(idSetter.setId(entity, id));
             } else {
-                return Failure.of(FailureType.DB_DATA_RETRIEVAL_FAILURE, "No ID generated for entity");
+                return Failure.of(FailureType.DB_DATA_RETRIEVAL_FAILURE, "DBDaoHelper.add() - No ID generated for entity: " + entity.getClass().getName());
             }
         } catch (SQLException e) {
-            return Failure.of(FailureType.DB_DATA_RETRIEVAL_FAILURE, "Failed to retrieve data from the database", e);
+            return Failure.of(FailureType.DB_DATA_RETRIEVAL_FAILURE, "DBDaoHelper.add() - Failed to add entity + " + entity.getClass().getName() + " from the database", e);
         }
     }
 
@@ -136,7 +136,7 @@ public class DBDaoHelper<T extends Entity<T>> implements DAO<T> {
         try {
             setupDBConnector();
         } catch (IOException e) {
-            return Failure.of(FailureType.IO_FAILURE, "Failed to read from the data source", e);
+            return Failure.of(FailureType.IO_FAILURE, "DBdaoHelper.update() - Failed to read from the data source", e);
         }
 
         String sql = sqlTemplate.updateSQL();
@@ -148,7 +148,7 @@ public class DBDaoHelper<T extends Entity<T>> implements DAO<T> {
             int rowsAffected = stmt.executeUpdate();
             return Success.of(rowsAffected > 0);
         } catch (SQLException e) {
-            return Failure.of(FailureType.DB_DATA_RETRIEVAL_FAILURE, "Failed to retrieve data from the database", e);
+            return Failure.of(FailureType.DB_DATA_RETRIEVAL_FAILURE, "DBDaoHelper.update() - Failed to update entity + " + original.getClass().getName() + " in the database", e);
         }
     }
 
@@ -157,7 +157,7 @@ public class DBDaoHelper<T extends Entity<T>> implements DAO<T> {
         try {
             setupDBConnector();
         } catch (IOException e) {
-            return Failure.of(FailureType.IO_FAILURE, "Failed to read from the data source", e);
+            return Failure.of(FailureType.IO_FAILURE, "DBDaoHelper.delete() - Failed to read from the data source", e);
         }
 
         String sql = sqlTemplate.deleteSQL();
@@ -176,10 +176,10 @@ public class DBDaoHelper<T extends Entity<T>> implements DAO<T> {
                 return Success.of(rowsAffected > 0);
             } catch (SQLException e) {
                 conn.rollback(); // Rollback transaction if an error happens
-                return Failure.of(FailureType.DB_DATA_RETRIEVAL_FAILURE, "Failed to delete entity", e);
+                return Failure.of(FailureType.DB_DATA_RETRIEVAL_FAILURE, "DBDaoHelper.delete() - Failed to delete entity " + entity.getClass().getName(), e);
             }
         } catch (SQLException e) {
-            return Failure.of(FailureType.DB_DATA_RETRIEVAL_FAILURE, "Failed to access the database", e);
+            return Failure.of(FailureType.DB_DATA_RETRIEVAL_FAILURE, "DBDaoHelper.delete() - Failed to access the database - " + entity.getClass().getName(), e);
         }
     }
 

@@ -553,7 +553,7 @@ class DBDaoHelperTest {
             assertThat(result).isInstanceOf(Success.class);
             var success = (Success<Boolean>) result;
             assertThat(success.result()).isEqualTo(true);
-            assertThat(user.getUsername()).isEqualTo("Sodavand");
+            assertThat(user.username()).isEqualTo("Sodavand");
         }
 
         @Test

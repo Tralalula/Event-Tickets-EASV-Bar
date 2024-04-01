@@ -54,7 +54,7 @@ public class ShowEventView implements View {
         ViewHandler.currentViewDataProperty().subscribe((oldData, newData) -> {
             if (newData instanceof EventModel) {
                 model.update((EventModel) newData);
-                Image img = EventsView.getImage(model.imageName().get());
+                Image img = EventsView.getImage(model.id().get() + "/" + model.imageName().get());
                 PixelReader reader = img.getPixelReader();
                 WritableImage newImage = new WritableImage(reader, 0, 0, (int) img.getWidth(), 300);
                 image.setImage(newImage);
