@@ -7,13 +7,17 @@ import event.tickets.easv.bar.gui.common.*;
 import event.tickets.easv.bar.gui.component.main.MainModel;
 import event.tickets.easv.bar.gui.util.StyleConfig;
 import javafx.beans.property.BooleanProperty;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.SortedList;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.*;
 import org.kordamp.ikonli.feather.Feather;
 import org.kordamp.ikonli.javafx.FontIcon;
+
+import java.util.Comparator;
 
 public class TicketsView implements View {
     private final MainModel mainModel;
@@ -125,7 +129,10 @@ public class TicketsView implements View {
 
         table.getStyleClass().addAll(Tweaks.NO_HEADER, Styles.STRIPED);
 
-        table.setItems(model);
+
+        SortedList<TicketModel> sortedList = ticketsModel.sortToNewest(model);
+        table.setItems(sortedList);
+
         table.getColumns().addAll(col1, col2, col4);
 
         table.getStyleClass().add(StyleConfig.ACTIONABLE);

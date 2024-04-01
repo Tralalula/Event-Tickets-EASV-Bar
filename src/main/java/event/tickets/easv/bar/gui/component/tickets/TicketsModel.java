@@ -14,6 +14,7 @@ import event.tickets.easv.bar.util.Result;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,5 +54,17 @@ public class TicketsModel {
             }
         }
         return newEntries;
+    }
+
+    /** Sorts a TicketModel list to newest from integer list: 1, 2, 3, 4, 5 returns 5, 4, 3, 2, 1
+     *
+     * @param ObservableList<TicketModel>
+     * @return sorted list
+     */
+    public SortedList<TicketModel> sortToNewest(ObservableList<TicketModel> list) {
+        FilteredList<TicketModel> filteredList = new FilteredList<>(list);
+
+        return new SortedList<>(filteredList,
+                (ticket1, ticket2) -> Integer.compare(ticket2.id().get(), ticket1.id().get()));
     }
 }

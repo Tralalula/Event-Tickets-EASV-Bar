@@ -38,8 +38,6 @@ public class ShowTicketView implements View {
             if (newData instanceof TicketModel) {
                 model.update((TicketModel) newData);
                 ticketEventModels.setAll(((TicketModel) newData).ticketEvents());
-
-                //ticketEventModels.addAll(ticketsModel.getTicketsForEvent(model.toEntity()));
             }
         });
     }
