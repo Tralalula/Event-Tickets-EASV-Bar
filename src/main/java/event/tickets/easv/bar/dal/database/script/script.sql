@@ -26,6 +26,10 @@ IF OBJECT_ID('dbo.Ticket', 'U') IS NOT NULL
     DROP TABLE dbo.Ticket;
 GO
 
+IF OBJECT_ID('dbo.Customer', 'U') IS NOT NULL
+DROP TABLE dbo.Ticket;
+GO
+
 IF OBJECT_ID('dbo.Event', 'U') IS NOT NULL
     DROP TABLE dbo.Event;
 GO
@@ -117,6 +121,12 @@ CREATE TABLE TicketGenerated (
     -- FOREIGN KEY (customerId) REFERENCES Customer(id)
 );
 GO
+
+create table Customers
+(
+    id   int identity,
+    mail varchar(100)
+);
 
 INSERT INTO Event (title, imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo)
 VALUES
