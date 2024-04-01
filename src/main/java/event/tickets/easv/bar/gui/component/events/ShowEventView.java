@@ -3,8 +3,11 @@ package event.tickets.easv.bar.gui.component.events;
 import atlantafx.base.theme.Styles;
 import event.tickets.easv.bar.be.Event;
 import event.tickets.easv.bar.gui.common.*;
+import event.tickets.easv.bar.gui.component.events.assigncoordinator.AssignCoordinatorView;
 import event.tickets.easv.bar.gui.util.NodeUtils;
 import event.tickets.easv.bar.gui.util.StyleConfig;
+import event.tickets.easv.bar.gui.widgets.Buttons;
+import event.tickets.easv.bar.gui.widgets.Icons;
 import event.tickets.easv.bar.gui.widgets.Images;
 import event.tickets.easv.bar.gui.widgets.Labels;
 import javafx.application.Platform;
@@ -27,6 +30,7 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
+import org.kordamp.ikonli.material2.Material2AL;
 
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
@@ -131,7 +135,10 @@ public class ShowEventView implements View {
         var noteBox = new VBox(noteText, note);
 
         var coordinatorsText = Labels.styledLabel("Event coordinators", Styles.TITLE_3);
-        var coordinatorsBox = new VBox(coordinatorsText, coordinators);
+        var spacer = new Region();
+        var add = Buttons.actionIconButton(Material2AL.ADD, e -> ViewHandler.showOverlay("Add coordinator", new AssignCoordinatorView().getView(), 450, 450), StyleConfig.ACTIONABLE);
+        var box = new HBox(coordinatorsText, spacer, add);
+        var coordinatorsBox = new VBox(box, coordinators);
 
         var ticketsText = Labels.styledLabel("Tickets", Styles.TITLE_3);
         var ticketsBox = new VBox(ticketsText, eventTicketsTableView);
@@ -144,4 +151,6 @@ public class ShowEventView implements View {
 
         return results;
     }
+
+
 }

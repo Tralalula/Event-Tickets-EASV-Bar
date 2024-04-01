@@ -2,6 +2,7 @@ package event.tickets.easv.bar.gui.common;
 
 import atlantafx.base.controls.ModalPane;
 import event.tickets.easv.bar.gui.widgets.Dialog;
+import event.tickets.easv.bar.gui.widgets.ModalDialog;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -69,10 +70,24 @@ public class ViewHandler {
         INSTANCE.overlay.show(node);
     }
 
-    public static void showOverlay(Node node, int width, int height) {
+    public static void showOverlay(Node content, int width, int height) {
         var dialog = new Dialog(width, height);
-        dialog.getChildren().setAll(node);
+        dialog.getChildren().setAll(content);
         INSTANCE.overlay.show(dialog);
+    }
+
+    public static void showOverlay(String title, Node content, int width, int height) {
+        var dialog = new ModalDialog(title, content, width, height);
+        INSTANCE.overlay.show(dialog);
+    }
+
+    public static void showOverlay(String title, Node content, Node footer, int width, int height) {
+        var dialog = new ModalDialog(title, content, footer, width, height);
+        INSTANCE.overlay.show(dialog);
+    }
+
+    public static void hideOverlay() {
+        INSTANCE.overlay.hide();
     }
 
     public static ObservableValue<Object> currentViewDataProperty() {
