@@ -33,6 +33,15 @@ public class TicketGenerated implements Entity<TicketGenerated> {
                 ticketGenerated.isUsed(), ticketGenerated.getBarcode(), ticketGenerated.getQrcode());
     }
 
+    public TicketGenerated(int eventId, int customerId) {
+        this.eventId = eventId;
+        this.customerId = customerId;
+        this.assigned = false;
+        this.used = false;
+        this.barcode = "ASD";
+        this.qrcode = "ASD";
+    }
+
     public int getId() {
         return id;
     }

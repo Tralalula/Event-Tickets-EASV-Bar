@@ -1,6 +1,7 @@
 package event.tickets.easv.bar.gui.component.tickets;
 
 import event.tickets.easv.bar.Main;
+import event.tickets.easv.bar.be.Customer;
 import event.tickets.easv.bar.be.Event;
 import event.tickets.easv.bar.be.Ticket.Ticket;
 import event.tickets.easv.bar.be.Ticket.TicketEvent;
@@ -67,6 +68,40 @@ public class TicketsModel {
         }
 
         return list;
+    }
+
+    //TODO: Refactor
+    public List<TicketGenerated> generateTickets(int id, int amount, String email) {
+        List<TicketGenerated> newEntries = new ArrayList<>();
+        Customer createdCustomer = handleCustomer(entityManager.add(new Customer(email)));
+
+        for (int i = 0; i < amount; i++) {
+            handleAddGenerated(entityManager.add(new TicketGenerated(id, createdCustomer.id())));
+        }
+
+        return newEntries;
+    }
+
+    private Customer handleCustomer(Result<Customer> result) {
+        switch (result) {
+            case Result.Success<Customer> s -> {
+                return s.result();
+            }
+            case Result.Failure<Customer> f -> {
+                System.out.println("Error: " + f.cause());
+                return null;
+            }
+        }
+    }
+
+    private List<TicketGenerated> handleAddGenerated(Result<TicketGenerated> result) {
+        ObservableList<TicketGenerated> tickets = FXCollections.observableArrayList();
+        switch (result) {
+            case Result.Success<TicketGenerated> s -> tickets.add(s.result());
+            case Result.Failure<TicketGenerated> f -> System.out.println("Error: " + f.cause());
+        }
+
+        return tickets;
     }
 
     /** Sorts a TicketModel list to newest from integer list: 1, 2, 3, 4, 5 returns 5, 4, 3, 2, 1

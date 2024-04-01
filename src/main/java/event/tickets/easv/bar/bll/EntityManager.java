@@ -1,5 +1,6 @@
 package event.tickets.easv.bar.bll;
 
+import event.tickets.easv.bar.be.Customer;
 import event.tickets.easv.bar.be.Entity;
 import event.tickets.easv.bar.be.Event;
 import event.tickets.easv.bar.be.User;
@@ -35,6 +36,7 @@ public class EntityManager {
         registerDao(Ticket.class, new TicketDAO());
         registerDao(TicketGenerated.class, new TicketGeneratedDAO());
         registerDao(TicketEvent.class, new TicketEventDAO());
+        registerDao(Customer.class, new CustomerDAO());
 
         // Associations
         registerAssociation(Event.class, User.class, new EventUserDAO());

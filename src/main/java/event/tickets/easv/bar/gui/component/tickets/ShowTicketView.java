@@ -13,10 +13,13 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import org.kordamp.ikonli.feather.Feather;
 import org.kordamp.ikonli.javafx.FontIcon;
+import org.kordamp.ikonli.material2.Material2AL;
+import org.kordamp.ikonli.material2.Material2MZ;
 
 import java.beans.EventHandler;
 import java.lang.reflect.Array;
@@ -107,6 +110,8 @@ public class ShowTicketView implements View {
         TableColumn<TicketEventModel, Void> col6 = new TableColumn<>("");
         col6.setCellFactory(param -> new TableCell<>() {
             private final Button editButton = new Button(null, new FontIcon(Feather.EDIT));
+            private final Button assignButton = new Button(null, new FontIcon(Material2MZ.PERSON_ADD));
+
             {
                 editButton.getStyleClass().addAll(
                         Styles.BUTTON_ICON, Styles.FLAT, Styles.ACCENT, Styles.TITLE_4
@@ -116,12 +121,27 @@ public class ShowTicketView implements View {
                     TicketEventModel rowData = getTableView().getItems().get(getIndex());
                     ViewHandler.changeView(ViewType.SHOW_TICKET, rowData);
                 });
+
+                assignButton.getStyleClass().addAll(
+                        Styles.BUTTON_ICON, Styles.FLAT, Styles.ACCENT, Styles.TITLE_4
+                );
+
+                assignButton.setOnAction(event -> {
+                    TicketEventModel rowData = getTableView().getItems().get(getIndex());
+                    ViewHandler.changeView(ViewType.ASSIGN_TICKET_VIEW, rowData);
+                });
             }
 
             @Override
             protected void updateItem(Void item, boolean empty) {
                 super.updateItem(item, empty);
-                setGraphic(empty ? null : editButton);
+                if (empty) {
+                    setGraphic(null);
+                } else {
+                    HBox buttons = new HBox(editButton, assignButton);
+                    buttons.setSpacing(20);
+                    setGraphic(buttons);
+                }
             }
         });
 

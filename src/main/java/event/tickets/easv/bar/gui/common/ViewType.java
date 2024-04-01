@@ -31,6 +31,7 @@ public enum ViewType {
     ADD_TICKET(WindowType.MAIN_APP, TICKETS),
     SHOW_TICKET(WindowType.MAIN_APP, TICKETS),
     ADD_TICKET_EVENT(WindowType.MAIN_APP, SHOW_TICKET),
+    ASSIGN_TICKET_VIEW(WindowType.MAIN_APP, SHOW_TICKET),
 
     // Users
     USERS(WindowType.MAIN_APP),
