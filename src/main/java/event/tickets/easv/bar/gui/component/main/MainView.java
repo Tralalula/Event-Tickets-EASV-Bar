@@ -20,13 +20,19 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
+import org.controlsfx.glyphfont.FontAwesome;
+import org.kordamp.ikonli.Ikon;
 import org.kordamp.ikonli.feather.Feather;
+import org.kordamp.ikonli.fontawesome5.FontAwesomeRegular;
+import org.kordamp.ikonli.fontawesome5.FontAwesomeSolid;
 import org.kordamp.ikonli.javafx.FontIcon;
+import org.kordamp.ikonli.material2.Material2AL;
 import org.kordamp.ikonli.material2.Material2MZ;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Stream;
 
 public class MainView implements View {
     private final MainModel model;
@@ -229,12 +235,23 @@ public class MainView implements View {
         results.getStyleClass().addAll(Styles.BG_DEFAULT, StyleConfig.ROUNDING_DEFAULT, StyleConfig.PADDING_DEFAULT);
         results.setMinWidth(250);
 
-        var dashboard = new Button("Dashboard");
-        var events = new Button("Events");
-        var tickets = new Button("Tickets");
-        var users = new Button("Users");
-        var verifyTicket = new Button("Verify Ticket");
-        var login = new Button("Login");
+        var dashboard = createButton("Dashboard", Material2AL.DASHBOARD);
+        var events = createButton("Events", Material2AL.EVENT_AVAILABLE);
+        var tickets = createButton("Tickets", FontAwesomeSolid.TICKET_ALT);
+        var users = createButton("Users", FontAwesomeSolid.USERS);
+        var verifyTicket = createButton("Verify Ticket", Feather.CHECK);
+        var login = createButton("Login", null);
+
+/*        var dashboard = new Button("Dashboard", new FontIcon(Material2AL.DASHBOARD));
+        dashboard.getStyleClass().addAll(Styles.ACCENT);
+
+        var events = new Button("Events", new FontIcon(Material2AL.EVENT_AVAILABLE));
+        events.getStyleClass().addAll(Styles.ACCENT, Styles.FLAT);
+
+        var tickets = new Button("Tickets", new FontIcon(FontAwesomeSolid.TICKET_ALT));
+        var users = new Button("Users", new FontIcon(FontAwesomeSolid.USERS));
+        var verifyTicket = new Button("Verify Ticket", new FontIcon(Feather.CHECK));
+        var login = new Button("Login", null);*/
 
         results.getChildren().addAll(
                 dashboard,
@@ -253,5 +270,31 @@ public class MainView implements View {
         users.setOnAction(e -> ViewHandler.changeView(ViewType.CREATE_USER));
 
         return results;
+    }
+
+    private Button createButton(String text, Ikon icon) {
+        var btn = new Button();
+        var hbox = new HBox(16);
+        hbox.setAlignment(Pos.CENTER_LEFT);
+
+        var lbl = new Label(text);
+
+        if (icon != null) {
+            var fontIcon = new FontIcon(icon);
+            fontIcon.setIconSize(32);
+            hbox.getChildren().add(fontIcon);
+        }
+        hbox.getChildren().add(lbl);
+
+        btn.setGraphic(hbox);
+
+        btn.getStyleClass().addAll(Styles.TEXT_BOLD, StyleConfig.ACTIONABLE, Styles.FLAT);
+        btn.setMinWidth(200);
+        btn.setMaxWidth(200);
+        btn.setMinHeight(60);
+        btn.setMaxHeight(60);
+        hbox.setPadding(new Insets(0, 10, 0, 10));
+
+        return btn;
     }
 }
