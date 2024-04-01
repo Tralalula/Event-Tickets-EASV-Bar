@@ -50,15 +50,13 @@ public class CreateUserController {
     private boolean createUser() {
         String username = model.usernameProperty().get();
         String mail = model.mailProperty().get();
-        String password = psw("test");
-        String imageName = "";
         Rank rank = model.rankProperty().get();
         String firstName = model.firstNameProperty().get();
         String lastName = model.lastNameProperty().get();
         String location = model.locationProperty().get();
         String phoneNumber = model.phoneNumberProperty().get();
 
-        var user = new User(username, mail, password, firstName, lastName, location, phoneNumber, rank);
+        var user = new User(username, mail, "test", firstName, lastName, location, phoneNumber, rank);
         Result<User> result = new EntityManager().add(user);
         switch (result) {
             case Success<User> s -> {
@@ -70,11 +68,6 @@ public class CreateUserController {
                 return false;
             }
         }
-    }
-
-    private String psw(String text) {
-        String salt = BCrypt.gensalt(10);
-        return BCrypt.hashpw(text, salt);
     }
 
     private boolean isDataValid() {
