@@ -40,7 +40,7 @@ import java.util.stream.Stream;
 
 public class MainView implements View {
     private static final PseudoClass ACTIVE_PSEUDO_CLASS = PseudoClass.getPseudoClass("active");
-
+    private static final PseudoClass HOVER_PSEUDO_CLASS = PseudoClass.getPseudoClass("hover");
 
     private final MainModel model;
     private final MainController controller;
@@ -247,7 +247,11 @@ public class MainView implements View {
         var events = createButton("Events", Material2AL.EVENT_AVAILABLE, ViewType.EVENTS);
         var tickets = createButton("Tickets", FontAwesomeSolid.TICKET_ALT, ViewType.TICKETS);
         var users = createButton("Users", FontAwesomeSolid.USERS, ViewType.USERS);
-        var verifyTicket = createButton("Verify Ticket", Feather.CHECK, ViewType.NO_VIEW);
+
+        var verifyTicket = new Button("Verify ticket", new FontIcon(Feather.CHECK));
+        verifyTicket.getStyleClass().addAll(Styles.BUTTON_OUTLINED);
+
+
         var login = createButton("Login", null, ViewType.NO_VIEW);
 
         results.getChildren().addAll(
@@ -272,7 +276,7 @@ public class MainView implements View {
 
     private Button createButton(String text, Ikon icon, ViewType viewType) {
         var btn = new Button();
-        btn.getStyleClass().addAll(Styles.TEXT_BOLD, StyleConfig.ACTIONABLE, Styles.FLAT, Styles.ACCENT, "nav-button");
+        btn.getStyleClass().addAll(Styles.TEXT_BOLD, StyleConfig.ACTIONABLE, Styles.FLAT, "nav-button");
         var hbox = new HBox(16);
         hbox.setAlignment(Pos.CENTER_LEFT);
 
@@ -297,8 +301,8 @@ public class MainView implements View {
         hbox.setPadding(new Insets(0, 10, 0, 10));
 
         final FontIcon fIcon = fontIcon;
-        ViewHandler.activeRootViewProperty().addListener((obs, ov, nv) -> {
-            boolean isActive = nv == viewType;
+        ViewHandler.activeRootViewProperty().subscribe(vt -> {
+            boolean isActive = vt == viewType;
             btn.pseudoClassStateChanged(ACTIVE_PSEUDO_CLASS, isActive);
             lbl.pseudoClassStateChanged(ACTIVE_PSEUDO_CLASS, isActive);
             if (fIcon != null) fIcon.pseudoClassStateChanged(ACTIVE_PSEUDO_CLASS, isActive);
