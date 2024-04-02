@@ -6,10 +6,7 @@ import event.tickets.easv.bar.gui.common.*;
 import event.tickets.easv.bar.gui.component.events.assigncoordinator.AssignCoordinatorView;
 import event.tickets.easv.bar.gui.util.NodeUtils;
 import event.tickets.easv.bar.gui.util.StyleConfig;
-import event.tickets.easv.bar.gui.widgets.Buttons;
-import event.tickets.easv.bar.gui.widgets.Icons;
-import event.tickets.easv.bar.gui.widgets.Images;
-import event.tickets.easv.bar.gui.widgets.Labels;
+import event.tickets.easv.bar.gui.widgets.*;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
@@ -31,6 +28,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import org.kordamp.ikonli.material2.Material2AL;
 
@@ -104,15 +102,13 @@ public class ShowEventView implements View {
         coordinators.getChildren().clear();
 
         for (UserModel userModel : users) {
-            var circle = new Circle(24);
-            circle.getStyleClass().add(Styles.ELEVATED_3);
-
+            var photo = new CircularImageView(24, "OK");
             String imageName = userModel.id().get() + "/" + userModel.imageName().get();
-            System.out.println(imageName);
-            EventsView.loadImagePattern(circle, EventsView.getProfileImage(imageName));
+            photo.setFill(Color.WHITE);
+            photo.setImage(EventsView.getProfileImage(imageName));
 
             var name = Labels.styledLabel(userModel.username(), Styles.TEXT_NORMAL);
-            var box = new VBox(StyleConfig.STANDARD_SPACING, circle, name);
+            var box = new VBox(StyleConfig.STANDARD_SPACING, photo.get(), name);
             box.setAlignment(Pos.CENTER);
 
             coordinators.getChildren().add(box);

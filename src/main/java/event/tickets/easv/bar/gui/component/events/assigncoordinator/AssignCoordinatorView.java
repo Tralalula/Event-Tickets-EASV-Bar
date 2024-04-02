@@ -9,18 +9,18 @@ import event.tickets.easv.bar.gui.common.UserModel;
 import event.tickets.easv.bar.gui.common.View;
 import event.tickets.easv.bar.gui.component.events.EventsView;
 import event.tickets.easv.bar.gui.util.StyleConfig;
-import event.tickets.easv.bar.gui.widgets.Images;
+import event.tickets.easv.bar.gui.widgets.CircularImageView;
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.BooleanProperty;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.kordamp.ikonli.material2.Material2MZ;
 import org.kordamp.ikonli.material2.Material2OutlinedAL;
@@ -29,9 +29,14 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class AssignCoordinatorView implements View {
+    private final AssignCoordinatorModel model;
+    private final AssignCoordinatorController controller;
     private final FilteredList<UserModel> filteredUserModels;
 
     public AssignCoordinatorView(EventModel eventModel, ObservableList<UserModel> models) {
+        this.model = new AssignCoordinatorModel();
+        this.controller = new AssignCoordinatorController(model, eventModel);
+
         this.filteredUserModels = new FilteredList<>(models, userModel -> true);
 
         Set<Integer> associatedUserIds = eventModel.users().stream()
@@ -65,13 +70,14 @@ public class AssignCoordinatorView implements View {
     private ListCell<UserModel> resultCell() {
         return new ListCell<>() {
             private final Tile tile = new Tile();
-            private StackPane imgageContainer;
-            private final ImageView imgView;
-            private StackPane placeholder;
+            private final Button assignBtn = new Button(null);
+            private final CircularImageView photo;
 
             {
-                imgView = Images.circle(32);
+                photo = new CircularImageView(32);
                 setPadding(new Insets(4, 0, 4, 0));
+                assignBtn.setGraphic(new FontIcon(Material2OutlinedAL.ADD));
+                assignBtn.getStyleClass().addAll(Styles.BUTTON_CIRCLE, StyleConfig.ACTIONABLE, Styles.FLAT);
             }
 
             @Override
@@ -82,7 +88,7 @@ public class AssignCoordinatorView implements View {
                     setGraphic(null);
                 } else {
 
-                    imgView.setImage(EventsView.getProfileImage(item.id().get() + "/" + item.imageName().get()));
+                    photo.setImage(EventsView.getProfileImage(item.id().get() + "/" + item.imageName().get()));
 
                     String firstName = item.firstName().get();
                     String lastName = item.lastName().get();
@@ -93,28 +99,28 @@ public class AssignCoordinatorView implements View {
                         initials = firstName.substring(0, 1) + lastName.substring(0, 1);
                     }
 
-                    placeholder = circlePlaceholder(initials.toUpperCase(), 32);
-                    imgageContainer = new StackPane(placeholder, imgView);
-                    var btn = new Button(null, new FontIcon(Material2OutlinedAL.ADD));
-                    btn.getStyleClass().addAll(Styles.BUTTON_CIRCLE, StyleConfig.ACTIONABLE, Styles.FLAT);
+                    System.out.println(initials.toUpperCase());
+                    photo.setText(initials.toUpperCase());
 
-                    tile.setGraphic(imgageContainer);
+                    BooleanProperty selectedProperty = model.selectionStateProperty(item);
+                    assignBtn.graphicProperty().bind(Bindings.when(selectedProperty)
+                                                       .then(new FontIcon(Material2OutlinedAL.CHECK))
+                                                       .otherwise(new FontIcon(Material2OutlinedAL.ADD)));
+                    assignBtn.disableProperty().bind(model.okToAssignProperty().not());
+                    assignBtn.setOnAction(e -> {
+                        assignBtn.disableProperty().unbind();
+                        assignBtn.setDisable(true);
+                        selectedProperty.set(true);
+                        controller.assignCoordinator(() -> assignBtn.disableProperty().bind(model.okToAssignProperty().not()), item);
+                    });
+
+                    tile.setGraphic(photo.get());
                     tile.setDescription(item.mail().get());
                     tile.setTitle(firstName + " " + lastName);
-                    tile.setAction(btn);
+                    tile.setAction(assignBtn);
                     setGraphic(tile);
                 }
             }
         };
-    }
-
-    public static StackPane circlePlaceholder(String text, int radius) {
-        var circle = new Circle(radius);
-        circle.setFill(Color.LIGHTGRAY);
-
-        var label = new Label(text);
-        label.getStyleClass().add(Styles.TEXT_BOLD);
-
-        return new StackPane(circle, label);
     }
 }

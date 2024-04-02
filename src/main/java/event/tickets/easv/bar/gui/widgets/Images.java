@@ -1,16 +1,21 @@
 package event.tickets.easv.bar.gui.widgets;
 
 import atlantafx.base.controls.CardSkin;
+import atlantafx.base.theme.Styles;
 import javafx.scene.Group;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.*;
+
+import static java.awt.SystemColor.text;
 
 public class Images {
     public static ImageView topRoundImage(double fitWidth, double fitHeight, double radius) {
         return round(fitWidth, fitHeight, radius, radius, 0, 0);
     }
-
 
     public static ImageView circle(double radius) {
         double diameter = radius * 2;
@@ -26,7 +31,6 @@ public class Images {
 
         return imgView;
     }
-
 
     // https://stackoverflow.com/a/72951931
     public static ImageView round(double width,
