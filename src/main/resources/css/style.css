@@ -31,3 +31,19 @@
     -fx-border-color: transparent;
     -fx-background-radius: 5;
 }
+
+.nav-button:active {
+    -fx-background-color: #009FE3;
+}
+
+.nav-text:active {
+    -fx-text-fill: white;
+}
+
+.nav-icon:active {
+    -fx-icon-color: white;
+}
+
+.nav-icon {
+    -fx-icon-color: black;
+}

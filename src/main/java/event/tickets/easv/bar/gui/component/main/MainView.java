@@ -14,12 +14,16 @@ import event.tickets.easv.bar.gui.component.users.createuser.CreateUserView;
 import event.tickets.easv.bar.gui.util.StyleConfig;
 import event.tickets.easv.bar.gui.util.*;
 import event.tickets.easv.bar.util.SessionManager;
+import javafx.beans.binding.Bindings;
+import javafx.beans.value.ObservableValue;
+import javafx.css.PseudoClass;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import org.controlsfx.glyphfont.FontAwesome;
 import org.kordamp.ikonli.Ikon;
 import org.kordamp.ikonli.feather.Feather;
@@ -35,6 +39,9 @@ import java.util.Objects;
 import java.util.stream.Stream;
 
 public class MainView implements View {
+    private static final PseudoClass ACTIVE_PSEUDO_CLASS = PseudoClass.getPseudoClass("active");
+
+
     private final MainModel model;
     private final MainController controller;
 
@@ -231,27 +238,17 @@ public class MainView implements View {
     }
 
     private Region sidebar() {
-        var results = new VBox(StyleConfig.STANDARD_SPACING);
-        results.getStyleClass().addAll(Styles.BG_DEFAULT, StyleConfig.ROUNDING_DEFAULT, StyleConfig.PADDING_DEFAULT);
+        var results = new VBox(StyleConfig.STANDARD_SPACING * 2);
+        results.getStyleClass().addAll(Styles.BG_DEFAULT, StyleConfig.ROUNDING_DEFAULT);
+        results.setPadding(new Insets(25));
         results.setMinWidth(250);
 
-        var dashboard = createButton("Dashboard", Material2AL.DASHBOARD);
-        var events = createButton("Events", Material2AL.EVENT_AVAILABLE);
-        var tickets = createButton("Tickets", FontAwesomeSolid.TICKET_ALT);
-        var users = createButton("Users", FontAwesomeSolid.USERS);
-        var verifyTicket = createButton("Verify Ticket", Feather.CHECK);
-        var login = createButton("Login", null);
-
-/*        var dashboard = new Button("Dashboard", new FontIcon(Material2AL.DASHBOARD));
-        dashboard.getStyleClass().addAll(Styles.ACCENT);
-
-        var events = new Button("Events", new FontIcon(Material2AL.EVENT_AVAILABLE));
-        events.getStyleClass().addAll(Styles.ACCENT, Styles.FLAT);
-
-        var tickets = new Button("Tickets", new FontIcon(FontAwesomeSolid.TICKET_ALT));
-        var users = new Button("Users", new FontIcon(FontAwesomeSolid.USERS));
-        var verifyTicket = new Button("Verify Ticket", new FontIcon(Feather.CHECK));
-        var login = new Button("Login", null);*/
+        var dashboard = createButton("Dashboard", Material2AL.DASHBOARD, ViewType.DASHBOARD);
+        var events = createButton("Events", Material2AL.EVENT_AVAILABLE, ViewType.EVENTS);
+        var tickets = createButton("Tickets", FontAwesomeSolid.TICKET_ALT, ViewType.TICKETS);
+        var users = createButton("Users", FontAwesomeSolid.USERS, ViewType.USERS);
+        var verifyTicket = createButton("Verify Ticket", Feather.CHECK, ViewType.NO_VIEW);
+        var login = createButton("Login", null, ViewType.NO_VIEW);
 
         results.getChildren().addAll(
                 dashboard,
@@ -272,28 +269,40 @@ public class MainView implements View {
         return results;
     }
 
-    private Button createButton(String text, Ikon icon) {
+
+    private Button createButton(String text, Ikon icon, ViewType viewType) {
         var btn = new Button();
+        btn.getStyleClass().addAll(Styles.TEXT_BOLD, StyleConfig.ACTIONABLE, Styles.FLAT, Styles.ACCENT, "nav-button");
         var hbox = new HBox(16);
         hbox.setAlignment(Pos.CENTER_LEFT);
 
         var lbl = new Label(text);
+        lbl.getStyleClass().add("nav-text");
 
+        FontIcon fontIcon = null;
         if (icon != null) {
-            var fontIcon = new FontIcon(icon);
+            fontIcon = new FontIcon(icon);
             fontIcon.setIconSize(32);
+            fontIcon.getStyleClass().add("nav-icon");
             hbox.getChildren().add(fontIcon);
         }
         hbox.getChildren().add(lbl);
 
         btn.setGraphic(hbox);
 
-        btn.getStyleClass().addAll(Styles.TEXT_BOLD, StyleConfig.ACTIONABLE, Styles.FLAT);
         btn.setMinWidth(200);
-        btn.setMaxWidth(200);
+        btn.setMaxWidth(Double.MAX_VALUE);
         btn.setMinHeight(60);
         btn.setMaxHeight(60);
         hbox.setPadding(new Insets(0, 10, 0, 10));
+
+        final FontIcon fIcon = fontIcon;
+        ViewHandler.activeRootViewProperty().addListener((obs, ov, nv) -> {
+            boolean isActive = nv == viewType;
+            btn.pseudoClassStateChanged(ACTIVE_PSEUDO_CLASS, isActive);
+            lbl.pseudoClassStateChanged(ACTIVE_PSEUDO_CLASS, isActive);
+            if (fIcon != null) fIcon.pseudoClassStateChanged(ACTIVE_PSEUDO_CLASS, isActive);
+        });
 
         return btn;
     }

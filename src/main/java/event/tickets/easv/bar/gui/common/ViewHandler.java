@@ -21,6 +21,7 @@ public class ViewHandler {
     private final ObjectProperty<WindowType> activeWindow = new SimpleObjectProperty<>(WindowType.NONE);
     private final ObjectProperty<ViewType> activeView = new SimpleObjectProperty<>(ViewType.NO_VIEW);
     private final ObjectProperty<ViewType> previousView = new SimpleObjectProperty<>(ViewType.NO_VIEW);
+    private final ObjectProperty<ViewType> activeRootView = new SimpleObjectProperty<>(ViewType.NO_VIEW);
     private final List<ViewType> navigationStack = new LinkedList<>();
 
     // Rep invariant:
@@ -46,6 +47,11 @@ public class ViewHandler {
     private static void checkRep() {
         INSTANCE.instanceCheckRep();
     }
+
+    private ViewHandler() {
+        navigationStack.add(ViewType.NO_VIEW);
+    }
+
 
     /**
      * Updates the active view and active window to
@@ -136,11 +142,20 @@ public class ViewHandler {
         INSTANCE.activeView.set(previousView);
         INSTANCE.activeWindow.set(previousWindow);
         INSTANCE.previousView.set(stack.size() > 1 ? stack.get(stack.size() - 2) : ViewType.NO_VIEW);
+        INSTANCE.updateActiveRootView(INSTANCE.activeView.get());
         checkRep();
     }
 
     public static ReadOnlyObjectProperty<ViewType> activeViewProperty() {
         return INSTANCE.activeView;
+    }
+
+    private void updateActiveRootView(ViewType viewType) {
+        INSTANCE.activeRootView.set(ViewTypeHelper.rootOf(viewType));
+    }
+
+    public static ReadOnlyObjectProperty<ViewType> activeRootViewProperty() {
+        return INSTANCE.activeRootView;
     }
 
     public static ReadOnlyObjectProperty<WindowType> activeWindowProperty() {
@@ -149,10 +164,6 @@ public class ViewHandler {
 
     public static ModalPane overlay() {
         return INSTANCE.overlay;
-    }
-
-    private ViewHandler() {
-        navigationStack.add(ViewType.NO_VIEW);
     }
 
     private void changeViewInstance(ViewType newView) {
@@ -165,6 +176,7 @@ public class ViewHandler {
         activeView.set(newView);
         activeWindow.set(newView.windowType());
         navigationStack.add(newView);
+        INSTANCE.updateActiveRootView(INSTANCE.activeView.get());
         checkRep();
     }
 

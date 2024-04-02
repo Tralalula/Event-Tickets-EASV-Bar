@@ -51,4 +51,9 @@ public class ViewTypeHelper {
         path.addFirst(currentType);
         return constructPath(currentType.parent(), path);
     }
+
+    public static ViewType rootOf(ViewType viewType) {
+        var path = pathOf(viewType);
+        return path.isEmpty() ? NO_VIEW : path.getFirst();
+    }
 }
