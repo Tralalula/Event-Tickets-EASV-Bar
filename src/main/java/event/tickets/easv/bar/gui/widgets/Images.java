@@ -11,6 +11,23 @@ public class Images {
         return round(fitWidth, fitHeight, radius, radius, 0, 0);
     }
 
+
+    public static ImageView circle(double radius) {
+        double diameter = radius * 2;
+        ImageView imgView = new ImageView();
+
+        imgView.setFitWidth(diameter);
+        imgView.setFitHeight(diameter);
+
+        Rectangle clip = new Rectangle(diameter, diameter);
+        clip.setArcWidth(diameter);
+        clip.setArcHeight(diameter);
+        imgView.setClip(clip);
+
+        return imgView;
+    }
+
+
     // https://stackoverflow.com/a/72951931
     public static ImageView round(double width,
                                   double height,

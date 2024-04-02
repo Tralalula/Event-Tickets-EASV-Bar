@@ -13,6 +13,8 @@ import event.tickets.easv.bar.gui.widgets.Labels;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
+import javafx.beans.property.IntegerProperty;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -34,16 +36,21 @@ import org.kordamp.ikonli.material2.Material2AL;
 
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
+import java.util.Set;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 public class ShowEventView implements View {
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE dd. MMMM HHmm", Locale.ENGLISH);
     private final EventModel model;
+    private final ObservableList<UserModel> userModels;
     private final ImageView image;
     private final HBox coordinators;
     private final TableView<TestModel> eventTicketsTableView;
 
-    public ShowEventView(EventModel model) {
+    public ShowEventView(EventModel model, ObservableList<UserModel> userModels) {
         this.model = model;
+        this.userModels = userModels;
         coordinators = new HBox(StyleConfig.STANDARD_SPACING * 8);
         eventTicketsTableView = new TableView<>();
 
@@ -136,7 +143,7 @@ public class ShowEventView implements View {
 
         var coordinatorsText = Labels.styledLabel("Event coordinators", Styles.TITLE_3);
         var spacer = new Region();
-        var add = Buttons.actionIconButton(Material2AL.ADD, e -> ViewHandler.showOverlay("Add coordinator", new AssignCoordinatorView().getView(), 450, 450), StyleConfig.ACTIONABLE);
+        var add = Buttons.actionIconButton(Material2AL.ADD, e -> ViewHandler.showOverlay("Add coordinator", new AssignCoordinatorView(model, userModels).getView(), 600, 540), StyleConfig.ACTIONABLE);
         var box = new HBox(coordinatorsText, spacer, add);
         var coordinatorsBox = new VBox(box, coordinators);
 

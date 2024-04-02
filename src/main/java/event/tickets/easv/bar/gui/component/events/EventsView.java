@@ -30,6 +30,7 @@ import org.controlsfx.control.GridCell;
 import org.controlsfx.control.GridView;
 import org.kordamp.ikonli.material2.Material2AL;
 
+import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -183,6 +184,7 @@ public class EventsView implements View {
 
     public static Image getProfileImage(String imagePath) {
         Image img = profileCache.get(imagePath);
+        System.out.println("path: " + imagePath);
         if (img == null) {
             String absolutePath = "file:///" + Paths.get("").toAbsolutePath() + AppConfig.PROFILE_IMAGES_DIR + imagePath.replace("\\", "/");
             img = new Image(absolutePath, true);
