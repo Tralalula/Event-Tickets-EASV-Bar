@@ -1,22 +1,16 @@
 package event.tickets.easv.bar.gui.component.events;
 
 import atlantafx.base.theme.Styles;
-import event.tickets.easv.bar.be.Event;
 import event.tickets.easv.bar.gui.common.*;
 import event.tickets.easv.bar.gui.component.events.assigncoordinator.AssignCoordinatorView;
 import event.tickets.easv.bar.gui.util.NodeUtils;
 import event.tickets.easv.bar.gui.util.StyleConfig;
 import event.tickets.easv.bar.gui.widgets.*;
-import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
-import javafx.beans.binding.BooleanBinding;
-import javafx.beans.property.IntegerProperty;
-import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.geometry.Rectangle2D;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -26,29 +20,26 @@ import javafx.scene.image.PixelReader;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
 import org.kordamp.ikonli.material2.Material2AL;
 
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
-import java.util.Set;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
 
 public class ShowEventView implements View {
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE dd. MMMM HHmm", Locale.ENGLISH);
     private final EventModel model;
-    private final ObservableList<UserModel> userModels;
+    private final ObservableList<EventModel> masterEventList;
+    private final ObservableList<UserModel> masterUserList;
     private final ImageView image;
     private final HBox coordinators;
     private final TableView<TestModel> eventTicketsTableView;
 
-    public ShowEventView(EventModel model, ObservableList<UserModel> userModels) {
+    public ShowEventView(EventModel model, ObservableList<EventModel> masterEventList, ObservableList<UserModel> masterUserList) {
         this.model = model;
-        this.userModels = userModels;
+        this.masterEventList = masterEventList;
+        this.masterUserList = masterUserList;
         coordinators = new HBox(StyleConfig.STANDARD_SPACING * 8);
         eventTicketsTableView = new TableView<>();
 
@@ -60,6 +51,14 @@ public class ShowEventView implements View {
         image.setFitWidth(1200);
         image.setFitHeight(300);
 
+        masterUserList.addListener((ListChangeListener<? super UserModel>) c -> {
+            System.out.println("wtf");
+        });
+
+        model.users().addListener((ListChangeListener<? super UserModel>) c -> {
+            System.out.println("yosfsjfsjdfjsdf");
+        });
+
         ViewHandler.currentViewDataProperty().subscribe((oldData, newData) -> {
             if (newData instanceof EventModel) {
                 model.update((EventModel) newData);
@@ -69,6 +68,10 @@ public class ShowEventView implements View {
                 image.setImage(newImage);
 
                 updateCoordinatorsView(model.users());
+
+                model.users().addListener((ListChangeListener<? super UserModel>) c -> {
+                    updateCoordinatorsView(model.users());
+                });
                 eventTicketsTableView.setItems(model.tests());
             }
         });
@@ -139,9 +142,10 @@ public class ShowEventView implements View {
 
         var coordinatorsText = Labels.styledLabel("Event coordinators", Styles.TITLE_3);
         var spacer = new Region();
-        var add = Buttons.actionIconButton(Material2AL.ADD, e -> ViewHandler.showOverlay("Add coordinator", new AssignCoordinatorView(model, userModels).getView(), 600, 540), StyleConfig.ACTIONABLE);
+        var add = Buttons.actionIconButton(Material2AL.ADD, e -> ViewHandler.showOverlay("Add coordinator", new AssignCoordinatorView(model, masterEventList, masterUserList).getView(), 600, 540), StyleConfig.ACTIONABLE);
         var box = new HBox(coordinatorsText, spacer, add);
         var coordinatorsBox = new VBox(box, coordinators);
+
 
         var ticketsText = Labels.styledLabel("Tickets", Styles.TITLE_3);
         var ticketsBox = new VBox(ticketsText, eventTicketsTableView);

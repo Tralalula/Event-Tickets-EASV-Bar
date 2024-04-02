@@ -11,9 +11,11 @@ import event.tickets.easv.bar.gui.common.EventModel;
 import event.tickets.easv.bar.gui.common.TestModel;
 import event.tickets.easv.bar.gui.common.UserModel;
 import event.tickets.easv.bar.gui.common.TicketModel;
+import event.tickets.easv.bar.gui.component.events.assigncoordinator.CoordinatorAssignedEvent;
 import event.tickets.easv.bar.gui.component.tickets.TicketEventModel;
 import event.tickets.easv.bar.gui.component.tickets.TicketGeneratedModel;
 import event.tickets.easv.bar.gui.util.BackgroundExecutor;
+import event.tickets.easv.bar.gui.util.EventBus;
 import event.tickets.easv.bar.util.Result;
 import event.tickets.easv.bar.util.Result.Success;
 import event.tickets.easv.bar.util.Result.Failure;
@@ -52,6 +54,72 @@ public class MainController {
         fetchTickets();
         fetchTicketEvents();
         fetchTicketsGenerated();
+
+        EventBus.subscribe(CoordinatorAssignedEvent.class, this::onCoordinatorAssigned);
+    }
+
+    private void onCoordinatorAssigned(CoordinatorAssignedEvent event) {
+        System.out.println("subscribe");
+        System.out.println("event titel: " + event.getEventModel().title());
+        System.out.println("user first name: " + event.getUserModel().firstName());
+
+        UserModel assignedUser = event.getUserModel();
+        EventModel assignedEvent = event.getEventModel();
+        // update master lists
+        model.eventModels().stream()
+                .filter(eventModel -> eventModel.id().get() == assignedEvent.id().get())
+                .findFirst()
+                .ifPresent(eventModel -> {
+                    System.out.println("1111111111111111111 le bagguete");
+                    if (!eventModel.users().contains(assignedUser)) {
+                        System.out.println("1111111111111111111 mh");
+                        eventModel.users().add(assignedUser);
+                    }
+                });
+
+        model.userModels().stream()
+                .filter(userModel -> userModel.id().get() == assignedUser.id().get())
+                .findFirst()
+                .ifPresent(userModel -> {
+                    System.out.println("1111111111111111111 nutella");
+                    if (!userModel.events().contains(assignedEvent)) {
+                        System.out.println("1111111111111111111 hm");
+                        userModel.events().add(assignedEvent);
+                    }
+                });
+
+        // update sublists
+        if (!assignedEvent.users().contains(assignedUser)) {
+            System.out.println("1111111111111111111 weh");
+            assignedEvent.users().add(assignedUser);
+        }
+        if (!assignedUser.events().contains(assignedEvent)) {
+            System.out.println("1111111111111111111 woah");
+            assignedUser.events().add(assignedEvent);
+        }
+
+    }
+
+    private void syncWithoutEventUserWithoutFilter() {
+        for (EventModel eventModel : model.eventModels()) {
+            ObservableList<UserModel> associatedUsers = FXCollections.observableArrayList(
+                    model.userModels().stream()
+                                      .filter(userModel -> eventToUsersMap.getOrDefault(eventModel.id().get(), Collections.emptyList())
+                                      .contains(userModel.id().get()))
+                                      .collect(Collectors.toList())
+            );
+            eventModel.setUsers(associatedUsers);
+        }
+
+        for (UserModel userModel : model.userModels()) {
+            ObservableList<EventModel> associatedEvents = FXCollections.observableArrayList(
+                    model.eventModels().stream()
+                                       .filter(eventModel -> userToEventsMap.getOrDefault(userModel.id().get(), Collections.emptyList())
+                                       .contains(eventModel.id().get()))
+                                       .collect(Collectors.toList())
+            );
+            userModel.setEvents(associatedEvents);
+        }
     }
 
     private void syncAssociations() {
@@ -60,17 +128,18 @@ public class MainController {
                 && model.ticketsFetchedProperty().get() && model.ticketEventsFetchedProperty().get()
                 && model.ticketsGeneratedProperty().get()) {
 
-            for (EventModel eventModel : model.eventModels()) {
-                FilteredList<UserModel> filteredUsers = new FilteredList<>(model.userModels(), userModel ->
-                        eventToUsersMap.getOrDefault(eventModel.id().get(), Collections.emptyList()).contains(userModel.id().get()));
-                eventModel.setUsers(filteredUsers);
-            }
-
-            for (UserModel userModel : model.userModels()) {
-                FilteredList<EventModel> filteredEvents = new FilteredList<>(model.eventModels(), eventModel ->
-                        userToEventsMap.getOrDefault(userModel.id().get(), Collections.emptyList()).contains(eventModel.id().get()));
-                userModel.setEvents(filteredEvents);
-            }
+            syncWithoutEventUserWithoutFilter(); // tester uden filteredlist
+//            for (EventModel eventModel : model.eventModels()) {
+//                FilteredList<UserModel> filteredUsers = new FilteredList<>(model.userModels(), userModel ->
+//                        eventToUsersMap.getOrDefault(eventModel.id().get(), Collections.emptyList()).contains(userModel.id().get()));
+//                eventModel.setUsers(filteredUsers);
+//            }
+//
+//            for (UserModel userModel : model.userModels()) {
+//                FilteredList<EventModel> filteredEvents = new FilteredList<>(model.eventModels(), eventModel ->
+//                        userToEventsMap.getOrDefault(userModel.id().get(), Collections.emptyList()).contains(eventModel.id().get()));
+//                userModel.setEvents(filteredEvents);
+//            }
 
             // TODO: Omskriv nedenstående for loops
             for (TicketModel ticketModel : model.ticketModels()) {
