@@ -250,7 +250,10 @@ public class MainView implements View {
 
         var verifyTicket = new Button("Verify ticket", new FontIcon(Feather.CHECK));
         verifyTicket.getStyleClass().addAll(Styles.BUTTON_OUTLINED);
-
+        verifyTicket.setMinWidth(200);
+        verifyTicket.setMaxWidth(Double.MAX_VALUE);
+        verifyTicket.setMinHeight(38);
+        verifyTicket.setMaxHeight(38);
 
         var login = createButton("Login", null, ViewType.NO_VIEW);
 
@@ -269,6 +272,7 @@ public class MainView implements View {
         tickets.setOnAction(e -> ViewHandler.changeView(ViewType.TICKETS));
         login.setOnAction(e -> ViewHandler.changeView(ViewType.LOGIN));
         users.setOnAction(e -> ViewHandler.changeView(ViewType.CREATE_USER));
+        verifyTicket.setOnAction(e -> ViewHandler.showOverlay("Verify ticket", new Label("Ticket found"), 450, 450));
 
         return results;
     }
@@ -286,7 +290,6 @@ public class MainView implements View {
         FontIcon fontIcon = null;
         if (icon != null) {
             fontIcon = new FontIcon(icon);
-            fontIcon.setIconSize(32);
             fontIcon.getStyleClass().add("nav-icon");
             hbox.getChildren().add(fontIcon);
         }

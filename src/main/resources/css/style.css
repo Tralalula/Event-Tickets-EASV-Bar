@@ -41,6 +41,11 @@
 
 .nav-icon {
     -fx-icon-color: black;
+    -fx-icon-size: 24px;
+}
+
+.nav-text {
+    -fx-font-size: 16;
 }
 
 .nav-button:active {
