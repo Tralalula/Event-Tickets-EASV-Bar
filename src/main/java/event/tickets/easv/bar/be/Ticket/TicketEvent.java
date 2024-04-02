@@ -11,14 +11,14 @@ public class TicketEvent implements Entity<TicketEvent> {
     private int id;
     private int ticketId;
     private int eventId;
-    private float price;
+    private double price;
 
     private int quantity;
 
     private List<TicketGenerated> tickets = new ArrayList<>();
     private Event event;
 
-    public TicketEvent(int id, int ticketId, int eventId, float price, int quantity) {
+    public TicketEvent(int id, int ticketId, int eventId, double price, int quantity) {
         this.id = id;
         this.ticketId = ticketId;
         this.eventId = eventId;
@@ -26,7 +26,7 @@ public class TicketEvent implements Entity<TicketEvent> {
         this.quantity = quantity;
     }
 
-    public TicketEvent(int ticketId, int eventId, float price, int quantity) {
+    public TicketEvent(int ticketId, int eventId, double price, int quantity) {
         this.ticketId = ticketId;
         this.eventId = eventId;
         this.price = price;
@@ -61,7 +61,7 @@ public class TicketEvent implements Entity<TicketEvent> {
         this.eventId = eventId;
     }
 
-    public float getPrice() {
+    public double getPrice() {
         return price;
     }
 

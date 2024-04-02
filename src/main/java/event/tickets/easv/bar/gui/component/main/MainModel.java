@@ -20,14 +20,14 @@ public class MainModel {
     private final BooleanProperty fetchingEvents = new SimpleBooleanProperty(false);
     private final BooleanProperty fetchingUsers = new SimpleBooleanProperty(false);
     private final BooleanProperty fetchingTickets = new SimpleBooleanProperty(false);
-    private final BooleanProperty fetchingTicketEventsProperty = new SimpleBooleanProperty(false);
+    private final BooleanProperty fetchingTicketEvents = new SimpleBooleanProperty(false);
     private final BooleanProperty fetchingTicketsGenerated = new SimpleBooleanProperty(false);
 
     private final BooleanProperty eventsFetched = new SimpleBooleanProperty(false);
     private final BooleanProperty usersFetched = new SimpleBooleanProperty(false);
     private final BooleanProperty ticketsFetched = new SimpleBooleanProperty(false);
     private final BooleanProperty ticketEventsFetched = new SimpleBooleanProperty(false);
-    private final BooleanProperty ticketsGenerated = new SimpleBooleanProperty(false);
+    private final BooleanProperty ticketsGeneratedFetched = new SimpleBooleanProperty(false);
 
     private final StringProperty username = new SimpleStringProperty();
 
@@ -70,9 +70,12 @@ public class MainModel {
     }
 
     public BooleanProperty fetchingTicketEventsProperty() {
-        return fetchingTickets;
+        return fetchingTicketEvents;
     }
 
+    public BooleanProperty fetchingTicketsGenerated() {
+        return fetchingTicketsGenerated;
+    }
 
     public BooleanProperty eventsFetchedProperty() {
         return eventsFetched;
@@ -91,10 +94,6 @@ public class MainModel {
     }
 
     public BooleanProperty ticketsGeneratedProperty() {
-        return ticketEventsFetched;
-    }
-
-    public BooleanProperty fetchingTicketsGenerated() {
-        return fetchingTicketsGenerated;
+        return ticketsGeneratedFetched;
     }
 }

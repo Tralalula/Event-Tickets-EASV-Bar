@@ -51,9 +51,7 @@ public class MainView implements View {
     private final Region createEventView;
     private final Region showEventView;
     private final Region ticketsView;
-    private final Region addTicketView;
     private final Region showTicketView;
-    private final Region addTicketEventView;
     private final Region assignTicketView;
 
     private final Region createUserView;
@@ -76,9 +74,7 @@ public class MainView implements View {
         this.showEventView = new ShowEventView(EventModel.Empty()).getView();
 
         this.ticketsView = new TicketsView(model, model.ticketModels(), model.fetchingTicketsProperty()).getView();
-        this.addTicketView = new AddTicketView(new TicketsModel(model), model).getView();
-        this.showTicketView = new ShowTicketView(model.ticketEventsFetchedProperty()).getView();
-        this.addTicketEventView = new AddTicketEventView(model).getView();
+        this.showTicketView = new ShowTicketView(model, new TicketsModel(model)).getView();
         this.assignTicketView = new AssignTicketView(new TicketsModel(model)).getView();
 
         this.createUserView = new CreateUserView(model.userModels()).getView();
@@ -130,13 +126,11 @@ public class MainView implements View {
         NodeUtils.bindVisibility(createEventView, ViewHandler.activeViewProperty().isEqualTo(ViewType.CREATE_EVENT));
         NodeUtils.bindVisibility(showEventView, ViewHandler.activeViewProperty().isEqualTo(ViewType.SHOW_EVENT));
         NodeUtils.bindVisibility(ticketsView, ViewHandler.activeViewProperty().isEqualTo(ViewType.TICKETS));
-        NodeUtils.bindVisibility(addTicketView, ViewHandler.activeViewProperty().isEqualTo(ViewType.ADD_TICKET));
         NodeUtils.bindVisibility(showTicketView, ViewHandler.activeViewProperty().isEqualTo(ViewType.SHOW_TICKET));
-        NodeUtils.bindVisibility(addTicketEventView, ViewHandler.activeViewProperty().isEqualTo(ViewType.ADD_TICKET_EVENT));
         NodeUtils.bindVisibility(assignTicketView, ViewHandler.activeViewProperty().isEqualTo(ViewType.ASSIGN_TICKET_VIEW));
         NodeUtils.bindVisibility(createUserView, ViewHandler.activeViewProperty().isEqualTo(ViewType.CREATE_USER));
 
-        var content = new StackPane(authView, dashboardView, eventsView, createEventView, showEventView, ticketsView, addTicketView, showTicketView, addTicketEventView, assignTicketView, createUserView);
+        var content = new StackPane(authView, dashboardView, eventsView, createEventView, showEventView, ticketsView, showTicketView, assignTicketView, createUserView);
 
         var scrollPane = new ScrollPane(content);
         scrollPane.setFitToHeight(true);

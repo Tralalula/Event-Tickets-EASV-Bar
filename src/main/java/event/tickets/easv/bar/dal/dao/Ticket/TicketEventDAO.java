@@ -106,7 +106,7 @@ class TicketEventInsertParameterSetter implements InsertParameterSetter<TicketEv
             stmt.setNull(2, Types.INTEGER);
         else
             stmt.setInt(2, entity.getEventId());
-        stmt.setFloat(3, entity.getPrice());
+        stmt.setDouble(3, entity.getPrice());
         stmt.setInt(4, entity.getQuantity());
     }
 }

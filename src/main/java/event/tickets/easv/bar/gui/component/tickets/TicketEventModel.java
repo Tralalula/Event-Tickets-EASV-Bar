@@ -15,7 +15,7 @@ public class TicketEventModel {
     private final IntegerProperty total = new SimpleIntegerProperty();
     private final IntegerProperty left = new SimpleIntegerProperty();
     private final IntegerProperty bought = new SimpleIntegerProperty();
-    private final FloatProperty price = new SimpleFloatProperty();
+    private final DoubleProperty price = new SimpleDoubleProperty();
 
     private SimpleObjectProperty<EventModel> event = new SimpleObjectProperty<>();
     private ObservableList<TicketGeneratedModel> ticketsGenerated = FXCollections.observableArrayList();
@@ -81,7 +81,7 @@ public class TicketEventModel {
     }
 
 
-    public FloatProperty price() {
+    public DoubleProperty price() {
         return price;
     }
 

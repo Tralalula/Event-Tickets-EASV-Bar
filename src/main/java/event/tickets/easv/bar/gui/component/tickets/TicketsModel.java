@@ -44,7 +44,7 @@ public class TicketsModel {
         return null;
     }
 
-    public List<TicketEvent> addToEvent(int ticketId, int price, int total, List<Integer> eventIds) {
+    public List<TicketEvent> addToEvent(int ticketId, int total, double price, List<Integer> eventIds) {
         List<TicketEvent> newEntries = new ArrayList<>();
 
         if (!eventIds.isEmpty()) {
@@ -54,9 +54,11 @@ public class TicketsModel {
         } else
             handleAddResult(entityManager.add(new TicketEvent(ticketId, 0, price, total)), newEntries);
 
-        //TODO: Refactor
-        for (TicketEvent ticketEvent : newEntries)
+        //TODO: Refactor - virker ikke korrekt
+        for (TicketEvent ticketEvent : newEntries) {
+            System.out.println(ticketEvent.getPrice());
             model.ticketEventModels().add(TicketEventModel.fromEntity(ticketEvent));
+        }
 
         return newEntries;
     }
@@ -114,5 +116,9 @@ public class TicketsModel {
 
         return new SortedList<>(filteredList,
                 (ticket1, ticket2) -> Integer.compare(ticket2.id().get(), ticket1.id().get()));
+    }
+
+    public MainModel getMain() {
+        return model;
     }
 }
