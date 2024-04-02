@@ -11,6 +11,7 @@ import event.tickets.easv.bar.gui.component.events.EventsView;
 import event.tickets.easv.bar.gui.util.StyleConfig;
 import event.tickets.easv.bar.gui.widgets.Images;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
@@ -24,14 +25,22 @@ import org.kordamp.ikonli.javafx.FontIcon;
 import org.kordamp.ikonli.material2.Material2MZ;
 import org.kordamp.ikonli.material2.Material2OutlinedAL;
 
-public class AssignCoordinatorView implements View {
-    private final EventModel model;
-    private final ObservableList<UserModel> models;
+import java.util.Set;
+import java.util.stream.Collectors;
 
-    public AssignCoordinatorView(EventModel model, ObservableList<UserModel> models) {
-        this.model = model;
-        this.models = models;
+public class AssignCoordinatorView implements View {
+    private final FilteredList<UserModel> filteredUserModels;
+
+    public AssignCoordinatorView(EventModel eventModel, ObservableList<UserModel> models) {
+        this.filteredUserModels = new FilteredList<>(models, userModel -> true);
+
+        Set<Integer> associatedUserIds = eventModel.users().stream()
+                                                           .map(userModel -> userModel.id().get())
+                                                           .collect(Collectors.toSet());
+
+        filteredUserModels.setPredicate(userModel -> !associatedUserIds.contains(userModel.id().get()));
     }
+
 
     @Override
     public Region getView() {
@@ -44,7 +53,7 @@ public class AssignCoordinatorView implements View {
         placeholder.getStyleClass().add(Styles.TITLE_4);
 
         var resultList = new ListView<UserModel>();
-        resultList.setItems(models);
+        resultList.setItems(filteredUserModels);
         resultList.setPlaceholder(placeholder);
         resultList.getStyleClass().add(Tweaks.EDGE_TO_EDGE);
         resultList.setCellFactory(cell -> resultCell());
