@@ -3,6 +3,7 @@ package event.tickets.easv.bar.gui.common;
 import atlantafx.base.controls.ModalPane;
 import event.tickets.easv.bar.gui.widgets.Dialog;
 import event.tickets.easv.bar.gui.widgets.ModalDialog;
+import event.tickets.easv.bar.gui.widgets.ModalOverlay;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -16,7 +17,7 @@ import java.util.*;
  */
 public class ViewHandler {
     private static final ViewHandler INSTANCE = new ViewHandler();
-    private final ModalPane overlay = new ModalPane();
+    private final ModalPane overlay = new ModalOverlay();
     private final ObjectProperty<Object> currentViewData = new SimpleObjectProperty<>();
     private final ObjectProperty<WindowType> activeWindow = new SimpleObjectProperty<>(WindowType.NONE);
     private final ObjectProperty<ViewType> activeView = new SimpleObjectProperty<>(ViewType.NO_VIEW);
