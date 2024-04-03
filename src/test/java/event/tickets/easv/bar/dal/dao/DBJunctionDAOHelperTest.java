@@ -2,6 +2,9 @@ package event.tickets.easv.bar.dal.dao;
 
 import event.tickets.easv.bar.be.Event;
 import event.tickets.easv.bar.be.User;
+import event.tickets.easv.bar.be.enums.Language;
+import event.tickets.easv.bar.be.enums.Rank;
+import event.tickets.easv.bar.be.enums.Theme;
 import event.tickets.easv.bar.dal.database.DBConnector;
 import event.tickets.easv.bar.util.Result;
 import event.tickets.easv.bar.util.Result.Failure;
@@ -88,7 +91,7 @@ class DBJunctionDAOHelperTest {
             // Setup
             runScript(POPULATE_SINGLE);
             var event = new Event(1, "Single", "sample.png", "6700 Esbjerg", LocalDate.of(2024, 4, 5), LocalDate.of(2024, 4, 5), LocalTime.of(10, 0), LocalTime.of(20, 0), "", "");
-            var user = new User(1, "test");
+            var user =  new User(1, "test", "mail@mail.com", "Firstname", "Lastname", "Location", "Phone number", "profileImage.jpeg", Rank.ADMIN, Theme.LIGHT, Language.EN_GB, 14);
 
             // Call
             Result<Boolean> result = eventUserDaoHelper.addAssociation(event, user);
@@ -106,7 +109,7 @@ class DBJunctionDAOHelperTest {
             when(mockDbConnector.connection()).thenThrow(new SQLException("Connection failed"));
             eventUserDaoHelper.setDbConnector(mockDbConnector);
             var event = new Event(1, "Single", "sample.png", "6700 Esbjerg", LocalDate.of(2024, 4, 5), LocalDate.of(2024, 4, 5), LocalTime.of(10, 0), LocalTime.of(20, 0), "", "");
-            var user = new User(1, "test");
+            var user =  new User(1, "test", "mail@mail.com", "Firstname", "Lastname", "Location", "Phone number", "profileImage.jpeg", Rank.ADMIN, Theme.LIGHT, Language.EN_GB, 14);
 
             // Call
             Result<Boolean> result = eventUserDaoHelper.addAssociation(event, user);
@@ -120,7 +123,7 @@ class DBJunctionDAOHelperTest {
             // Setup
             runScript(POPULATE_SINGLE);
             var event = new Event(1, "Single", "sample.png", "6700 Esbjerg", LocalDate.of(2024, 4, 5), LocalDate.of(2024, 4, 5), LocalTime.of(10, 0), LocalTime.of(20, 0), "", "");
-            var user = new User(1, "test");
+            var user =  new User(1, "test", "mail@mail.com", "Firstname", "Lastname", "Location", "Phone number", "profileImage.jpeg", Rank.ADMIN, Theme.LIGHT, Language.EN_GB, 14);
 
             // Call
             Result<Boolean> result = eventUserDaoHelper.removeAssociation(event, user);
@@ -136,7 +139,7 @@ class DBJunctionDAOHelperTest {
             // Setup
             runScript(POPULATE_SINGLE);
             var event = new Event(1, "Single", "sample.png", "6700 Esbjerg", LocalDate.of(2024, 4, 5), LocalDate.of(2024, 4, 5), LocalTime.of(10, 0), LocalTime.of(20, 0), "", "");
-            var user = new User(1, "test");
+            var user =  new User(1, "test", "mail@mail.com", "Firstname", "Lastname", "Location", "Phone number", "profileImage.jpeg", Rank.ADMIN, Theme.LIGHT, Language.EN_GB, 14);
             eventUserDaoHelper.addAssociation(event, user); // integration test here, probably shouldnt be
 
             // Call
@@ -153,7 +156,7 @@ class DBJunctionDAOHelperTest {
             // Setup
             runScript(POPULATE_SINGLE);
             var event = new Event(1, "Single", "sample.png", "6700 Esbjerg", LocalDate.of(2024, 4, 5), LocalDate.of(2024, 4, 5), LocalTime.of(10, 0), LocalTime.of(20, 0), "", "");
-            var user = new User(1, "test");
+            var user =  new User(1, "test", "mail@mail.com", "Firstname", "Lastname", "Location", "Phone number", "profileImage.jpeg", Rank.ADMIN, Theme.LIGHT, Language.EN_GB, 14);
             eventUserDaoHelper.addAssociation(event, user); // integration test here, probably shouldnt be
 
             // Call
@@ -170,7 +173,7 @@ class DBJunctionDAOHelperTest {
             // Setup
             runScript(POPULATE_SINGLE);
             var event = new Event(1, "Single", "sample.png", "6700 Esbjerg", LocalDate.of(2024, 4, 5), LocalDate.of(2024, 4, 5), LocalTime.of(10, 0), LocalTime.of(20, 0), "", "");
-            var user = new User(1, "test");
+            var user =  new User(1, "test", "mail@mail.com", "Firstname", "Lastname", "Location", "Phone number", "profileImage.jpeg", Rank.ADMIN, Theme.LIGHT, Language.EN_GB, 14);
             eventUserDaoHelper.addAssociation(event, user); // integration test here, probably shouldnt be
 
             // Call
@@ -187,7 +190,7 @@ class DBJunctionDAOHelperTest {
             // Setup
             runScript(POPULATE_SINGLE);
             var event = new Event(1, "Single", "sample.png", "6700 Esbjerg", LocalDate.of(2024, 4, 5), LocalDate.of(2024, 4, 5), LocalTime.of(10, 0), LocalTime.of(20, 0), "", "");
-            var user = new User(1, "test");
+            var user =  new User(1, "test", "mail@mail.com", "Firstname", "Lastname", "Location", "Phone number", "profileImage.jpeg", Rank.ADMIN, Theme.LIGHT, Language.EN_GB, 14);
             eventUserDaoHelper.addAssociation(event, user); // integration test here, probably shouldnt be
 
             // Call
@@ -204,7 +207,7 @@ class DBJunctionDAOHelperTest {
             // Setup
             runScript(POPULATE_SINGLE);
             var event = new Event(1, "Single", "sample.png", "6700 Esbjerg", LocalDate.of(2024, 4, 5), LocalDate.of(2024, 4, 5), LocalTime.of(10, 0), LocalTime.of(20, 0), "", "");
-            var user = new User(1, "test");
+            var user =  new User(1, "test", "mail@mail.com", "Firstname", "Lastname", "Location", "Phone number", "profileImage.jpeg", Rank.ADMIN, Theme.LIGHT, Language.EN_GB, 14);
             eventUserDaoHelper.addAssociation(event, user); // integration test here, probably shouldnt be
 
             // Call
@@ -221,7 +224,7 @@ class DBJunctionDAOHelperTest {
             // Setup
             runScript(POPULATE_SINGLE);
             var event = new Event(1, "Single", "sample.png", "6700 Esbjerg", LocalDate.of(2024, 4, 5), LocalDate.of(2024, 4, 5), LocalTime.of(10, 0), LocalTime.of(20, 0), "", "");
-            var user = new User(1, "test");
+            var user =  new User(1, "test", "mail@mail.com", "Firstname", "Lastname", "Location", "Phone number", "profileImage.jpeg", Rank.ADMIN, Theme.LIGHT, Language.EN_GB, 14);
             eventUserDaoHelper.addAssociation(event, user); // integration test here, probably shouldnt be
 
             // Call
@@ -238,7 +241,7 @@ class DBJunctionDAOHelperTest {
             // Setup
             runScript(POPULATE_SINGLE);
             var event = new Event(1, "Single", "sample.png", "6700 Esbjerg", LocalDate.of(2024, 4, 5), LocalDate.of(2024, 4, 5), LocalTime.of(10, 0), LocalTime.of(20, 0), "", "");
-            var user = new User(1, "test");
+            var user =  new User(1, "test", "mail@mail.com", "Firstname", "Lastname", "Location", "Phone number", "profileImage.jpeg", Rank.ADMIN, Theme.LIGHT, Language.EN_GB, 14);
             eventUserDaoHelper.addAssociation(event, user); // integration test here, probably shouldnt be
 
             // Call

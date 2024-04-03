@@ -2,6 +2,9 @@ package event.tickets.easv.bar.dal.dao;
 
 import event.tickets.easv.bar.be.Event;
 import event.tickets.easv.bar.be.User;
+import event.tickets.easv.bar.be.enums.Language;
+import event.tickets.easv.bar.be.enums.Rank;
+import event.tickets.easv.bar.be.enums.Theme;
 import event.tickets.easv.bar.dal.database.DBConnector;
 import event.tickets.easv.bar.util.Result;
 import event.tickets.easv.bar.util.Result.Success;
@@ -94,6 +97,7 @@ class DBDaoHelperTest {
             throw new RuntimeException("Error trying to connect to TEST DATABASE in DBDaoHelperTest.runScript().\n " + e);
         }
     }
+
 
     @Nested
     class EventTest {
@@ -380,6 +384,119 @@ class DBDaoHelperTest {
             var success = (Success<Boolean>) result;
             assertThat(success.result()).isEqualTo(true);
         }
+
+        @Test
+        void addAllEvents() {
+            // Setup
+            var imageName = "sample.png";
+            var location = "6700, Esbjerg";
+            var startDate = LocalDate.now();
+            LocalDate endDate = null;
+            var startTime = LocalTime.now();
+            LocalTime endTime = null;
+            var locationGuidance = "";
+            var extraInfo = "";
+
+            var eventsToAdd = List.of(
+                    new Event("International Food Festival", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
+                    new Event("Vegan Cooking Workshop", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
+                    new Event("Farm to Table Dinner", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
+                    new Event("Wine and Cheese Night", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
+                    new Event("Italian Pasta Making Class", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
+                    new Event("French Cuisine Tasting", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
+                    new Event("Sushi Rolling Workshop", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
+                    new Event("Chocolate Making Class", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
+                    new Event("BBQ and Grill Cook-off", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
+                    new Event("Farmers Market Tour", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
+                    new Event("Pastry and Baking Workshop", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
+                    new Event("Coffee Tasting Experience", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
+                    new Event("Beer Brewing Demonstration", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
+                    new Event("Gourmet Burger Festival", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
+                    new Event("Mexican Fiesta Night", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
+                    new Event("Street Food Extravaganza", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
+                    new Event("Ice Cream Social", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
+                    new Event("Pizza Making Party", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
+                    new Event("Seafood Feast", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
+                    new Event("Culinary Arts Festival", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo)
+            );
+
+            var eventsAdded = List.of(
+                    new Event(1, "International Food Festival", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
+                    new Event(2, "Vegan Cooking Workshop", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
+                    new Event(3, "Farm to Table Dinner", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
+                    new Event(4, "Wine and Cheese Night", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
+                    new Event(5, "Italian Pasta Making Class", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
+                    new Event(6, "French Cuisine Tasting", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
+                    new Event(7, "Sushi Rolling Workshop", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
+                    new Event(8, "Chocolate Making Class", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
+                    new Event(9, "BBQ and Grill Cook-off", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
+                    new Event(10, "Farmers Market Tour", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
+                    new Event(11, "Pastry and Baking Workshop", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
+                    new Event(12, "Coffee Tasting Experience", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
+                    new Event(13, "Beer Brewing Demonstration", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
+                    new Event(14, "Gourmet Burger Festival", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
+                    new Event(15, "Mexican Fiesta Night", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
+                    new Event(16, "Street Food Extravaganza", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
+                    new Event(17, "Ice Cream Social", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
+                    new Event(18, "Pizza Making Party", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
+                    new Event(19, "Seafood Feast", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
+                    new Event(20, "Culinary Arts Festival", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo)
+            );
+
+            // Call
+            Result<List<Event>> result = eventDaoHelper.addAll(eventsToAdd);
+
+            System.out.println(result);
+
+            // Check
+            assertThat(result).isInstanceOf(Success.class);
+            var success = (Success<List<Event>>) result;
+            assertThat(success.result()).containsExactlyElementsIn(eventsAdded).inOrder();
+        }
+    }
+
+    @Test
+    void batchAddEvents() {
+        // Setup
+        var imageName = "sample.png";
+        var location = "6700, Esbjerg";
+        var startDate = LocalDate.now();
+        LocalDate endDate = null;
+        var startTime = LocalTime.now();
+        LocalTime endTime = null;
+        var locationGuidance = "";
+        var extraInfo = "";
+
+        var eventsToAdd = List.of(
+                new Event("International Food Festival", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
+                new Event("Vegan Cooking Workshop", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
+                new Event("Farm to Table Dinner", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
+                new Event("Wine and Cheese Night", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
+                new Event("Italian Pasta Making Class", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
+                new Event("French Cuisine Tasting", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
+                new Event("Sushi Rolling Workshop", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
+                new Event("Chocolate Making Class", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
+                new Event("BBQ and Grill Cook-off", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
+                new Event("Farmers Market Tour", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
+                new Event("Pastry and Baking Workshop", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
+                new Event("Coffee Tasting Experience", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
+                new Event("Beer Brewing Demonstration", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
+                new Event("Gourmet Burger Festival", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
+                new Event("Mexican Fiesta Night", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
+                new Event("Street Food Extravaganza", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
+                new Event("Ice Cream Social", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
+                new Event("Pizza Making Party", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
+                new Event("Seafood Feast", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo),
+                new Event("Culinary Arts Festival", imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo)
+        );
+
+        // Call
+        Result<Integer> result = eventDaoHelper.batchAdd(eventsToAdd);
+
+        // Check
+        assertThat(result).isInstanceOf(Success.class);
+        var success = (Success<Integer>) result;
+        assertThat(success.result()).isEqualTo(20);
     }
 
     @Nested
@@ -421,7 +538,7 @@ class DBDaoHelperTest {
             assertThat(result).isInstanceOf(Success.class);
             var success = (Success<Optional<User>>) result;
             assertThat(success.result()).isPresent();
-            assertThat(success.result()).isEqualTo(Optional.of(new User(1, "test")));
+            assertThat(success.result()).isEqualTo(Optional.of(new User(1, "test", "mail@mail.com", "Firstname", "Lastname", "Location", "Phone number", "profileImage.jpeg", Rank.ADMIN, Theme.LIGHT, Language.EN_GB, 14)));
         }
 
         @Test
@@ -461,7 +578,7 @@ class DBDaoHelperTest {
             assertThat(result).isInstanceOf(Success.class);
             var success = (Success<List<User>>) result;
             assertThat(success.result()).hasSize(1);
-            assertThat(success.result().getFirst()).isEqualTo(new User(1, "test"));
+            assertThat(success.result().getFirst()).isEqualTo(new User(1, "test", "mail@mail.com", "Firstname", "Lastname", "Location", "Phone number", "profileImage.jpeg", Rank.ADMIN, Theme.LIGHT, Language.EN_GB, 14));
         }
 
         @Test
@@ -496,8 +613,8 @@ class DBDaoHelperTest {
         void addUser() {
             // Setup
             runScript(POPULATE_SINGLE);
-            var userToAdd = new User("Kakao", "");
-            var userAdded = new User(2, "Kakao");
+            var userToAdd = new User("Kakao", "mail@mail.com", "abemadermitkodeord", "Firstname", "Lastname", "Location", "Phone number", Rank.ADMIN);
+            var userAdded = new User(2, "Kakao", "mail@mail.com", "Firstname", "Lastname", "Location", "Phone number", "profileImage.jpeg", Rank.ADMIN, Theme.LIGHT, Language.EN_GB, 14);
 
             // Call
             Result<User> result = userDaoHelper.add(userToAdd);
@@ -527,8 +644,8 @@ class DBDaoHelperTest {
         void updateUserDoesntExist() {
             // Setup
             runScript(POPULATE_SINGLE);
-            var user = new User(2, "Kakao");
-            var updated = new User("Sodavand", "");
+            var user = new User(2, "Kakao", "mail@mail.com", "Firstname", "Lastname", "Location", "Phone number", "profileImage.jpeg", Rank.ADMIN, Theme.LIGHT, Language.EN_GB, 14);
+            var updated =  new User(2, "Sodavand", "mail@mail.com", "Firstname", "Lastname", "Location", "Phone number", "profileImage.jpeg", Rank.ADMIN, Theme.LIGHT, Language.EN_GB, 14);
 
             // Call
             Result<Boolean> result = userDaoHelper.update(user, updated);
@@ -543,8 +660,8 @@ class DBDaoHelperTest {
         void updateUserExists() {
             // Setup
             runScript(POPULATE_SINGLE);
-            var user = new User(1, "test");
-            var updated = new User("Sodavand", "");
+            var user = new User(1, "test", "mail@mail.com", "Firstname", "Lastname", "Location", "Phone number", "profileImage.jpeg", Rank.ADMIN, Theme.LIGHT, Language.EN_GB, 14);
+            var updated = new User(1, "Sodavand", "mail@mail.com", "Firstname", "Lastname", "Location", "Phone number", "profileImage.jpeg", Rank.ADMIN, Theme.LIGHT, Language.EN_GB, 14);
 
             // Call
             Result<Boolean> result = userDaoHelper.update(user, updated);
@@ -560,7 +677,7 @@ class DBDaoHelperTest {
         void deleteUserDoesntExist() {
             // Setup
             runScript(POPULATE_SINGLE);
-            var user = new User(2, "Kakao");
+            var user = new User(2, "Kakao", "mail@mail.com", "Firstname", "Lastname", "Location", "Phone number", "profileImage.jpeg", Rank.ADMIN, Theme.LIGHT, Language.EN_GB, 14);
 
             // Call
             Result<Boolean> result = userDaoHelper.delete(user);
@@ -575,7 +692,7 @@ class DBDaoHelperTest {
         void deleteUserExists() {
             // Setup
             runScript(POPULATE_SINGLE);
-            var user = new User(1, "test");
+            var user = new User(1, "test", "mail@mail.com", "Firstname", "Lastname", "Location", "Phone number", "profileImage.jpeg", Rank.ADMIN, Theme.LIGHT, Language.EN_GB, 14);
 
             // Call
             Result<Boolean> result = userDaoHelper.delete(user);

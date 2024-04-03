@@ -5,6 +5,7 @@ import event.tickets.easv.bar.be.Ticket.Ticket;
 import event.tickets.easv.bar.be.Ticket.TicketEvent;
 import event.tickets.easv.bar.gui.component.tickets.TicketEventModel;
 import javafx.beans.Observable;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -17,6 +18,7 @@ public class TicketModel {
     private final IntegerProperty id = new SimpleIntegerProperty();
     private final StringProperty title = new SimpleStringProperty();
     private final StringProperty type = new SimpleStringProperty();
+    private final IntegerProperty eventCount = new SimpleIntegerProperty();
     private ObservableList<TicketEventModel> ticketEvents = FXCollections.observableArrayList();
 
     public TicketModel() {
@@ -27,6 +29,7 @@ public class TicketModel {
         id.set(ticket.getId());
         title.set(ticket.getTitle());
         type.set(ticket.getType());
+        eventCount.set(ticket.getEventCount());
     }
 
     public static TicketModel fromEntity(Ticket ticket) {
@@ -40,8 +43,9 @@ public class TicketModel {
     public void update(TicketModel ticketModel) {
         this.id.set(ticketModel.id.get());
         this.title.set(ticketModel.title.get());
-        this.type.set(ticketModel.title.get());
-        this.ticketEvents.setAll(ticketModel.ticketEvents);
+        this.type.set(ticketModel.type.get());
+        this.eventCount.set(ticketModel.eventCount.get());
+        this.ticketEvents = ticketModel.ticketEvents();
     }
 
     public Ticket toEntity() {
@@ -65,8 +69,17 @@ public class TicketModel {
         return type;
     }
 
-    public void setTicketEvents(ObservableList<TicketEventModel> tickets) { this.ticketEvents = tickets; }
+    public IntegerProperty eventCount() {
+        eventCount.bind(Bindings.size(this.ticketEvents));
+        return eventCount;
+    }
 
-    public ObservableList<TicketEventModel> ticketEvents() { return ticketEvents; }
+    public void setTicketEvents(ObservableList<TicketEventModel> tickets) {
+        this.ticketEvents = tickets;
+    }
+
+    public ObservableList<TicketEventModel> ticketEvents() {
+        return ticketEvents;
+    }
 
 }

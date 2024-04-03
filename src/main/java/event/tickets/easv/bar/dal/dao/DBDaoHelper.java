@@ -9,9 +9,7 @@ import event.tickets.easv.bar.util.Result.Failure;
 
 import java.io.IOException;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Helper class providing generic data access operations against a database.
@@ -110,7 +108,7 @@ public class DBDaoHelper<T extends Entity<T>> implements DAO<T> {
         try {
             setupDBConnector();
         } catch (IOException e) {
-            return Failure.of(FailureType.IO_FAILURE, "Failed to read from the data source", e);
+            return Failure.of(FailureType.IO_FAILURE, "DBDaoHelper.add() - Failed to read from the data source", e);
         }
 
         String sql = sqlTemplate.insertSQL();
@@ -127,7 +125,78 @@ public class DBDaoHelper<T extends Entity<T>> implements DAO<T> {
                 return Failure.of(FailureType.DB_DATA_RETRIEVAL_FAILURE, "DBDaoHelper.add() - No ID generated for entity: " + entity.getClass().getName());
             }
         } catch (SQLException e) {
-            return Failure.of(FailureType.DB_DATA_RETRIEVAL_FAILURE, "DBDaoHelper.add() - Failed to add entity + " + entity.getClass().getName() + " from the database", e);
+            return Failure.of(FailureType.DB_DATA_RETRIEVAL_FAILURE, "DBDaoHelper.add() - Failed to add entity: " + entity.getClass().getName() + " to the database", e);
+        }
+    }
+
+    @Override
+    public Result<List<T>> addAll(List<T> entities) {
+        // https://github.com/microsoft/mssql-jdbc/issues/245
+        // Cannot retrieve all generated keys for batch execution
+        // so this the solution for when adding multiple entries to DB
+        // and wanting to retrieve back a list of entities with their ids in the db.
+        // Works similarly to the basic add() method, just a transaction & for loop.
+        if (entities == null || entities.isEmpty()) {
+            return Success.of(Collections.emptyList());
+        }
+
+        try {
+            setupDBConnector();
+        } catch (IOException e) {
+            return Failure.of(FailureType.IO_FAILURE, "DBDaoHelper.addAll() - Failed to read from the data source", e);
+        }
+
+        try (Connection conn = dbConnector.connection()) {
+            conn.setAutoCommit(false); // Start transaction
+
+            List<T> addedEntities = new ArrayList<>();
+            for (T entity : entities) {
+                try (PreparedStatement stmt = conn.prepareStatement(sqlTemplate.insertSQL(), Statement.RETURN_GENERATED_KEYS)) {
+                    insertParameterSetter.setParameters(stmt, entity);
+                    stmt.executeUpdate();
+                    ResultSet rs = stmt.getGeneratedKeys();
+                    if (rs.next()) {
+                        int id = rs.getInt(1);
+                        addedEntities.add(idSetter.setId(entity, id));
+                    }
+                }
+            }
+
+            conn.commit();
+            return Success.of(addedEntities);
+        } catch (SQLException e) {
+            // todo: rollback mangler
+            return Failure.of(FailureType.DB_DATA_RETRIEVAL_FAILURE, "DBDaoHelper.addAll() - Failed to connect to database", e);
+        }
+    }
+
+    @Override
+    public Result<Integer> batchAdd(List<T> entities) {
+        if (entities == null || entities.isEmpty()) {
+            return Success.of(0);
+        }
+
+        try {
+            setupDBConnector();
+        } catch (IOException e) {
+            return Failure.of(FailureType.IO_FAILURE, "DBDaoHelper.addAll() - Failed to read from the data source", e);
+        }
+
+        try (Connection conn = dbConnector.connection();
+             PreparedStatement stmt = conn.prepareStatement(sqlTemplate.insertSQL())) {
+            conn.setAutoCommit(false); // start transaction
+
+            for (T entity : entities) {
+                insertParameterSetter.setParameters(stmt, entity);
+                stmt.addBatch();
+            }
+            int[] results = stmt.executeBatch();
+            int rowsAffected = Arrays.stream(results).sum();
+            conn.commit(); // commit transaction
+            return Success.of(rowsAffected);
+        } catch (SQLException e) {
+            // todo: rollback mangler
+            return Failure.of(FailureType.DB_DATA_RETRIEVAL_FAILURE, "DBDaoHelper.addAll() - Failed to connect to database", e);
         }
     }
 
@@ -136,7 +205,7 @@ public class DBDaoHelper<T extends Entity<T>> implements DAO<T> {
         try {
             setupDBConnector();
         } catch (IOException e) {
-            return Failure.of(FailureType.IO_FAILURE, "DBdaoHelper.update() - Failed to read from the data source", e);
+            return Failure.of(FailureType.IO_FAILURE, "DBDaoHelper.update() - Failed to read from the data source", e);
         }
 
         String sql = sqlTemplate.updateSQL();
@@ -148,7 +217,7 @@ public class DBDaoHelper<T extends Entity<T>> implements DAO<T> {
             int rowsAffected = stmt.executeUpdate();
             return Success.of(rowsAffected > 0);
         } catch (SQLException e) {
-            return Failure.of(FailureType.DB_DATA_RETRIEVAL_FAILURE, "DBDaoHelper.update() - Failed to update entity + " + original.getClass().getName() + " in the database", e);
+            return Failure.of(FailureType.DB_DATA_RETRIEVAL_FAILURE, "DBDaoHelper.update() - Failed to update entity: " + original.getClass().getName() + " in the database", e);
         }
     }
 
@@ -176,10 +245,10 @@ public class DBDaoHelper<T extends Entity<T>> implements DAO<T> {
                 return Success.of(rowsAffected > 0);
             } catch (SQLException e) {
                 conn.rollback(); // Rollback transaction if an error happens
-                return Failure.of(FailureType.DB_DATA_RETRIEVAL_FAILURE, "DBDaoHelper.delete() - Failed to delete entity " + entity.getClass().getName(), e);
+                return Failure.of(FailureType.DB_DATA_RETRIEVAL_FAILURE, "DBDaoHelper.delete() - Failed to delete entity: " + entity.getClass().getName(), e);
             }
         } catch (SQLException e) {
-            return Failure.of(FailureType.DB_DATA_RETRIEVAL_FAILURE, "DBDaoHelper.delete() - Failed to access the database - " + entity.getClass().getName(), e);
+            return Failure.of(FailureType.DB_DATA_RETRIEVAL_FAILURE, "DBDaoHelper.delete() - Failed to access the database: " + entity.getClass().getName(), e);
         }
     }
 

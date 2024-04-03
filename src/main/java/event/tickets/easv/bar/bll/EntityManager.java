@@ -16,11 +16,8 @@ import event.tickets.easv.bar.util.Result.Failure;
 import event.tickets.easv.bar.util.Result.Success;
 
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Processes and manages entities.
@@ -114,6 +111,30 @@ public class EntityManager {
         if (dao == null) return Failure.of(FailureType.INVALID_ENTITY_TYPE, "Unexpected entity: " + entity.getClass());
 
         return dao.add(entity);
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> Result<List<T>> addAll(List<T> entities) {
+        if (entities == null || entities.isEmpty()) return Success.of(Collections.emptyList());
+        if (entities.contains(null)) return Failure.of(FailureType.INVALID_ENTITY_TYPE, "Entities list cannot contain null elements");
+
+        T entity = entities.getFirst();
+        DAO<T> dao = (DAO<T>) daos.get(entity.getClass());
+        if (dao == null) return Failure.of(FailureType.INVALID_ENTITY_TYPE, "Unexpected entity: " + entity.getClass());
+
+        return dao.addAll(entities);
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> Result<Integer> batchAdd(List<T> entities) {
+        if (entities == null || entities.isEmpty()) return Success.of(0);
+        if (entities.contains(null)) return Failure.of(FailureType.INVALID_ENTITY_TYPE, "Entities list cannot contain null elements");
+
+        T entity = entities.getFirst();
+        DAO<T> dao = (DAO<T>) daos.get(entity.getClass());
+        if (dao == null) return Failure.of(FailureType.INVALID_ENTITY_TYPE, "Unexpected entity: " + entity.getClass());
+
+        return dao.batchAdd(entities);
     }
 
     @SuppressWarnings("unchecked")

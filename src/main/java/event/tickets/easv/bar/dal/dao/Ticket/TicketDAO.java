@@ -42,6 +42,16 @@ public class TicketDAO implements DAO<Ticket> {
     }
 
     @Override
+    public Result<List<Ticket>> addAll(List<Ticket> entities) {
+        return daoHelper.addAll(entities);
+    }
+
+    @Override
+    public Result<Integer> batchAdd(List<Ticket> entities) {
+        return daoHelper.batchAdd(entities);
+    }
+
+    @Override
     public Result<Boolean> update(Ticket original, Ticket updatedData) {
         return daoHelper.update(original, updatedData);
     }

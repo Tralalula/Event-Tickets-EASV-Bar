@@ -42,6 +42,16 @@ public class TicketGeneratedDAO implements DAO<TicketGenerated> {
     }
 
     @Override
+    public Result<List<TicketGenerated>> addAll(List<TicketGenerated> entities) {
+        return daoHelper.addAll(entities);
+    }
+
+    @Override
+    public Result<Integer> batchAdd(List<TicketGenerated> entities) {
+        return daoHelper.batchAdd(entities);
+    }
+
+    @Override
     public Result<Boolean> update(TicketGenerated original, TicketGenerated updatedData) {
         return daoHelper.update(original, updatedData);
     }

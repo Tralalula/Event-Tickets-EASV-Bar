@@ -1,13 +1,10 @@
 package event.tickets.easv.bar.gui.component.tickets;
 
-import event.tickets.easv.bar.Main;
 import event.tickets.easv.bar.be.Customer;
-import event.tickets.easv.bar.be.Event;
 import event.tickets.easv.bar.be.Ticket.Ticket;
 import event.tickets.easv.bar.be.Ticket.TicketEvent;
 import event.tickets.easv.bar.be.Ticket.TicketGenerated;
 import event.tickets.easv.bar.bll.EntityManager;
-import event.tickets.easv.bar.bll.TicketManager;
 import event.tickets.easv.bar.gui.common.EventModel;
 import event.tickets.easv.bar.gui.common.TicketModel;
 import event.tickets.easv.bar.gui.component.main.MainModel;
@@ -19,19 +16,19 @@ import javafx.collections.transformation.SortedList;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class TicketsModel {
-    private MainModel model;
-
-    private EntityManager entityManager;
+    private final MainModel model;
+    private final EntityManager entityManager;
 
     public TicketsModel(MainModel model) {
         this.model = model;
         this.entityManager = new EntityManager();
     }
 
-    public Ticket add(Ticket ticket) {
+    public Ticket addTicket(Ticket ticket) {
         Result<Ticket> result = entityManager.add(ticket);
 
         switch (result) {
@@ -44,40 +41,54 @@ public class TicketsModel {
         return null;
     }
 
-    public List<TicketEvent> addToEvent(int ticketId, int price, int total, List<Integer> eventIds) {
-        List<TicketEvent> newEntries = new ArrayList<>();
+    public List<TicketEvent> addToEvent(TicketModel ticketModel, MainModel main, int ticketId, int total, double price, List<EventModel> events) {
+        // Laver om til ticketevent list for hver eventid.
+        List<TicketEvent> newEntries = events.stream()
+                .map(event -> new TicketEvent(ticketId, event.id().get(), price, total))
+                .collect(Collectors.toList());
 
-        if (!eventIds.isEmpty()) {
-            for (int i : eventIds) {
-                handleAddResult(entityManager.add(new TicketEvent(ticketId, i, price, total)), newEntries);
+        // Tilføj alle i listen til DB
+        Result<List<TicketEvent>> result = entityManager.addAll(newEntries);
+
+        switch (result) {
+            case Result.Success<List<TicketEvent>> s -> {
+                    for (TicketEvent ticketEvent : s.result()) {
+                        TicketEventModel created = new TicketEventModel(ticketEvent);
+
+                        // Få fat i eventId og lav det om til eventModel, så vi kan tilføje den.
+                        int eventId = created.eventId().get();
+                        EventModel eventModel = events.stream()
+                                .filter(event -> event.id().get() == eventId)
+                                .findFirst()
+                                .orElse(null);
+
+                        if (eventModel != null)
+                            created.setEvent(eventModel);
+
+                        //Opdater hovedliste
+                        main.ticketEventModels().add(created);
+
+                        //Opdaterer nuværende view i baggrunden
+                        ticketModel.ticketEvents().add(created);
+                    }
             }
-        } else
-            handleAddResult(entityManager.add(new TicketEvent(ticketId, 0, price, total)), newEntries);
-
-        //TODO: Refactor
-        for (TicketEvent ticketEvent : newEntries)
-            model.ticketEventModels().add(TicketEventModel.fromEntity(ticketEvent));
+            case Result.Failure<List<TicketEvent>> f -> System.out.println("Error: " + f.cause());
+        }
 
         return newEntries;
     }
 
-    private List<TicketEvent> handleAddResult(Result<TicketEvent> result, List<TicketEvent> list) {
-        switch (result) {
-            case Result.Success<TicketEvent> s -> list.add(s.result());
-            case Result.Failure<TicketEvent> f -> System.out.println("Error: " + f.cause());
-        }
-
-        return list;
-    }
-
     //TODO: Refactor
-    public List<TicketGenerated> generateTickets(int id, int amount, String email) {
+    public List<TicketGenerated> generateTickets(TicketEventModel ticketEvent, int amount, String email) {
         List<TicketGenerated> newEntries = new ArrayList<>();
         Customer createdCustomer = handleCustomer(entityManager.add(new Customer(email)));
 
         for (int i = 0; i < amount; i++) {
-            handleAddGenerated(entityManager.add(new TicketGenerated(id, createdCustomer.id())));
+            newEntries.add(new TicketGenerated(ticketEvent.id().get(), createdCustomer.id()));
         }
+
+        Result<List<TicketGenerated>> result = entityManager.addAll(newEntries);
+        handleAddGenerated(result, ticketEvent);
 
         return newEntries;
     }
@@ -94,12 +105,24 @@ public class TicketsModel {
         }
     }
 
-    private List<TicketGenerated> handleAddGenerated(Result<TicketGenerated> result) {
+    private List<TicketGenerated> handleAddGenerated(Result<List<TicketGenerated>> result, TicketEventModel ticketEvent) {
         ObservableList<TicketGenerated> tickets = FXCollections.observableArrayList();
         switch (result) {
-            case Result.Success<TicketGenerated> s -> tickets.add(s.result());
-            case Result.Failure<TicketGenerated> f -> System.out.println("Error: " + f.cause());
+            case Result.Success<List<TicketGenerated>> s -> {
+                for (TicketGenerated ticketGenerated : s.result()) {
+                    TicketGeneratedModel ticketGeneratedModel = TicketGeneratedModel.fromEntity(ticketGenerated);
+
+                    //Opdater hovedeliste
+                    model.ticketGeneratedModels().add(ticketGeneratedModel);
+
+                    //Opdater selve ticketEvent
+                    ticketEvent.ticketsGenerated().add(ticketGeneratedModel);
+                }
+
+            }
+            case Result.Failure<List<TicketGenerated>> f -> System.out.println("Error: " + f.cause());
         }
+
 
         return tickets;
     }
@@ -114,5 +137,9 @@ public class TicketsModel {
 
         return new SortedList<>(filteredList,
                 (ticket1, ticket2) -> Integer.compare(ticket2.id().get(), ticket1.id().get()));
+    }
+
+    public MainModel getMain() {
+        return model;
     }
 }

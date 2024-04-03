@@ -43,6 +43,16 @@ public class TicketEventDAO implements DAO<TicketEvent> {
     }
 
     @Override
+    public Result<List<TicketEvent>> addAll(List<TicketEvent> entities) {
+        return daoHelper.addAll(entities);
+    }
+
+    @Override
+    public Result<Integer> batchAdd(List<TicketEvent> entities) {
+        return daoHelper.batchAdd(entities);
+    }
+
+    @Override
     public Result<Boolean> update(TicketEvent original, TicketEvent updatedData) {
         return daoHelper.update(original, updatedData);
     }
@@ -106,7 +116,7 @@ class TicketEventInsertParameterSetter implements InsertParameterSetter<TicketEv
             stmt.setNull(2, Types.INTEGER);
         else
             stmt.setInt(2, entity.getEventId());
-        stmt.setFloat(3, entity.getPrice());
+        stmt.setDouble(3, entity.getPrice());
         stmt.setInt(4, entity.getQuantity());
     }
 }

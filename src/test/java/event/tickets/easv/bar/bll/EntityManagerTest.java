@@ -3,6 +3,9 @@ package event.tickets.easv.bar.bll;
 import event.tickets.easv.bar.be.Entity;
 import event.tickets.easv.bar.be.Event;
 import event.tickets.easv.bar.be.User;
+import event.tickets.easv.bar.be.enums.Language;
+import event.tickets.easv.bar.be.enums.Rank;
+import event.tickets.easv.bar.be.enums.Theme;
 import event.tickets.easv.bar.dal.dao.DAO;
 import event.tickets.easv.bar.dal.dao.EventDAO;
 import event.tickets.easv.bar.dal.dao.EventUserDAO;
@@ -133,7 +136,10 @@ class EntityManagerTest {
 
         var event = new Event(1, "a", imageName, location, startDate, endDate, startTime, endTime, "", "");
         when(mockEventDAO.get(1)).thenReturn(Success.of(Optional.of(event)));
-        List<User> usersForEvent = List.of(new User(1, "User1"), new User(2, "User2"));
+        var user1 =  new User(1, "test1", "mail@mail.com", "Firstname", "Lastname", "Location", "Phone number", "profileImage.jpeg", Rank.ADMIN, Theme.LIGHT, Language.EN_GB, 14);
+        var user2 =  new User(2, "test2", "mail@mail.com", "Firstname", "Lastname", "Location", "Phone number", "profileImage.jpeg", Rank.ADMIN, Theme.LIGHT, Language.EN_GB, 14);
+
+        List<User> usersForEvent = List.of(user1, user2);
         when(mockEventUserAssociation.findAssociatesOf(event)).thenReturn(Success.of(usersForEvent));
 
         // Call
@@ -177,10 +183,10 @@ class EntityManagerTest {
     @Test
     void allUserSuccess() {
         // Setup
-        List<User> expected = List.of(
-                new User(1, "test"),
-                new User(2, "Kakao")
-        );
+        var user1 =  new User(1, "test", "mail@mail.com", "Firstname", "Lastname", "Location", "Phone number", "profileImage.jpeg", Rank.ADMIN, Theme.LIGHT, Language.EN_GB, 14);
+        var user2 =  new User(2, "Kakao", "mail@mail.com", "Firstname", "Lastname", "Location", "Phone number", "profileImage.jpeg", Rank.ADMIN, Theme.LIGHT, Language.EN_GB, 14);
+
+        List<User> expected = List.of(user1, user2);
         when(mockUserDAO.all()).thenReturn(Success.of(expected));
 
         // Call
@@ -227,10 +233,10 @@ class EntityManagerTest {
     @Test
     void allWithAssociationsUserSuccess() {
         // Setup
-        List<User> expected = List.of(
-                new User(1, "test"),
-                new User(2, "Kakao")
-        );
+        var user1 =  new User(1, "test", "mail@mail.com", "Firstname", "Lastname", "Location", "Phone number", "profileImage.jpeg", Rank.ADMIN, Theme.LIGHT, Language.EN_GB, 14);
+        var user2 =  new User(2, "Kakao", "mail@mail.com", "Firstname", "Lastname", "Location", "Phone number", "profileImage.jpeg", Rank.ADMIN, Theme.LIGHT, Language.EN_GB, 14);
+
+        List<User> expected = List.of(user1, user2);
         when(mockUserDAO.all()).thenReturn(Success.of(expected));
         when(mockEventUserAssociation.findAssociatesOf(any(User.class))).thenReturn(Success.of(List.of()));
 
@@ -258,7 +264,10 @@ class EntityManagerTest {
                 new Event(1, "a", imageName, location, startDate, endDate, startTime, endTime, "", "")
         );
         when(mockEventDAO.all()).thenReturn(Success.of(expected));
-        List<User> usersForEvent = List.of(new User(1, "User1"), new User(2, "User2"));
+
+        var user1 =  new User(1, "User1", "mail@mail.com", "Firstname", "Lastname", "Location", "Phone number", "profileImage.jpeg", Rank.ADMIN, Theme.LIGHT, Language.EN_GB, 14);
+        var user2 =  new User(2, "User2", "mail@mail.com", "Firstname", "Lastname", "Location", "Phone number", "profileImage.jpeg", Rank.ADMIN, Theme.LIGHT, Language.EN_GB, 14);
+        List<User> usersForEvent = List.of(user1, user2);
         when(mockEventUserAssociation.findAssociatesOf(any(Event.class))).thenReturn(Success.of(usersForEvent));
 
         // Call
@@ -290,7 +299,10 @@ class EntityManagerTest {
                 new Event(1, "a", imageName, location, startDate, endDate, startTime, endTime, "", "")
         );
         when(mockEventDAO.all()).thenReturn(Success.of(expected));
-        List<User> usersForEvent = List.of(new User(1, "User1"), new User(2, "User2"));
+
+        var user1 =  new User(1, "User1", "mail@mail.com", "Firstname", "Lastname", "Location", "Phone number", "profileImage.jpeg", Rank.ADMIN, Theme.LIGHT, Language.EN_GB, 14);
+        var user2 =  new User(2, "User2", "mail@mail.com", "Firstname", "Lastname", "Location", "Phone number", "profileImage.jpeg", Rank.ADMIN, Theme.LIGHT, Language.EN_GB, 14);
+        List<User> usersForEvent = List.of(user1, user2);
         when(mockEventUserAssociation.findAssociatesOf(any(Event.class))).thenReturn(Success.of(usersForEvent));
 
         // Call
@@ -355,7 +367,10 @@ class EntityManagerTest {
     void addAssociationsSuccess() {
         // Setup
         Event event = new Event(1, "Test Event", "sample.png", "6700, Esbjerg", LocalDate.now(), null, LocalTime.now(), null, "", "");
-        List<User> users = List.of(new User(1, "User1"), new User(2, "User2"));
+
+        var user1 =  new User(1, "User1", "mail@mail.com", "Firstname", "Lastname", "Location", "Phone number", "profileImage.jpeg", Rank.ADMIN, Theme.LIGHT, Language.EN_GB, 14);
+        var user2 =  new User(2, "User2", "mail@mail.com", "Firstname", "Lastname", "Location", "Phone number", "profileImage.jpeg", Rank.ADMIN, Theme.LIGHT, Language.EN_GB, 14);
+        List<User> users = List.of(user1, user2);
         when(mockEventUserAssociation.addAssociation(eq(event), any(User.class))).thenReturn(Success.of(true));
 
         // Call
@@ -372,7 +387,9 @@ class EntityManagerTest {
     void addAssociationsFailure() {
         // Setup
         Event event = new Event(1, "Test Event", "sample.png", "6700, Esbjerg", LocalDate.now(), null, LocalTime.now(), null, "", "");
-        List<User> users = List.of(new User(1, "User1"));
+
+        var user1 =  new User(1, "User1", "mail@mail.com", "Firstname", "Lastname", "Location", "Phone number", "profileImage.jpeg", Rank.ADMIN, Theme.LIGHT, Language.EN_GB, 14);
+        List<User> users = List.of(user1);
         when(mockEventUserAssociation.addAssociation(eq(event), any(User.class)))
                                      .thenReturn(Failure.of(FailureType.DB_INSERTION_FAILURE, "Failed to add association"));
 
@@ -391,7 +408,7 @@ class EntityManagerTest {
     void addSingleAssociationSuccess() {
         //Setup
         Event event = new Event(1, "Event", "image.png", "Some Location", LocalDate.now(), null, LocalTime.now(), null, "", "");
-        User user = new User(1, "User1");
+        var user =  new User(1, "User1", "mail@mail.com", "Firstname", "Lastname", "Location", "Phone number", "profileImage.jpeg", Rank.ADMIN, Theme.LIGHT, Language.EN_GB, 14);
         when(mockEventUserAssociation.addAssociation(event, user)).thenReturn(Success.of(true));
 
         // Call
@@ -406,7 +423,7 @@ class EntityManagerTest {
     void addSingleAssociationFailure() {
         // Setup
         Event event = new Event(1, "Event", "image.png", "Some Location", LocalDate.now(), null, LocalTime.now(), null, "", "");
-        User user = new User(1, "User1");
+        var user =  new User(1, "User1", "mail@mail.com", "Firstname", "Lastname", "Location", "Phone number", "profileImage.jpeg", Rank.ADMIN, Theme.LIGHT, Language.EN_GB, 14);
         when(mockEventUserAssociation.addAssociation(event, user)).thenReturn(Failure.of(FailureType.DB_INSERTION_FAILURE, "Error"));
 
         // Call

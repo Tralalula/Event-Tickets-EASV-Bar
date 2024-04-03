@@ -15,15 +15,12 @@ public class Ticket implements Entity<Ticket> {
     private TicketGenerated generatedTicket;
     private List<TicketEvent> ticketEvent = new ArrayList<>();
 
-    private TicketManager ticketManager;
-
     public Ticket(String title, String type) {
         this.title = title;
         this.type = type;
     }
 
     public Ticket(int id, String title, String type) {
-        this.ticketManager = new TicketManager();
         this.id = id;
         this.title = title;
         this.type = type;
@@ -50,6 +47,10 @@ public class Ticket implements Entity<Ticket> {
         this.type = type;
     }
 
+    public int getEventCount() {
+        return ticketEvent.size();
+    }
+
 
     public String getTitle() {
         return title;
@@ -65,11 +66,6 @@ public class Ticket implements Entity<Ticket> {
 
     public void setPrice(int price) {
         this.price = price;
-    }
-
-    public void setTicketEvent() {
-        if (this.ticketEvent.isEmpty())
-            this.ticketEvent.addAll(ticketManager.getAllTicketsForTicket(this));
     }
 
     public List<TicketEvent> getTicketEvent() {

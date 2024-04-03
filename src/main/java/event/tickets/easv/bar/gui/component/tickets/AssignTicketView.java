@@ -37,7 +37,7 @@ public class AssignTicketView  implements View {
 
         Button button = new Button("Send to customer");
         button.setOnAction(e -> {
-            ticketsModel.generateTickets(model.ticketId().get(), Integer.parseInt(amount.getText()), email.getText());
+            ticketsModel.generateTickets(model, Integer.parseInt(amount.getText()), email.getText());
         });
 
         vBox.getChildren().addAll(label, email, amountLabel, amount, button);

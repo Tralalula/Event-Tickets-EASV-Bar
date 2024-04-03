@@ -203,7 +203,7 @@ public class MainController {
         switch (result) {
             case Success<List<TicketGenerated>> s -> {
                 model.ticketGeneratedModels().setAll(convertToTicketsGeneratedModels(s.result()));
-                model.ticketEventsFetchedProperty().set(true);
+                model.ticketsGeneratedProperty().set(true);
             }
             case Failure<List<TicketGenerated>> f -> System.out.println("Error: " + f);
         }

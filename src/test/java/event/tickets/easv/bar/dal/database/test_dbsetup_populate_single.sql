@@ -7,7 +7,7 @@ VALUES
 GO
 
 -- Password: test
-INSERT INTO dbo.Users (username, password)
+INSERT INTO dbo.Users (username, mail, password, firstName, lastName, location, phoneNumber, imageName, rank, theme, language, fontSize)
 VALUES
-    ('test', '$2a$10$CLYpJK6QyzLKEvKzgnYd4OgBDAhhI0tmlYb02HgWAmfo1icjo0nMy');
+    ('test', 'test@test.dk', '$2a$10$CLYpJK6QyzLKEvKzgnYd4OgBDAhhI0tmlYb02HgWAmfo1icjo0nMy', 'Test fornavn', 'Test efternavn', '6700, Esbjerg', '+4512345678', 'profileImage.jpeg', 'Admin', 'Light', 'en-GB', 14);
 GO
