@@ -25,9 +25,9 @@ public class CreateUserView implements View {
     private final CreateUserModel model;
     private final CreateUserController controller;
 
-    public CreateUserView(ObservableList<UserModel> models) {
+    public CreateUserView() {
         this.model = new CreateUserModel();
-        this.controller = new CreateUserController(model, models);
+        this.controller = new CreateUserController(model);
     }
 
     @Override

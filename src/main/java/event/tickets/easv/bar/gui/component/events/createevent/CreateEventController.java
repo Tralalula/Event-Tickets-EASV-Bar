@@ -47,7 +47,7 @@ public class CreateEventController {
         createTask.setOnSucceeded(evt -> {
             postTaskGuiActions.run();
 
-            Result<Event> result = createTask.getValue();
+            var result = createTask.getValue();
             if (result.isSuccess()) ActionHandler.handle(new CreateEvent(EventModel.fromEntity(result.get())));
 
             // todo: håndter failure
@@ -71,7 +71,7 @@ public class CreateEventController {
         if (imagedCopied.isFailure()) return imagedCopied.failAs();
 
         var event = new Event(title, imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo);
-        Result<Event> result = new EntityManager().add(event);
+        var result = new EntityManager().add(event);
 
         if (result.isFailure()) return result;
 

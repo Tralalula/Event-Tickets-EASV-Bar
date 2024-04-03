@@ -6,7 +6,11 @@ import event.tickets.easv.bar.be.enums.Rank;
 import event.tickets.easv.bar.bll.EmailSender;
 import event.tickets.easv.bar.bll.EntityManager;
 import event.tickets.easv.bar.bll.cryptographic.BCrypt;
+import event.tickets.easv.bar.gui.common.Action;
+import event.tickets.easv.bar.gui.common.Action.CreateUser;
+import event.tickets.easv.bar.gui.common.ActionHandler;
 import event.tickets.easv.bar.gui.common.UserModel;
+import event.tickets.easv.bar.util.FailureType;
 import event.tickets.easv.bar.util.Generator;
 import event.tickets.easv.bar.util.Result;
 import event.tickets.easv.bar.util.Result.Success;
@@ -19,11 +23,9 @@ import java.io.IOException;
 
 public class CreateUserController {
     private final CreateUserModel model;
-    private final ObservableList<UserModel> models;
 
-    public CreateUserController(CreateUserModel model, ObservableList<UserModel> models) {
+    public CreateUserController(CreateUserModel model) {
         this.model = model;
-        this.models = models;
         model.okToCreateProperty().bind(Bindings.createBooleanBinding(
                 this::isDataValid,
                 model.rankProperty(),
@@ -34,25 +36,26 @@ public class CreateUserController {
     }
 
     void createUser(Runnable postTaskGuiActions) {
-        Task<Boolean> createTask = new Task<>() {
+        Task<Result<User>> createTask = new Task<>() {
             @Override
-            protected Boolean call() {
+            protected Result<User> call() {
                 return createUser();
             }
         };
 
         createTask.setOnSucceeded(evt -> {
             postTaskGuiActions.run();
-            if (!createTask.getValue()) {
-                System.out.println("hey");
-            }
+
+            var result = createTask.getValue();
+            if (result.isSuccess()) ActionHandler.handle(new CreateUser(UserModel.fromEntity(result.get())));
+
+            // todo: håndter failure
         });
 
-        var saveThread = new Thread(createTask);
-        saveThread.start();
+        new Thread(createTask).start();
     }
 
-    private boolean createUser() {
+    private Result<User> createUser() {
         String username = model.usernameProperty().get();
         String mail = model.mailProperty().get();
         Rank rank = model.rankProperty().get();
@@ -62,27 +65,24 @@ public class CreateUserController {
         String phoneNumber = model.phoneNumberProperty().get();
 
         String password = Generator.generatePassword(8);
-        System.out.println("password: " + password);
         var user = new User(username, mail, password, firstName, lastName, location, phoneNumber, rank);
-        Result<User> result = new EntityManager().add(user);
-        switch (result) {
-            case Success<User> s -> {
-                System.out.println("lol");
-//                try {
-//                    EmailSender emailSender = new EmailSender();
-////                    emailSender.sendPassword(mail, firstName, username, password);
-//                } catch (IOException e) {
-//                    System.out.println("fejl ved at læse prop fil til email sending... " + e);
-//                } catch (ResendException e) {
-//                    System.out.println("fejl ved at sende mail... " + e);
-//                }
-                return true;
-            }
-            case Failure<User> f -> {
-                System.out.println(f);
-                return false;
-            }
-        }
+        var result = new EntityManager().add(user);
+
+        if (result.isFailure()) return result;
+
+
+        // todo: sender ikke mail på test
+
+/*        try {
+            EmailSender emailSender = new EmailSender();
+            emailSender.sendPassword(mail, firstName, username, password);
+        } catch (IOException e) {
+            return Failure.of(FailureType.IO_FAILURE, "CreateUserController.createUser - failed during reading prop file for sending email", e);
+        } catch (ResendException e) {
+            return Failure.of(FailureType.EMAIL_FAILURE, "CreateUserController.createUser - failed during sending mail");
+        }*/
+
+        return result;
     }
 
     private boolean isDataValid() {

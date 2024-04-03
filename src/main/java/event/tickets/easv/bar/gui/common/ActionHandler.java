@@ -10,7 +10,6 @@ import java.util.Optional;
 import java.util.function.Predicate;
 
 public class ActionHandler {
-    private static final ActionHandler INSTANCE = new ActionHandler();
     private static MainModel model;
 
     private ActionHandler() {
