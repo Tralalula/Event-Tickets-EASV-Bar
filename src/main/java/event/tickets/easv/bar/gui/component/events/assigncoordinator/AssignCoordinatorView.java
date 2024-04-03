@@ -24,32 +24,59 @@ import org.kordamp.ikonli.material2.Material2MZ;
 import org.kordamp.ikonli.material2.Material2OutlinedAL;
 
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class AssignCoordinatorView implements View {
     private final AssignCoordinatorModel model;
     private final AssignCoordinatorController controller;
     private final FilteredList<UserModel> filteredUserModels;
+    private final EventModel currentEventModel;
+    private Predicate<UserModel> excludeAssociatedUsers;
 
     public AssignCoordinatorView(EventModel currentEventModel, ObservableList<UserModel> masterUserList) {
         this.model = new AssignCoordinatorModel();
-        this.controller = new AssignCoordinatorController(model, currentEventModel);
+        this.currentEventModel = currentEventModel;
+        this.controller = new AssignCoordinatorController(model, this.currentEventModel);
 
-        this.filteredUserModels = new FilteredList<>(masterUserList, userModel -> true);
+        initializeExcludePredicate();
+        this.filteredUserModels = new FilteredList<>(masterUserList, excludeAssociatedUsers);
 
-        Set<Integer> associatedUserIds = currentEventModel.users().stream()
-                                                           .map(userModel -> userModel.id().get())
-                                                           .collect(Collectors.toSet());
-
-        filteredUserModels.setPredicate(userModel -> !associatedUserIds.contains(userModel.id().get()));
+        setupSearchFilter();
     }
 
+    private void initializeExcludePredicate() {
+        excludeAssociatedUsers = userModel -> {
+            Set<Integer> associatedUserIds = currentEventModel.users().stream()
+                                                                      .map(user -> user.id().get())
+                                                                      .collect(Collectors.toSet());
+            return !associatedUserIds.contains(userModel.id().get());
+        };
+    }
+
+    private void setupSearchFilter() {
+        model.searchProperty().addListener((obs, ov, nv) -> {
+            Predicate<UserModel> searchPredicate = userModel -> {
+                if (nv == null || nv.isEmpty()) {
+                    return true;
+                }
+
+                var lowercase = nv.toLowerCase();
+                return userModel.firstName().get().toLowerCase().contains(lowercase) ||
+                       userModel.lastName().get().toLowerCase().contains(lowercase) ||
+                       userModel.mail().get().toLowerCase().contains(lowercase);
+            };
+
+            filteredUserModels.setPredicate(excludeAssociatedUsers.and(searchPredicate));
+        });
+    }
 
     @Override
     public Region getView() {
         var searchField = new CustomTextField();
         searchField.setPromptText("By name or mail");
         searchField.setLeft(new FontIcon(Material2MZ.SEARCH));
+        searchField.textProperty().bindBidirectional(model.searchProperty());
         VBox.setVgrow(searchField, Priority.NEVER);
 
         var placeholder = new Label("Your search results will appear here");
