@@ -43,6 +43,16 @@ public class CustomerDAO implements DAO<Customer> {
     }
 
     @Override
+    public Result<List<Customer>> addAll(List<Customer> entities) {
+        return daoHelper.addAll(entities);
+    }
+
+    @Override
+    public Result<Integer> batchAdd(List<Customer> entities) {
+        return daoHelper.batchAdd(entities);
+    }
+
+    @Override
     public Result<Boolean> update(Customer original, Customer updatedData) {
         return daoHelper.update(original, updatedData);
     }

@@ -43,6 +43,16 @@ public class TicketEventDAO implements DAO<TicketEvent> {
     }
 
     @Override
+    public Result<List<TicketEvent>> addAll(List<TicketEvent> entities) {
+        return daoHelper.addAll(entities);
+    }
+
+    @Override
+    public Result<Integer> batchAdd(List<TicketEvent> entities) {
+        return daoHelper.batchAdd(entities);
+    }
+
+    @Override
     public Result<Boolean> update(TicketEvent original, TicketEvent updatedData) {
         return daoHelper.update(original, updatedData);
     }

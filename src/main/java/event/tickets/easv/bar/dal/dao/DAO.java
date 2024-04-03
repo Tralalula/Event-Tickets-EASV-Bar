@@ -36,6 +36,10 @@ public interface DAO<T> {
      */
     Result<T> add(T entity);
 
+    Result<List<T>> addAll(List<T> entities);
+
+    Result<Integer> batchAdd(List<T> entities);
+
     /**
      * Updates an existing entity with new data.
      *

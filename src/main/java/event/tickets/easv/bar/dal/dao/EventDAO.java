@@ -41,6 +41,16 @@ public class EventDAO implements DAO<Event> {
     }
 
     @Override
+    public Result<List<Event>> addAll(List<Event> entities) {
+        return daoHelper.addAll(entities);
+    }
+
+    @Override
+    public Result<Integer> batchAdd(List<Event> entities) {
+        return daoHelper.batchAdd(entities);
+    }
+
+    @Override
     public Result<Boolean> update(Event original, Event updatedData) {
         return daoHelper.update(original, updatedData);
     }

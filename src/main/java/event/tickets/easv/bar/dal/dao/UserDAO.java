@@ -42,6 +42,16 @@ public class UserDAO implements DAO<User> {
     }
 
     @Override
+    public Result<List<User>> addAll(List<User> entities) {
+        return daoHelper.addAll(entities);
+    }
+
+    @Override
+    public Result<Integer> batchAdd(List<User> entities) {
+        return daoHelper.batchAdd(entities);
+    }
+
+    @Override
     public Result<Boolean> update(User original, User updatedData) {
         return daoHelper.update(original, updatedData);
     }

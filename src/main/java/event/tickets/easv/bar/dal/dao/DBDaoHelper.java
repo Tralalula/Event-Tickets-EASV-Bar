@@ -129,6 +129,7 @@ public class DBDaoHelper<T extends Entity<T>> implements DAO<T> {
         }
     }
 
+    @Override
     public Result<List<T>> addAll(List<T> entities) {
         if (entities == null || entities.isEmpty()) {
             return Success.of(Collections.emptyList());
@@ -164,6 +165,7 @@ public class DBDaoHelper<T extends Entity<T>> implements DAO<T> {
         }
     }
 
+    @Override
     public Result<Integer> batchAdd(List<T> entities) {
         if (entities == null || entities.isEmpty()) {
             return Success.of(0);
