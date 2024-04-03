@@ -18,9 +18,7 @@ import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.kordamp.ikonli.material2.Material2MZ;
 import org.kordamp.ikonli.material2.Material2OutlinedAL;
@@ -113,7 +111,7 @@ public class AssignCoordinatorView implements View {
                         assignBtn.disableProperty().unbind();
                         assignBtn.setDisable(true);
                         selectedProperty.set(true);
-                        controller.assignCoordinator(() -> assignBtn.disableProperty().bind(model.okToAssignProperty().not()), item);
+                        controller.onAssignCoordinator(() -> assignBtn.disableProperty().bind(model.okToAssignProperty().not()), item);
                     });
 
                     tile.setGraphic(photo.get());

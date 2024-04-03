@@ -68,14 +68,14 @@ public class CreateUserController {
         switch (result) {
             case Success<User> s -> {
                 System.out.println("lol");
-                try {
-                    EmailSender emailSender = new EmailSender();
-                    emailSender.sendPassword(mail, firstName, username, password);
-                } catch (IOException e) {
-                    System.out.println("fejl ved at læse prop fil til email sending... " + e);
-                } catch (ResendException e) {
-                    System.out.println("fejl ved at sende mail... " + e);
-                }
+//                try {
+//                    EmailSender emailSender = new EmailSender();
+////                    emailSender.sendPassword(mail, firstName, username, password);
+//                } catch (IOException e) {
+//                    System.out.println("fejl ved at læse prop fil til email sending... " + e);
+//                } catch (ResendException e) {
+//                    System.out.println("fejl ved at sende mail... " + e);
+//                }
                 return true;
             }
             case Failure<User> f -> {
