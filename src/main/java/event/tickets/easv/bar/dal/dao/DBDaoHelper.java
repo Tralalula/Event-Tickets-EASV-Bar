@@ -140,28 +140,56 @@ public class DBDaoHelper<T extends Entity<T>> implements DAO<T> {
             return Failure.of(FailureType.IO_FAILURE, "DBDaoHelper.addAll() - Failed to read from the data source", e);
         }
 
-        String sql = sqlTemplate.insertSQL();
+        try (Connection conn = dbConnector.connection()) {
+            conn.setAutoCommit(false); // Start transaction
+
+            List<T> addedEntities = new ArrayList<>();
+            for (T entity : entities) {
+                try (PreparedStatement stmt = conn.prepareStatement(sqlTemplate.insertSQL(), Statement.RETURN_GENERATED_KEYS)) {
+                    insertParameterSetter.setParameters(stmt, entity);
+                    stmt.executeUpdate();
+                    ResultSet rs = stmt.getGeneratedKeys();
+                    if (rs.next()) {
+                        int id = rs.getInt(1);
+                        addedEntities.add(idSetter.setId(entity, id));
+                    }
+                }
+            }
+
+            conn.commit();
+            return Success.of(addedEntities);
+        } catch (SQLException e) {
+            // todo: rollback mangler
+            return Failure.of(FailureType.DB_DATA_RETRIEVAL_FAILURE, "DBDaoHelper.addAll() - Failed to connect to database", e);
+        }
+    }
+
+    public Result<Integer> batchAdd(List<T> entities) {
+        if (entities == null || entities.isEmpty()) {
+            return Success.of(0);
+        }
+
+        try {
+            setupDBConnector();
+        } catch (IOException e) {
+            return Failure.of(FailureType.IO_FAILURE, "DBDaoHelper.addAll() - Failed to read from the data source", e);
+        }
+
         try (Connection conn = dbConnector.connection();
-             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+             PreparedStatement stmt = conn.prepareStatement(sqlTemplate.insertSQL())) {
+            conn.setAutoCommit(false); // start transaction
+
             for (T entity : entities) {
                 insertParameterSetter.setParameters(stmt, entity);
                 stmt.addBatch();
             }
-            stmt.executeBatch();
-
-            List<T> addedEntities = new ArrayList<>();
-            try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
-                Iterator<T> entityIterator = entities.iterator();
-                while (generatedKeys.next() && entityIterator.hasNext()) {
-                    T entity = entityIterator.next();
-                    int id = generatedKeys.getInt(1);
-                    addedEntities.add(idSetter.setId(entity, id));
-                }
-            }
-
-            return Success.of(addedEntities);
+            int[] results = stmt.executeBatch();
+            int rowsAffected = Arrays.stream(results).sum();
+            conn.commit(); // commit transaction
+            return Success.of(rowsAffected);
         } catch (SQLException e) {
-            return Failure.of(FailureType.DB_DATA_RETRIEVAL_FAILURE, "DBDaoHelper.addAll() - Failed to batch add entities to database", e);
+            // todo: rollback mangler
+            return Failure.of(FailureType.DB_DATA_RETRIEVAL_FAILURE, "DBDaoHelper.addAll() - Failed to connect to database", e);
         }
     }
 
