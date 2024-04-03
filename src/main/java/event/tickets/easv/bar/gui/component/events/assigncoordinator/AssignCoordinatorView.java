@@ -31,9 +31,9 @@ public class AssignCoordinatorView implements View {
     private final AssignCoordinatorController controller;
     private final FilteredList<UserModel> filteredUserModels;
 
-    public AssignCoordinatorView(EventModel currentEventModel, ObservableList<EventModel> masterEventList, ObservableList<UserModel> masterUserList) {
+    public AssignCoordinatorView(EventModel currentEventModel, ObservableList<UserModel> masterUserList) {
         this.model = new AssignCoordinatorModel();
-        this.controller = new AssignCoordinatorController(model, currentEventModel, masterEventList, masterUserList);
+        this.controller = new AssignCoordinatorController(model, currentEventModel);
 
         this.filteredUserModels = new FilteredList<>(masterUserList, userModel -> true);
 
@@ -42,8 +42,6 @@ public class AssignCoordinatorView implements View {
                                                            .collect(Collectors.toSet());
 
         filteredUserModels.setPredicate(userModel -> !associatedUserIds.contains(userModel.id().get()));
-
-        System.out.println("eventModel.title().get(): " + currentEventModel.title().get());
     }
 
 

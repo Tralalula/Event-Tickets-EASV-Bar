@@ -30,15 +30,13 @@ import java.util.Locale;
 public class ShowEventView implements View {
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE dd. MMMM HHmm", Locale.ENGLISH);
     private final EventModel model;
-    private final ObservableList<EventModel> masterEventList;
     private final ObservableList<UserModel> masterUserList;
     private final ImageView image;
     private final HBox coordinators;
     private final TableView<TestModel> eventTicketsTableView;
 
-    public ShowEventView(EventModel model, ObservableList<EventModel> masterEventList, ObservableList<UserModel> masterUserList) {
+    public ShowEventView(EventModel model, ObservableList<UserModel> masterUserList) {
         this.model = model;
-        this.masterEventList = masterEventList;
         this.masterUserList = masterUserList;
         coordinators = new HBox(StyleConfig.STANDARD_SPACING * 8);
         eventTicketsTableView = new TableView<>();
@@ -142,7 +140,7 @@ public class ShowEventView implements View {
 
         var coordinatorsText = Labels.styledLabel("Event coordinators", Styles.TITLE_3);
         var spacer = new Region();
-        var add = Buttons.actionIconButton(Material2AL.ADD, e -> ViewHandler.showOverlay("Add coordinator", new AssignCoordinatorView(model, masterEventList, masterUserList).getView(), 600, 540), StyleConfig.ACTIONABLE);
+        var add = Buttons.actionIconButton(Material2AL.ADD, e -> ViewHandler.showOverlay("Add coordinator", new AssignCoordinatorView(model, masterUserList).getView(), 600, 540), StyleConfig.ACTIONABLE);
         var box = new HBox(coordinatorsText, spacer, add);
         var coordinatorsBox = new VBox(box, coordinators);
 
