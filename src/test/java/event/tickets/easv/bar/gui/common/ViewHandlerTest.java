@@ -1,5 +1,7 @@
 package event.tickets.easv.bar.gui.common;
 
+import javafx.embed.swing.JFXPanel;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -7,6 +9,14 @@ import static com.google.common.truth.Truth.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 class ViewHandlerTest {
+
+    @BeforeAll
+    static void initJavaFXRuntime() {
+        // Need to initialize the JavaFX runtime because of this line in ViewHandler:
+        // private final ModalPane overlay = new ModalOverlay();
+        // A JavaFX gui control that requires the runtime
+        new JFXPanel();
+    }
 
     @BeforeEach
     void setup() {

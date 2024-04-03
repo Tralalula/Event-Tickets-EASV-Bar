@@ -9,9 +9,7 @@ import event.tickets.easv.bar.util.Result.Failure;
 
 import java.io.IOException;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Helper class providing generic data access operations against a database.
@@ -110,7 +108,7 @@ public class DBDaoHelper<T extends Entity<T>> implements DAO<T> {
         try {
             setupDBConnector();
         } catch (IOException e) {
-            return Failure.of(FailureType.IO_FAILURE, "Failed to read from the data source", e);
+            return Failure.of(FailureType.IO_FAILURE, "DBDaoHelper.add() - Failed to read from the data source", e);
         }
 
         String sql = sqlTemplate.insertSQL();
@@ -127,7 +125,43 @@ public class DBDaoHelper<T extends Entity<T>> implements DAO<T> {
                 return Failure.of(FailureType.DB_DATA_RETRIEVAL_FAILURE, "DBDaoHelper.add() - No ID generated for entity: " + entity.getClass().getName());
             }
         } catch (SQLException e) {
-            return Failure.of(FailureType.DB_DATA_RETRIEVAL_FAILURE, "DBDaoHelper.add() - Failed to add entity + " + entity.getClass().getName() + " from the database", e);
+            return Failure.of(FailureType.DB_DATA_RETRIEVAL_FAILURE, "DBDaoHelper.add() - Failed to add entity: " + entity.getClass().getName() + " to the database", e);
+        }
+    }
+
+    public Result<List<T>> addAll(List<T> entities) {
+        if (entities == null || entities.isEmpty()) {
+            return Success.of(Collections.emptyList());
+        }
+
+        try {
+            setupDBConnector();
+        } catch (IOException e) {
+            return Failure.of(FailureType.IO_FAILURE, "DBDaoHelper.addAll() - Failed to read from the data source", e);
+        }
+
+        String sql = sqlTemplate.insertSQL();
+        try (Connection conn = dbConnector.connection();
+             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            for (T entity : entities) {
+                insertParameterSetter.setParameters(stmt, entity);
+                stmt.addBatch();
+            }
+            stmt.executeBatch();
+
+            List<T> addedEntities = new ArrayList<>();
+            try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
+                Iterator<T> entityIterator = entities.iterator();
+                while (generatedKeys.next() && entityIterator.hasNext()) {
+                    T entity = entityIterator.next();
+                    int id = generatedKeys.getInt(1);
+                    addedEntities.add(idSetter.setId(entity, id));
+                }
+            }
+
+            return Success.of(addedEntities);
+        } catch (SQLException e) {
+            return Failure.of(FailureType.DB_DATA_RETRIEVAL_FAILURE, "DBDaoHelper.addAll() - Failed to batch add entities to database", e);
         }
     }
 
@@ -136,7 +170,7 @@ public class DBDaoHelper<T extends Entity<T>> implements DAO<T> {
         try {
             setupDBConnector();
         } catch (IOException e) {
-            return Failure.of(FailureType.IO_FAILURE, "DBdaoHelper.update() - Failed to read from the data source", e);
+            return Failure.of(FailureType.IO_FAILURE, "DBDaoHelper.update() - Failed to read from the data source", e);
         }
 
         String sql = sqlTemplate.updateSQL();
@@ -148,7 +182,7 @@ public class DBDaoHelper<T extends Entity<T>> implements DAO<T> {
             int rowsAffected = stmt.executeUpdate();
             return Success.of(rowsAffected > 0);
         } catch (SQLException e) {
-            return Failure.of(FailureType.DB_DATA_RETRIEVAL_FAILURE, "DBDaoHelper.update() - Failed to update entity + " + original.getClass().getName() + " in the database", e);
+            return Failure.of(FailureType.DB_DATA_RETRIEVAL_FAILURE, "DBDaoHelper.update() - Failed to update entity: " + original.getClass().getName() + " in the database", e);
         }
     }
 
@@ -176,10 +210,10 @@ public class DBDaoHelper<T extends Entity<T>> implements DAO<T> {
                 return Success.of(rowsAffected > 0);
             } catch (SQLException e) {
                 conn.rollback(); // Rollback transaction if an error happens
-                return Failure.of(FailureType.DB_DATA_RETRIEVAL_FAILURE, "DBDaoHelper.delete() - Failed to delete entity " + entity.getClass().getName(), e);
+                return Failure.of(FailureType.DB_DATA_RETRIEVAL_FAILURE, "DBDaoHelper.delete() - Failed to delete entity: " + entity.getClass().getName(), e);
             }
         } catch (SQLException e) {
-            return Failure.of(FailureType.DB_DATA_RETRIEVAL_FAILURE, "DBDaoHelper.delete() - Failed to access the database - " + entity.getClass().getName(), e);
+            return Failure.of(FailureType.DB_DATA_RETRIEVAL_FAILURE, "DBDaoHelper.delete() - Failed to access the database: " + entity.getClass().getName(), e);
         }
     }
 

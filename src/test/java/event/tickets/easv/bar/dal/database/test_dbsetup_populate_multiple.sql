@@ -26,18 +26,18 @@ VALUES
 GO
 
 -- Password: test
-INSERT INTO dbo.Users (username, password)
+INSERT INTO dbo.Users (username, mail, password, firstName, lastName, location, phoneNumber, imageName, rank, theme, language, fontSize)
 VALUES
-    ('test', '$2a$10$CLYpJK6QyzLKEvKzgnYd4OgBDAhhI0tmlYb02HgWAmfo1icjo0nMy'),
-    ('test1', '$2a$10$CLYpJK6QyzLKEvKzgnYd4OgBDAhhI0tmlYb02HgWAmfo1icjo0nMy'),
-    ('test2', '$2a$10$CLYpJK6QyzLKEvKzgnYd4OgBDAhhI0tmlYb02HgWAmfo1icjo0nMy'),
-    ('test3', '$2a$10$CLYpJK6QyzLKEvKzgnYd4OgBDAhhI0tmlYb02HgWAmfo1icjo0nMy'),
-    ('test4', '$2a$10$CLYpJK6QyzLKEvKzgnYd4OgBDAhhI0tmlYb02HgWAmfo1icjo0nMy'),
-    ('test5', '$2a$10$CLYpJK6QyzLKEvKzgnYd4OgBDAhhI0tmlYb02HgWAmfo1icjo0nMy'),
-    ('test6', '$2a$10$CLYpJK6QyzLKEvKzgnYd4OgBDAhhI0tmlYb02HgWAmfo1icjo0nMy'),
-    ('test7', '$2a$10$CLYpJK6QyzLKEvKzgnYd4OgBDAhhI0tmlYb02HgWAmfo1icjo0nMy'),
-    ('test8', '$2a$10$CLYpJK6QyzLKEvKzgnYd4OgBDAhhI0tmlYb02HgWAmfo1icjo0nMy'),
-    ('test9', '$2a$10$CLYpJK6QyzLKEvKzgnYd4OgBDAhhI0tmlYb02HgWAmfo1icjo0nMy'),
-    ('test10', '$2a$10$CLYpJK6QyzLKEvKzgnYd4OgBDAhhI0tmlYb02HgWAmfo1icjo0nMy'),
-    ('kakao', '$2a$10$CLYpJK6QyzLKEvKzgnYd4OgBDAhhI0tmlYb02HgWAmfo1icjo0nMy');
+    ('test1', 'test1@test.dk', '$2a$10$CLYpJK6QyzLKEvKzgnYd4OgBDAhhI0tmlYb02HgWAmfo1icjo0nMy', 'Test fornavn', 'Test efternavn', '6700, Esbjerg', '+4512345678', 'profileImage.jpeg', 'Admin', 'Light', 'en-GB', 14),
+    ('test2', 'test2@test.dk', '$2a$10$CLYpJK6QyzLKEvKzgnYd4OgBDAhhI0tmlYb02HgWAmfo1icjo0nMy', 'Test fornavn', 'Test efternavn', '6700, Esbjerg', '+4512345678', 'profileImage.jpeg', 'Admin', 'Light', 'en-GB', 14),
+    ('test3', 'test3@test.dk', '$2a$10$CLYpJK6QyzLKEvKzgnYd4OgBDAhhI0tmlYb02HgWAmfo1icjo0nMy', 'Test fornavn', 'Test efternavn', '6700, Esbjerg', '+4512345678', 'profileImage.jpeg', 'Admin', 'Light', 'en-GB', 14),
+    ('test4', 'test4@test.dk', '$2a$10$CLYpJK6QyzLKEvKzgnYd4OgBDAhhI0tmlYb02HgWAmfo1icjo0nMy', 'Test fornavn', 'Test efternavn', '6700, Esbjerg', '+4512345678', 'profileImage.jpeg', 'Admin', 'Light', 'en-GB', 14),
+    ('test5', 'test5@test.dk', '$2a$10$CLYpJK6QyzLKEvKzgnYd4OgBDAhhI0tmlYb02HgWAmfo1icjo0nMy', 'Test fornavn', 'Test efternavn', '6700, Esbjerg', '+4512345678', 'profileImage.jpeg', 'Admin', 'Light', 'en-GB', 14),
+    ('test6', 'test6@test.dk', '$2a$10$CLYpJK6QyzLKEvKzgnYd4OgBDAhhI0tmlYb02HgWAmfo1icjo0nMy', 'Test fornavn', 'Test efternavn', '6700, Esbjerg', '+4512345678', 'profileImage.jpeg', 'Admin', 'Light', 'en-GB', 14),
+    ('test7', 'test7@test.dk', '$2a$10$CLYpJK6QyzLKEvKzgnYd4OgBDAhhI0tmlYb02HgWAmfo1icjo0nMy', 'Test fornavn', 'Test efternavn', '6700, Esbjerg', '+4512345678', 'profileImage.jpeg', 'Admin', 'Light', 'en-GB', 14),
+    ('test8', 'test8@test.dk', '$2a$10$CLYpJK6QyzLKEvKzgnYd4OgBDAhhI0tmlYb02HgWAmfo1icjo0nMy', 'Test fornavn', 'Test efternavn', '6700, Esbjerg', '+4512345678', 'profileImage.jpeg', 'Admin', 'Light', 'en-GB', 14),
+    ('test9', 'test9@test.dk', '$2a$10$CLYpJK6QyzLKEvKzgnYd4OgBDAhhI0tmlYb02HgWAmfo1icjo0nMy', 'Test fornavn', 'Test efternavn', '6700, Esbjerg', '+4512345678', 'profileImage.jpeg', 'Admin', 'Light', 'en-GB', 14),
+    ('test10', 'test10@test.dk', '$2a$10$CLYpJK6QyzLKEvKzgnYd4OgBDAhhI0tmlYb02HgWAmfo1icjo0nMy', 'Test fornavn', 'Test efternavn', '6700, Esbjerg', '+4512345678', 'profileImage.jpeg', 'Admin', 'Light', 'en-GB', 14),
+    ('test11', 'test11@test.dk', '$2a$10$CLYpJK6QyzLKEvKzgnYd4OgBDAhhI0tmlYb02HgWAmfo1icjo0nMy', 'Test fornavn', 'Test efternavn', '6700, Esbjerg', '+4512345678', 'profileImage.jpeg', 'Admin', 'Light', 'en-GB', 14),
+    ('kakao', 'kakao@test.dk', '$2a$10$CLYpJK6QyzLKEvKzgnYd4OgBDAhhI0tmlYb02HgWAmfo1icjo0nMy', 'Test fornavn', 'Test efternavn', '6700, Esbjerg', '+4512345678', 'profileImage.jpeg', 'Admin', 'Light', 'en-GB', 14);
 GO

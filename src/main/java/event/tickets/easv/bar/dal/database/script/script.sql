@@ -6,8 +6,8 @@ GO
 -- 2. 'TicketEvent' because it references 'Ticket' and 'Event'
 -- 3. 'EventUser' because it references 'Event' and 'Users'
 -- 4. 'Ticket' because it references 'TicketCategory'
--- 5. 'Event' can be dropped now, all references removed.
--- 6. 'TicketCategory' can be dropped now (after Ticket is dropped)
+-- 5. 'Customers' ..
+-- 6. 'Event' can be dropped now, all references removed.
 -- 7. 'Users' can be dropped at any time (no references to it)
 
 IF OBJECT_ID('dbo.TicketGenerated', 'U') IS NOT NULL
@@ -26,19 +26,13 @@ IF OBJECT_ID('dbo.Ticket', 'U') IS NOT NULL
     DROP TABLE dbo.Ticket;
 GO
 
-IF OBJECT_ID('dbo.Customer', 'U') IS NOT NULL
-DROP TABLE dbo.Ticket;
+IF OBJECT_ID('dbo.Customers', 'U') IS NOT NULL
+    DROP TABLE dbo.Customers;
 GO
 
 IF OBJECT_ID('dbo.Event', 'U') IS NOT NULL
     DROP TABLE dbo.Event;
 GO
-
-
-IF OBJECT_ID('dbo.TicketCategory', 'U') IS NOT NULL
-    DROP TABLE dbo.TicketCategory;
-GO
-
 
 IF OBJECT_ID('dbo.Users', 'U') IS NOT NULL
     DROP TABLE dbo.Users;
@@ -59,12 +53,6 @@ CREATE TABLE dbo.Users (
     theme       NVARCHAR(50) NOT NULL DEFAULT 'Light' CHECK (theme in ('Light', 'Dark')),
     language    NVARCHAR(50) NOT NULL DEFAULT 'en-GB' CHECK (language in ('en-GB', 'da-DK')),
     fontSize    INT          NOT NULL DEFAULT 14 CHECK (fontSize BETWEEN 8 and 24)
-);
-GO
-
-CREATE TABLE TicketCategory (
-    id   INT PRIMARY KEY IDENTITY(1,1),
-    name NVARCHAR(255)
 );
 GO
 
@@ -122,11 +110,11 @@ CREATE TABLE TicketGenerated (
 );
 GO
 
-create table Customers
-(
-    id   int identity,
-    mail varchar(100)
+CREATE TABLE Customers (
+    id   INT IDENTITY(1,1) PRIMARY KEY ,
+    mail NVARCHAR(100)
 );
+GO
 
 INSERT INTO Event (title, imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo)
 VALUES

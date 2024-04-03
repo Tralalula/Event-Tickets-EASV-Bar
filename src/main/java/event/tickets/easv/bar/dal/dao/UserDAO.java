@@ -75,7 +75,7 @@ class UserSQLTemplate implements SQLTemplate<User> {
     public String updateSQL() {
         return """
                UPDATE dbo.Users
-               SET username = ?, mail = ?, password = ?, firstName = ?, lastName = ?, location = ?, phoneNumber = ?, imageName = ?, rank = ?, theme = ?, language = ?, fontSize = ?
+               SET username = ?, mail = ?, firstName = ?, lastName = ?, location = ?, phoneNumber = ?, imageName = ?, rank = ?, theme = ?, language = ?, fontSize = ?
                WHERE id = ?;
                """;
     }
@@ -125,17 +125,16 @@ class UserUpdateParameterSetter implements UpdateParameterSetter<User> {
     public void setParameters(PreparedStatement stmt, User original, User updatedData) throws SQLException {
         stmt.setString(1, updatedData.username());
         stmt.setString(2, updatedData.mail());
-        stmt.setString(3, updatedData.hashedPassword());
-        stmt.setString(4, updatedData.firstName());
-        stmt.setString(5, updatedData.lastName());
-        stmt.setString(6, updatedData.location());
-        stmt.setString(7, updatedData.phoneNumber());
-        stmt.setString(8, updatedData.imageName());
-        stmt.setString(9, updatedData.rank().toDbValue());
-        stmt.setString(10, updatedData.theme().toDbValue());
-        stmt.setString(11, updatedData.language().toDbValue());
-        stmt.setInt(12, updatedData.fontSize());
-        stmt.setInt(13, original.id());
+        stmt.setString(3, updatedData.firstName());
+        stmt.setString(4, updatedData.lastName());
+        stmt.setString(5, updatedData.location());
+        stmt.setString(6, updatedData.phoneNumber());
+        stmt.setString(7, updatedData.imageName());
+        stmt.setString(8, updatedData.rank().toDbValue());
+        stmt.setString(9, updatedData.theme().toDbValue());
+        stmt.setString(10, updatedData.language().toDbValue());
+        stmt.setInt(11, updatedData.fontSize());
+        stmt.setInt(12, original.id());
     }
 }
 

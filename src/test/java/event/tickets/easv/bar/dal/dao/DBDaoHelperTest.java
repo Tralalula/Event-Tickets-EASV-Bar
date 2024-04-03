@@ -2,6 +2,9 @@ package event.tickets.easv.bar.dal.dao;
 
 import event.tickets.easv.bar.be.Event;
 import event.tickets.easv.bar.be.User;
+import event.tickets.easv.bar.be.enums.Language;
+import event.tickets.easv.bar.be.enums.Rank;
+import event.tickets.easv.bar.be.enums.Theme;
 import event.tickets.easv.bar.dal.database.DBConnector;
 import event.tickets.easv.bar.util.Result;
 import event.tickets.easv.bar.util.Result.Success;
@@ -93,6 +96,10 @@ class DBDaoHelperTest {
         } catch (SQLException e) {
             throw new RuntimeException("Error trying to connect to TEST DATABASE in DBDaoHelperTest.runScript().\n " + e);
         }
+    }
+
+    @Test
+    void addAll() {
     }
 
     @Nested
@@ -421,7 +428,7 @@ class DBDaoHelperTest {
             assertThat(result).isInstanceOf(Success.class);
             var success = (Success<Optional<User>>) result;
             assertThat(success.result()).isPresent();
-            assertThat(success.result()).isEqualTo(Optional.of(new User(1, "test")));
+            assertThat(success.result()).isEqualTo(Optional.of(new User(1, "test", "mail@mail.com", "Firstname", "Lastname", "Location", "Phone number", "profileImage.jpeg", Rank.ADMIN, Theme.LIGHT, Language.EN_GB, 14)));
         }
 
         @Test
@@ -461,7 +468,7 @@ class DBDaoHelperTest {
             assertThat(result).isInstanceOf(Success.class);
             var success = (Success<List<User>>) result;
             assertThat(success.result()).hasSize(1);
-            assertThat(success.result().getFirst()).isEqualTo(new User(1, "test"));
+            assertThat(success.result().getFirst()).isEqualTo(new User(1, "test", "mail@mail.com", "Firstname", "Lastname", "Location", "Phone number", "profileImage.jpeg", Rank.ADMIN, Theme.LIGHT, Language.EN_GB, 14));
         }
 
         @Test
@@ -496,8 +503,8 @@ class DBDaoHelperTest {
         void addUser() {
             // Setup
             runScript(POPULATE_SINGLE);
-            var userToAdd = new User("Kakao", "");
-            var userAdded = new User(2, "Kakao");
+            var userToAdd = new User("Kakao", "mail@mail.com", "abemadermitkodeord", "Firstname", "Lastname", "Location", "Phone number", Rank.ADMIN);
+            var userAdded = new User(2, "Kakao", "mail@mail.com", "Firstname", "Lastname", "Location", "Phone number", "profileImage.jpeg", Rank.ADMIN, Theme.LIGHT, Language.EN_GB, 14);
 
             // Call
             Result<User> result = userDaoHelper.add(userToAdd);
@@ -527,8 +534,8 @@ class DBDaoHelperTest {
         void updateUserDoesntExist() {
             // Setup
             runScript(POPULATE_SINGLE);
-            var user = new User(2, "Kakao");
-            var updated = new User("Sodavand", "");
+            var user = new User(2, "Kakao", "mail@mail.com", "Firstname", "Lastname", "Location", "Phone number", "profileImage.jpeg", Rank.ADMIN, Theme.LIGHT, Language.EN_GB, 14);
+            var updated =  new User(2, "Sodavand", "mail@mail.com", "Firstname", "Lastname", "Location", "Phone number", "profileImage.jpeg", Rank.ADMIN, Theme.LIGHT, Language.EN_GB, 14);
 
             // Call
             Result<Boolean> result = userDaoHelper.update(user, updated);
@@ -543,8 +550,8 @@ class DBDaoHelperTest {
         void updateUserExists() {
             // Setup
             runScript(POPULATE_SINGLE);
-            var user = new User(1, "test");
-            var updated = new User("Sodavand", "");
+            var user = new User(1, "test", "mail@mail.com", "Firstname", "Lastname", "Location", "Phone number", "profileImage.jpeg", Rank.ADMIN, Theme.LIGHT, Language.EN_GB, 14);
+            var updated = new User(1, "Sodavand", "mail@mail.com", "Firstname", "Lastname", "Location", "Phone number", "profileImage.jpeg", Rank.ADMIN, Theme.LIGHT, Language.EN_GB, 14);
 
             // Call
             Result<Boolean> result = userDaoHelper.update(user, updated);
@@ -560,7 +567,7 @@ class DBDaoHelperTest {
         void deleteUserDoesntExist() {
             // Setup
             runScript(POPULATE_SINGLE);
-            var user = new User(2, "Kakao");
+            var user = new User(2, "Kakao", "mail@mail.com", "Firstname", "Lastname", "Location", "Phone number", "profileImage.jpeg", Rank.ADMIN, Theme.LIGHT, Language.EN_GB, 14);
 
             // Call
             Result<Boolean> result = userDaoHelper.delete(user);
@@ -575,7 +582,7 @@ class DBDaoHelperTest {
         void deleteUserExists() {
             // Setup
             runScript(POPULATE_SINGLE);
-            var user = new User(1, "test");
+            var user = new User(1, "test", "mail@mail.com", "Firstname", "Lastname", "Location", "Phone number", "profileImage.jpeg", Rank.ADMIN, Theme.LIGHT, Language.EN_GB, 14);
 
             // Call
             Result<Boolean> result = userDaoHelper.delete(user);
