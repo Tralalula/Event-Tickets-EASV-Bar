@@ -33,21 +33,6 @@ public class TicketsView implements View {
         this.main = main;
 
         this.fetchingData = fetchingData;
-
-        main.ticketEventModels().addListener((ListChangeListener.Change<? extends TicketEventModel> change) -> {
-            while (change.next()) {
-                if (change.wasAdded()) {
-                    // Handle added items
-                    table.refresh();
-                    System.out.println("Items added: " + change.getAddedSubList());
-                }
-                if (change.wasRemoved()) {
-                    // Handle removed items
-                    System.out.println("Items removed: " + change.getRemoved());
-                }
-                // Handle other change types if needed
-            }
-        });
     }
 
     @Override
