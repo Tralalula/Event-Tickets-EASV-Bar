@@ -79,7 +79,6 @@ public class MainController {
                     if (ticketModel.id().get() == tc.ticketId().get())
                         list.add(tc);
 
-
                 ticketModel.setTicketEvents(list);
             }
 

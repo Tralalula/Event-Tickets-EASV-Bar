@@ -56,7 +56,7 @@ public class EmailSender {
 
     private boolean sendEmail(String recipient, String subject, String content) throws ResendException {
         SendEmailRequest sendEmailRequest = SendEmailRequest.builder()
-                .from("EASV Event <EASV@resend.dev>")
+                .from("EASV Event <EASV@leet.dk>")
                 .to(recipient)
                 .subject(subject)
                 .html(content)

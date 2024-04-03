@@ -11,8 +11,8 @@ import event.tickets.easv.bar.gui.util.StyleConfig;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
-import javafx.collections.transformation.SortedList;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
@@ -20,29 +20,40 @@ import javafx.scene.layout.*;
 import org.kordamp.ikonli.feather.Feather;
 import org.kordamp.ikonli.javafx.FontIcon;
 
-import java.util.Comparator;
-
 public class TicketsView implements View {
-    private final MainModel mainModel;
-    private final ObservableList<TicketModel> model;
+    private MainModel main;
     private final BooleanProperty fetchingData;
 
     private TicketsModel ticketsModel;
+    private TableView<TicketModel> table;
 
     private final static int PREF_OVERLAY_WIDTH = 200;
 
-    public TicketsView(MainModel mainModel, ObservableList<TicketModel> model, BooleanProperty fetchingData) {
-        this.mainModel = mainModel;
-        this.model = model;
+    public TicketsView(MainModel main, BooleanProperty fetchingData) {
+        this.main = main;
+
         this.fetchingData = fetchingData;
 
-        ticketsModel = new TicketsModel(mainModel);
+        main.ticketEventModels().addListener((ListChangeListener.Change<? extends TicketEventModel> change) -> {
+            while (change.next()) {
+                if (change.wasAdded()) {
+                    // Handle added items
+                    table.refresh();
+                    System.out.println("Items added: " + change.getAddedSubList());
+                }
+                if (change.wasRemoved()) {
+                    // Handle removed items
+                    System.out.println("Items removed: " + change.getRemoved());
+                }
+                // Handle other change types if needed
+            }
+        });
     }
 
     @Override
     public Region getView() {
         HBox top = topBar();
-        TableView<TicketModel> table = createTicketTableView();
+        table = createTicketTableView();
 
         StackPane stackPane = new StackPane(table);
         stackPane.getStyleClass().addAll(Styles.BG_SUBTLE);
@@ -91,10 +102,10 @@ public class TicketsView implements View {
 
         var button = new Button("Add ticket");
         button.setOnAction(e -> {
-            Ticket createdTicket = ticketsModel.add(new Ticket(tf.getText(), type.getValue()));
+            Ticket createdTicket = ticketsModel.addTicket(new Ticket(tf.getText(), type.getValue()));
             //model.ticketModels().add(TicketModel.fromEntity(createdTicket));
         });
-        //main.getChildren().addAll(title, tf,  typeTitle, type, new Label("Select for events"), mutliCombo());
+
         main.getChildren().addAll(title, tf,  typeTitle, type, button);
         return main;
     }
@@ -108,10 +119,6 @@ public class TicketsView implements View {
 
         TableColumn<TicketModel, String> eventCount = new TableColumn<>("Events");
         eventCount.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().eventCount().get() + " events"));
-
-
-        // TableColumn<TicketModel, String> col3 = new TableColumn<>("Category");
-       // col3.setCellValueFactory(c -> c.getValue().categoryName());
 
         TableColumn<TicketModel, Void> buttons = new TableColumn<>("");
         buttons.setCellFactory(param -> new TableCell<>() {
@@ -156,10 +163,10 @@ public class TicketsView implements View {
 
         table.getStyleClass().addAll(Tweaks.NO_HEADER, Styles.STRIPED);
 
-        SortedList<TicketModel> sortedList = ticketsModel.sortToNewest(model);
+        //SortedList<TicketModel> sortedList = ticketsModel.sortToNewest(model);
         //sortedList.comparatorProperty().bind(table.comparatorProperty());
 
-        table.setItems(sortedList);
+        table.setItems(main.ticketModels());
 
         table.getColumns().addAll(title, type, eventCount, buttons);
 
@@ -173,7 +180,7 @@ public class TicketsView implements View {
         table.setRowFactory(tv -> {
             TableRow<TicketModel> row = new TableRow<>();
             row.setOnMouseClicked(event -> {
-                if (!row.isEmpty() && event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 1) {
+                if (!row.isEmpty()) {
                     TicketModel rowData = row.getItem();
                     ViewHandler.changeView(ViewType.SHOW_TICKET, rowData);
                 }

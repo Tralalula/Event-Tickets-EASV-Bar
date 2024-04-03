@@ -10,7 +10,9 @@ import event.tickets.easv.bar.be.Ticket.TicketEvent;
 import event.tickets.easv.bar.bll.TicketManager;
 import event.tickets.easv.bar.gui.common.*;
 import event.tickets.easv.bar.gui.component.main.MainModel;
+import event.tickets.easv.bar.gui.util.NodeUtils;
 import event.tickets.easv.bar.gui.util.StyleConfig;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.FloatProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -37,21 +39,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ShowTicketView implements View {
+    private final TicketsModel ticketsModel;
+    private final MainModel main;
 
-    private final ObservableList<TicketEventModel> ticketEventModels = FXCollections.observableArrayList();
-    private TicketsModel ticketsModel;
-    private MainModel main;
-
-    private final TicketModel model = TicketModel.Empty();
+    private TicketModel model = TicketModel.Empty();
     private final Label titleLabel = new Label();
     private final Label type = new Label();
     private final Label defaultPrice = new Label();
     private final Label defaultQuantity = new Label();
     private final Label events = new Label();
 
-    private final static int PREF_TEXTFIELD_WIDTH = 200;
+    private TableView<TicketEventModel> table;
 
-    private CheckComboBox<String> checkComboBox = new CheckComboBox<>();
+    private final static int PREF_TEXTFIELD_WIDTH = 200;
+    private CheckComboBox<EventModelWrapper> checkComboBox = new CheckComboBox<>();
 
     public ShowTicketView(MainModel main, TicketsModel ticketsModel) {
         this.main = main;
@@ -60,7 +61,7 @@ public class ShowTicketView implements View {
         ViewHandler.currentViewDataProperty().subscribe((oldData, newData) -> {
             if (newData instanceof TicketModel) {
                 model.update((TicketModel) newData);
-                ticketEventModels.setAll(((TicketModel) newData).ticketEvents());
+                table.setItems(model.ticketEvents());
             }
         });
 
@@ -163,14 +164,14 @@ public class ShowTicketView implements View {
             }
         });
 
-        TableView<TicketEventModel> table = new TableView<>();
+        table = new TableView<>();
 
         table.setTableMenuButtonVisible(false);
         table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
         table.getStyleClass().addAll(Tweaks.NO_HEADER, Styles.STRIPED);
 
-        table.setItems(ticketEventModels);
+        table.setItems(model.ticketEvents());
         table.getColumns().addAll(col1, col2, col3, col4, col5, col6);
 
         table.getStyleClass().add(StyleConfig.ACTIONABLE);
@@ -219,12 +220,13 @@ public class ShowTicketView implements View {
         err.getStyleClass().add(Styles.DANGER);
 
         add.setOnAction(e -> {
-            if (getSelectedEventIds().size() <= 0) {
+            List<EventModel> selectedEvents = getSelectedEventModels();
+            if (selectedEvents.size() <= 0) {
                 err.setText("You must select atleast 1 event");
                 return;
             }
 
-            addToEvents(totalValue.getValue(), priceValue.getValue());
+            addToEvents(totalValue.getValue(), priceValue.getValue(), selectedEvents);
         });
 
         addBox.getChildren().addAll(add, err);
@@ -234,50 +236,38 @@ public class ShowTicketView implements View {
         return main;
     }
 
-    public CheckComboBox<String> multiCombo() {
+    public CheckComboBox<EventModelWrapper> multiCombo() {
+        CheckComboBox<EventModelWrapper> checkComboBox = new CheckComboBox<>();
         checkComboBox.setPrefWidth(200);
 
-        main.eventModels().addListener(new ListChangeListener<EventModel>() {
-            @Override
-            public void onChanged(Change<? extends EventModel> change) {
-                while (change.next()) {
-                    if (change.wasAdded()) {
-                        for (EventModel eventModel : change.getAddedSubList()) {
-                            checkComboBox.getItems().add(eventModel.title().get());
-                        }
+        main.eventModels().addListener((ListChangeListener.Change<? extends EventModel> change) -> {
+            while (change.next()) {
+                if (change.wasAdded()) {
+                    for (EventModel eventModel : change.getAddedSubList()) {
+                        EventModelWrapper wrapper = new EventModelWrapper(eventModel);
+                        checkComboBox.getItems().add(wrapper);
                     }
                 }
             }
         });
 
-        checkComboBox.getCheckModel().check(0);
-        checkComboBox.getCheckModel().check(1);
-
         return checkComboBox;
     }
 
-    public List<Integer> getSelectedEventIds() {
-        List<Integer> selectedIds = new ArrayList<>();
-        ObservableList<String> selectedTitles = checkComboBox.getCheckModel().getCheckedItems();
+    public List<EventModel> getSelectedEventModels() {
+        List<EventModel> selectedModels = new ArrayList<>();
+        ObservableList<EventModelWrapper> selectedTitles = checkComboBox.getCheckModel().getCheckedItems();
 
-        for (String title : selectedTitles) {
-            EventModel selectedEventModel = main.eventModels().stream()
-                    .filter(eventModel -> eventModel.title().get().equals(title))
-                    .findFirst()
-                    .orElse(null);
+        for (EventModelWrapper wrapper : selectedTitles)
+            selectedModels.add(wrapper.getEventModel());
 
-            if (selectedEventModel != null)
-                selectedIds.add(selectedEventModel.id().get());
-        }
-
-        return selectedIds;
+        return selectedModels;
     }
 
-
-    private void addToEvents(int total, double price) {
+    private void addToEvents(int total, double price, List<EventModel> selectedEvents) {
         int ticketId = model.id().get();
 
-        List<TicketEvent> newEntries = ticketsModel.addToEvent(ticketId, total, price, getSelectedEventIds());
+        ticketsModel.addToEvent(model, main, ticketId, total, price, selectedEvents);
     }
 
 }

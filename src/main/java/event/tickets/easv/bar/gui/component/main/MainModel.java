@@ -31,7 +31,6 @@ public class MainModel {
 
     private final StringProperty username = new SimpleStringProperty();
 
-
     private final ObservableList<TicketModel> ticketModels = FXCollections.observableArrayList();
     private final ObservableList<TicketEventModel> ticketEventModels = FXCollections.observableArrayList();
     private final ObservableList<TicketGeneratedModel> ticketGeneratedModels = FXCollections.observableArrayList();

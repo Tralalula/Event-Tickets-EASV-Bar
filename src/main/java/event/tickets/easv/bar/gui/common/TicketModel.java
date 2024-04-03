@@ -5,6 +5,7 @@ import event.tickets.easv.bar.be.Ticket.Ticket;
 import event.tickets.easv.bar.be.Ticket.TicketEvent;
 import event.tickets.easv.bar.gui.component.tickets.TicketEventModel;
 import javafx.beans.Observable;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -44,7 +45,7 @@ public class TicketModel {
         this.title.set(ticketModel.title.get());
         this.type.set(ticketModel.type.get());
         this.eventCount.set(ticketModel.eventCount.get());
-        this.ticketEvents.setAll(ticketModel.ticketEvents);
+        this.ticketEvents = ticketModel.ticketEvents();
     }
 
     public Ticket toEntity() {
@@ -69,11 +70,16 @@ public class TicketModel {
     }
 
     public IntegerProperty eventCount() {
+        eventCount.bind(Bindings.size(this.ticketEvents));
         return eventCount;
     }
 
-    public void setTicketEvents(ObservableList<TicketEventModel> tickets) { this.ticketEvents = tickets; }
+    public void setTicketEvents(ObservableList<TicketEventModel> tickets) {
+        this.ticketEvents = tickets;
+    }
 
-    public ObservableList<TicketEventModel> ticketEvents() { return ticketEvents; }
+    public ObservableList<TicketEventModel> ticketEvents() {
+        return ticketEvents;
+    }
 
 }

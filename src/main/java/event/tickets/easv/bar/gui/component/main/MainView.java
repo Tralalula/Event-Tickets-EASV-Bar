@@ -73,9 +73,11 @@ public class MainView implements View {
         this.createEventView = new CreateEventView(model.eventModels()).getView();
         this.showEventView = new ShowEventView(EventModel.Empty()).getView();
 
-        this.ticketsView = new TicketsView(model, model.ticketModels(), model.fetchingTicketsProperty()).getView();
-        this.showTicketView = new ShowTicketView(model, new TicketsModel(model)).getView();
-        this.assignTicketView = new AssignTicketView(new TicketsModel(model)).getView();
+        this.ticketsView = new TicketsView(model, model.fetchingTicketsProperty()).getView();
+
+        TicketsModel ticketsModel = new TicketsModel(model);
+        this.showTicketView = new ShowTicketView(model, ticketsModel).getView();
+        this.assignTicketView = new AssignTicketView(ticketsModel).getView();
 
         this.createUserView = new CreateUserView(model.userModels()).getView();
     }
@@ -270,7 +272,6 @@ public class MainView implements View {
 
         return results;
     }
-
 
     private Button createButton(String text, Ikon icon, ViewType viewType) {
         var btn = new Button();

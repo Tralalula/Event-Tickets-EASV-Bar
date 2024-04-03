@@ -91,5 +91,5 @@ public class TicketEventModel {
 
     public void setTicketsGenerated(ObservableList<TicketGeneratedModel> tickets) { this.ticketsGenerated = tickets; }
 
-    public ObservableList<TicketGeneratedModel> getTicketsGenerated() { return ticketsGenerated; }
+    public ObservableList<TicketGeneratedModel> ticketsGenerated() { return ticketsGenerated; }
 }
