@@ -47,7 +47,21 @@ public class FileManagementService {
         return Success.of(true);
     }
 
-    public static Result<Boolean> moveFile(Paths currentDir, Paths targetDir) {
+    public static Result<Boolean> moveFile(Path currentPath, Path destPath, StandardCopyOption standardCopyOption) {
+        if (!Files.exists(destPath)) {
+            try {
+                Files.createDirectories(destPath);
+            } catch (IOException e) {
+                return Failure.of(FailureType.IO_FAILURE, "FileManagementService.moveFile - couldn't create directory", e);
+            }
+        }
+
+        try {
+            Files.move(currentPath, destPath, standardCopyOption);
+        } catch (IOException e) {
+            return Failure.of(FailureType.IO_FAILURE, "FileManagementService.moveFile - couldn't move file", e);
+        }
+
         return Success.of(true);
     }
 }

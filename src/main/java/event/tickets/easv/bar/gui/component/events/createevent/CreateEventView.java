@@ -6,7 +6,6 @@ import event.tickets.easv.bar.gui.common.View;
 import event.tickets.easv.bar.gui.util.NodeUtils;
 import event.tickets.easv.bar.gui.util.StyleConfig;
 import event.tickets.easv.bar.gui.widgets.DatePickers;
-import event.tickets.easv.bar.gui.widgets.Images;
 import event.tickets.easv.bar.gui.widgets.Labels;
 import event.tickets.easv.bar.gui.widgets.TextFields;
 import javafx.collections.ObservableList;
@@ -15,7 +14,6 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 
@@ -55,7 +53,7 @@ public class CreateEventView implements View {
         saveButton.setOnAction(evt -> {
             saveButton.disableProperty().unbind();
             saveButton.setDisable(true);
-            controller.createEvent(() -> saveButton.disableProperty().bind(model.okToCreateProperty().not()));
+            controller.onCreateEvent(() -> saveButton.disableProperty().bind(model.okToCreateProperty().not()));
         });
 
         saveButton.getStyleClass().addAll(StyleConfig.ACTIONABLE, Styles.ACCENT);

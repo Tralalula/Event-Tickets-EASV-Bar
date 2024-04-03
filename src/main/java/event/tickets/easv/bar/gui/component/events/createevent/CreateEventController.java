@@ -2,24 +2,20 @@ package event.tickets.easv.bar.gui.component.events.createevent;
 
 import event.tickets.easv.bar.be.Event;
 import event.tickets.easv.bar.bll.EntityManager;
+import event.tickets.easv.bar.gui.common.Action.CreateEvent;
+import event.tickets.easv.bar.gui.common.ActionHandler;
 import event.tickets.easv.bar.gui.common.EventModel;
 import event.tickets.easv.bar.util.AppConfig;
-import event.tickets.easv.bar.util.FailureType;
 import event.tickets.easv.bar.util.FileManagementService;
 import event.tickets.easv.bar.util.Result;
 import event.tickets.easv.bar.util.Result.Success;
 import event.tickets.easv.bar.util.Result.Failure;
-import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.scene.image.Image;
 import javafx.stage.FileChooser;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URI;
-import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
@@ -44,23 +40,24 @@ public class CreateEventController {
         ));
     }
 
-    void createEvent(Runnable postTaskGuiActions) {
-        Task<Boolean> createTask = new Task<>() {
+    void onCreateEvent(Runnable postTaskGuiActions) {
+        Task<Result<Event>> createTask = new Task<>() {
             @Override
-            protected Boolean call() {
+            protected Result<Event> call() {
                 return createEvent();
             }
         };
 
         createTask.setOnSucceeded(evt -> {
             postTaskGuiActions.run();
-            if (!createTask.getValue()) {
-                System.out.println("hey");
-            }
+
+            Result<Event> result = createTask.getValue();
+            if (result.isSuccess()) ActionHandler.handle(new CreateEvent(EventModel.fromEntity(result.get())));
+
+            // todo: håndter failure
         });
 
-        var saveThread = new Thread(createTask);
-        saveThread.start();
+        new Thread(createTask).start();
     }
 
     private Result<Event> createEvent() {
@@ -74,31 +71,22 @@ public class CreateEventController {
         String extraInfo = model.extraInfoProperty().get();
         String locationGuidance = model.locationGuidanceProperty().get();
 
-        // todo: rimelig grim kode her med billeder og try/catch, må fiks senere
-        FileManagementService.copyImageToDir(model.imagePathProperty().get(), AppConfig.EVENT_TEMP_IMAGE_DIR, imageName);
-
+        var imagedCopied = FileManagementService.copyImageToDir(model.imagePathProperty().get(), AppConfig.EVENT_TEMP_IMAGE_DIR, imageName);
+        if (imagedCopied.isFailure()) return imagedCopied.failAs();
 
         var event = new Event(title, imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo);
         Result<Event> result = new EntityManager().add(event);
-        switch (result) {
-            case Success<Event> s -> {
-                    // todo: gør så det bliver resized?
-                    var addedEvent = s.result();
-                    var finalDir = AppConfig.EVENT_IMAGES_DIR2 + "\\" + addedEvent.id();
-                    Files.createDirectories(Paths.get(finalDir));
-                    Files.move(Paths.get(AppConfig.EVENT_TEMP_IMAGE_DIR, imageName), Paths.get(finalDir, imageName), StandardCopyOption.REPLACE_EXISTING);
 
-                    Platform.runLater(() -> models.add(EventModel.fromEntity(addedEvent))); // todo: skal ikke gøres her, skal løses et andet sted så vi ikke prøver at tilføje til model fra bg tråd.
+        if (result.isFailure()) return result;
 
+        // todo: gør så det bliver resized?
+        var addedEvent = result.get();
 
+        var finalDir = AppConfig.EVENT_IMAGES_DIR2 + "\\" + addedEvent.id();
+        var fileMoved = FileManagementService.moveFile(Paths.get(AppConfig.EVENT_TEMP_IMAGE_DIR, imageName), Paths.get(finalDir, imageName), StandardCopyOption.REPLACE_EXISTING);
+        if (fileMoved.isFailure()) return fileMoved.failAs();
 
-
-            }
-            case Failure<Event> f -> {
-                System.out.println(f.message());
-                return false;
-            }
-        }
+        return result;
     }
 
     void findImage() {

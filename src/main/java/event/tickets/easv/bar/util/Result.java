@@ -20,6 +20,7 @@ public sealed interface Result<T> {
         }
     }
 
+
     /**
      * Retrieves the result if this is a Success, otherwise throws an exception.
      *
@@ -34,6 +35,50 @@ public sealed interface Result<T> {
         } else {
             throw new IllegalStateException("Unknown Result state");
         }
+    }
+
+    /**
+     * Checks if the result represents a success.
+     *
+     * @return true if this is a Success, false otherwise.
+     */
+    default boolean isSuccess() {
+        return this instanceof Success<T>;
+    }
+
+    /**
+     * Checks if the result represents a failure.
+     *
+     * @return true if this is a Failure, false otherwise.
+     */
+    default boolean isFailure() {
+        return this instanceof Failure<?>;
+    }
+
+    /**
+     * Transforms a Failure result into a Failure of a different generic type.
+     * Used for "passing up" a failure where the expected return type of a method is different
+     * from the current Result.
+     * <br><br>
+     * Example:<br>
+     * Result{@code <String>} result = someOperation();
+     * if (resultString.isFailure()) {
+     *     // Propgate the failure (Result{@code <String>}) in a context expecting Result{@code <Integer>}
+     *     return resultString.failAs();
+     * }
+     *
+     * @return A new Failure of the type {@code <U>} with the same error details as the original Failure.
+     * @param <U> The target type for the Failure result.
+     *            Allows the method to be used in contexts where the expected Result type differs from the current one.
+     * @throws IllegalStateException if called on a Success instance.
+     *                               To ensure only being used for error propagation purposes.
+     */
+    default <U> Result<U> failAs() {
+        if (this instanceof Failure<T> failure) {
+            // we can safely cast this because Failure doesn't actually hold a value of type T. (read the spec for Failure)
+            return new Failure<>(failure.type(), failure.message(), failure.cause());
+        }
+        throw new IllegalStateException("Called failAs() on a Success, which is not valid.");
     }
 
     /**
