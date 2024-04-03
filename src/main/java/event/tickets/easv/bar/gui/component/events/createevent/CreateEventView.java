@@ -21,9 +21,9 @@ public class CreateEventView implements View {
     private final CreateEventModel model;
     private final CreateEventController controller;
 
-    public CreateEventView(ObservableList<EventModel> models) {
+    public CreateEventView() {
         this.model = new CreateEventModel();
-        this.controller = new CreateEventController(model, models);
+        this.controller = new CreateEventController(model);
     }
 
     @Override

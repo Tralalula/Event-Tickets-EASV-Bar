@@ -8,8 +8,6 @@ import event.tickets.easv.bar.gui.common.EventModel;
 import event.tickets.easv.bar.util.AppConfig;
 import event.tickets.easv.bar.util.FileManagementService;
 import event.tickets.easv.bar.util.Result;
-import event.tickets.easv.bar.util.Result.Success;
-import event.tickets.easv.bar.util.Result.Failure;
 import javafx.beans.binding.Bindings;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
@@ -25,11 +23,9 @@ import java.time.LocalTime;
 
 public class CreateEventController {
     private final CreateEventModel model;
-    private final ObservableList<EventModel> models;
 
-    public CreateEventController(CreateEventModel model, ObservableList<EventModel> models) {
+    public CreateEventController(CreateEventModel model) {
         this.model = model;
-        this.models = models;
         model.okToCreateProperty().bind(Bindings.createBooleanBinding(
                 this::isDataValid,
                 model.eventTitleProperty(),
