@@ -63,7 +63,7 @@ public class CreateEventController {
         saveThread.start();
     }
 
-    private boolean createEvent() {
+    private Result<Event> createEvent() {
         String title = model.eventTitleProperty().get();
         String imageName = model.imageNameProperty().get();
         String location = model.locationProperty().get();
@@ -75,29 +75,24 @@ public class CreateEventController {
         String locationGuidance = model.locationGuidanceProperty().get();
 
         // todo: rimelig grim kode her med billeder og try/catch, må fiks senere
-        try {
-            FileManagementService.copyImageToDir(model.imagePathProperty().get(), AppConfig.EVENT_TEMP_IMAGE_DIR, imageName);
-        } catch (IOException e) {
-            System.out.println("Error saving image to temp directory: " + e.getMessage());
-            return false;
-        }
+        FileManagementService.copyImageToDir(model.imagePathProperty().get(), AppConfig.EVENT_TEMP_IMAGE_DIR, imageName);
+
 
         var event = new Event(title, imageName, location, startDate, endDate, startTime, endTime, locationGuidance, extraInfo);
         Result<Event> result = new EntityManager().add(event);
         switch (result) {
             case Success<Event> s -> {
-                try {
                     // todo: gør så det bliver resized?
                     var addedEvent = s.result();
                     var finalDir = AppConfig.EVENT_IMAGES_DIR2 + "\\" + addedEvent.id();
                     Files.createDirectories(Paths.get(finalDir));
                     Files.move(Paths.get(AppConfig.EVENT_TEMP_IMAGE_DIR, imageName), Paths.get(finalDir, imageName), StandardCopyOption.REPLACE_EXISTING);
+
                     Platform.runLater(() -> models.add(EventModel.fromEntity(addedEvent))); // todo: skal ikke gøres her, skal løses et andet sted så vi ikke prøver at tilføje til model fra bg tråd.
-                    return true;
-                } catch (IOException e) {
-                    System.out.println("Error moving image to final directory: " + e.getMessage());
-                    return false;
-                }
+
+
+
+
             }
             case Failure<Event> f -> {
                 System.out.println(f.message());

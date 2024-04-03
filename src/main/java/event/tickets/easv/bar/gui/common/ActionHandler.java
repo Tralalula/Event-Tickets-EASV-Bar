@@ -1,6 +1,8 @@
 package event.tickets.easv.bar.gui.common;
 
 import event.tickets.easv.bar.gui.common.Action.AssignCoordinator;
+import event.tickets.easv.bar.gui.common.Action.CreateEvent;
+import event.tickets.easv.bar.gui.common.Action.CreateUser;
 import event.tickets.easv.bar.gui.component.main.MainModel;
 import javafx.collections.ObservableList;
 
@@ -21,9 +23,19 @@ public class ActionHandler {
 
     public static void handle(Action action) {
         switch (action) {
-            case AssignCoordinator assignCoordinatorAction -> handleAssignCoordinator(assignCoordinatorAction);
+            case CreateEvent a -> handleCreateEvent(a);
+            case CreateUser a -> handleCreateUser(a);
+            case AssignCoordinator a -> handleAssignCoordinator(a);
             default -> throw new IllegalStateException("Unexpected action type: " + action.getClass());
         }
+    }
+
+    private static void handleCreateEvent(CreateEvent action) {
+        model.eventModels().add(action.eventModel());
+    }
+
+    private static void handleCreateUser(CreateUser action) {
+        model.userModels().add(action.userModel());
     }
 
     private static void handleAssignCoordinator(AssignCoordinator action) {

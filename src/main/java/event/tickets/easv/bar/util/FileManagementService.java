@@ -1,5 +1,8 @@
 package event.tickets.easv.bar.util;
 
+import event.tickets.easv.bar.util.Result.Failure;
+import event.tickets.easv.bar.util.Result.Success;
+
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -10,26 +13,41 @@ import java.io.InputStream;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 
 public class FileManagementService {
-    public static void copyImageToDir(String imagePath, String destDir, String imageName) throws IOException {
+    public static Result<Boolean> copyImageToDir(String imagePath, String destDir, String imageName) {
         if (imagePath.startsWith("file:/")) {
             imagePath = imagePath.substring(6);
         }
 
         Path sourcePath = Path.of(imagePath);
-        System.out.println("sourceFile: " + sourcePath.getFileName());
 
-        if (!Files.exists(sourcePath)) throw new FileNotFoundException("Source file not found: " + imagePath);
+        if (!Files.exists(sourcePath)) return Failure.of(FailureType.IO_FAILURE, "FileManagementService.copyImageToDir - couldn't find sorce file : " + imagePath);
 
         Path dirPath = Path.of(destDir);
-        if (!Files.exists(dirPath)) Files.createDirectories(dirPath);
+        if (!Files.exists(dirPath)) {
+            try {
+                Files.createDirectories(dirPath);
+            } catch (IOException e) {
+                return Failure.of(FailureType.IO_FAILURE, "FileManagementService.copyImageToDir - couldn't create directory", e);
+            }
+        }
 
         Path outputPath = dirPath.resolve(imageName);
 
-        Files.copy(sourcePath, outputPath, StandardCopyOption.REPLACE_EXISTING);
-        System.out.println("Image copied to: " + outputPath);
+        try {
+            Files.copy(sourcePath, outputPath, StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException e) {
+            return Failure.of(FailureType.IO_FAILURE, "FileManagementService.copyImageToDir - couldn't copy file", e);
+        }
+
+        return Success.of(true);
+    }
+
+    public static Result<Boolean> moveFile(Paths currentDir, Paths targetDir) {
+        return Success.of(true);
     }
 }
