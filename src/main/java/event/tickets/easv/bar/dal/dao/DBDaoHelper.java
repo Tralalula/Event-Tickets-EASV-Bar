@@ -131,6 +131,11 @@ public class DBDaoHelper<T extends Entity<T>> implements DAO<T> {
 
     @Override
     public Result<List<T>> addAll(List<T> entities) {
+        // https://github.com/microsoft/mssql-jdbc/issues/245
+        // Cannot retrieve all generated keys for batch execution
+        // so this the solution for when adding multiple entries to DB
+        // and wanting to retrieve back a list of entities with their ids in the db.
+        // Works similarly to the basic add() method, just a transaction & for loop.
         if (entities == null || entities.isEmpty()) {
             return Success.of(Collections.emptyList());
         }
