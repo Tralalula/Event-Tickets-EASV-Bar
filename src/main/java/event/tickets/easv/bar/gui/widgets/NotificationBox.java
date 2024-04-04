@@ -8,9 +8,13 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.stage.Screen;
 import javafx.util.Duration;
 
 public class NotificationBox {
+    private final static Duration DEFAULT_ANIMATION_DURATION = Duration.millis(250);
+    private final static int MAX_NOTIFICATIONS = 5;
+
     private final VBox notificationBox = new VBox(StyleConfig.STANDARD_SPACING);
     private final StackPane notificationArea = new StackPane();
 
@@ -24,21 +28,27 @@ public class NotificationBox {
     }
 
     public void addNotification(Notification notification) {
-        if (notificationBox.getChildren().size() > 4) {
+        if (notificationBox.getChildren().size() >= MAX_NOTIFICATIONS) {
             notificationBox.getChildren().removeFirst();
         }
 
+        configureNotification(notification);
         notificationBox.getChildren().add(notification);
-        var slideIn = new TranslateTransition(Duration.millis(200), notification);
-        notification.setTranslateX(420);
-        slideIn.setFromX(300);
-        slideIn.setToX(0);
-        slideIn.setFromY(68);
-        slideIn.setDelay(Duration.millis(50));
-        slideIn.play();
+    }
+
+    private void configureNotification(Notification notification) {
+        notification.widthProperty().addListener((obs, ov, nv) -> {
+            double translateX = nv.doubleValue();
+            notification.setTranslateX(translateX);
+
+            var slideIn = new TranslateTransition(DEFAULT_ANIMATION_DURATION, notification);
+            slideIn.setFromX(translateX);
+            slideIn.setToX(0);
+            slideIn.play();
+        });
 
         notification.setOnClose(e -> {
-            var out = Animations.slideOutRight(notification, Duration.millis(250));
+            var out = Animations.slideOutRight(notification, DEFAULT_ANIMATION_DURATION);
             out.setOnFinished(f -> notificationBox.getChildren().remove(notification));
             out.playFromStart();
         });

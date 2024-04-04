@@ -110,18 +110,22 @@ public class MainView implements View {
         main.setLeft(left);
         main.setCenter(center);
 
-        results.getChildren().addAll(main, ViewHandler.overlay(), ViewHandler.notificationArea());
+        results.getChildren().addAll(main, ViewHandler.overlay());
         StackPane.setAlignment(main, Pos.TOP_LEFT);
         return results;
     }
 
     private Region center() {
-        var results = new VBox(StyleConfig.STANDARD_SPACING);
+        var vbox = new VBox(StyleConfig.STANDARD_SPACING);
         var content = content();
         VBox.setVgrow(content, Priority.ALWAYS);
 
-        results.getChildren().addAll(createCrumbs(), content);
-        return results;
+        vbox.getChildren().addAll(createCrumbs(), content);
+
+        var stackPane = new StackPane();
+        stackPane.getChildren().addAll(vbox, ViewHandler.notificationArea());
+
+        return stackPane;
     }
 
     private Region content() {
