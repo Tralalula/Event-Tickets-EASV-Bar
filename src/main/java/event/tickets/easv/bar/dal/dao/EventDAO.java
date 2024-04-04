@@ -26,7 +26,7 @@ public class EventDAO implements DAO<Event> {
     }
 
     @Override
-    public Result<Optional<Event>> get(int id) {
+    public Result<Optional<Event>> get(Object id) {
         return daoHelper.get(id);
     }
 

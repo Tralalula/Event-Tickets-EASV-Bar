@@ -28,7 +28,7 @@ public class CustomerDAO implements DAO<Customer> {
     }
 
     @Override
-    public Result<Optional<Customer>> get(int id) {
+    public Result<Optional<Customer>> get(Object id) {
         return daoHelper.get(id);
     }
 

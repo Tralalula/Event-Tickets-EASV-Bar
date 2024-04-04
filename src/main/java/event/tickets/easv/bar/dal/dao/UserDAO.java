@@ -27,7 +27,7 @@ public class UserDAO implements DAO<User> {
     }
 
     @Override
-    public Result<Optional<User>> get(int id) {
+    public Result<Optional<User>> get(Object id) {
         return daoHelper.get(id);
     }
 

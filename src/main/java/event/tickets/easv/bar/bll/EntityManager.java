@@ -60,7 +60,7 @@ public class EntityManager {
     }
 
     @SuppressWarnings("unchecked")
-    public <T> Result<Optional<T>> get(Class<T> entityClass, int id) {
+    public <T> Result<Optional<T>> get(Class<T> entityClass, Object id) {
         DAO<T> dao = (DAO<T>) daos.get(entityClass);
         if (dao == null) throw new IllegalArgumentException("Unexpected entity: " + entityClass);
         return dao.get(id);

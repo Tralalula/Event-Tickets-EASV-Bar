@@ -27,7 +27,7 @@ public class TicketDAO implements DAO<Ticket> {
         );
     }
     @Override
-    public Result<Optional<Ticket>> get(int id) {
+    public Result<Optional<Ticket>> get(Object id) {
         return daoHelper.get(id);
     }
 

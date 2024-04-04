@@ -28,7 +28,7 @@ public class TicketEventDAO implements DAO<TicketEvent> {
         );
     }
     @Override
-    public Result<Optional<TicketEvent>> get(int id) {
+    public Result<Optional<TicketEvent>> get(Object id) {
         return daoHelper.get(id);
     }
 

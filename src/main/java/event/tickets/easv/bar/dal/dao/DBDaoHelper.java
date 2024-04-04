@@ -50,7 +50,7 @@ public class DBDaoHelper<T extends Entity<T>> implements DAO<T> {
      * @return a result which is either a success or a failure if any issues occurred during data retrieval.
      *         The success contains optional which either contains the entity if found; otherwise an empty optional.
      */
-    public Result<Optional<T>> get(int id) {
+    public Result<Optional<T>> get(Object id) {
         try {
             setupDBConnector();
         } catch (IOException e) {
@@ -60,7 +60,13 @@ public class DBDaoHelper<T extends Entity<T>> implements DAO<T> {
         String sql = sqlTemplate.getSelectSQL();
         try (Connection conn = dbConnector.connection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, id);
+            switch (id) {
+                case String s -> stmt.setString(1, s);
+                case Integer i -> stmt.setInt(1, i);
+                default -> {
+                    return Failure.of(FailureType.INVALID_ENTITY_TYPE, "Unexpected entity type: " + id.getClass().getName());
+                }
+            }
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {

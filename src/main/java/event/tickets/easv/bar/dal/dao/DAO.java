@@ -18,7 +18,7 @@ public interface DAO<T> {
      * @param id the unique identifier of the entity to retrieve.
      * @return a result containing an optional containing the retrieved entity; otherwise an empty Optional.
      */
-    Result<Optional<T>> get(int id);
+    Result<Optional<T>> get(Object id);
 
     /**
      * Retrieves all entities of type T.
