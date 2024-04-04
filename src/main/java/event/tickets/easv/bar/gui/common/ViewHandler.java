@@ -1,29 +1,20 @@
 package event.tickets.easv.bar.gui.common;
 
-import atlantafx.base.controls.Message;
 import atlantafx.base.controls.ModalPane;
 import atlantafx.base.controls.Notification;
 import atlantafx.base.theme.Styles;
-import atlantafx.base.util.Animations;
-import event.tickets.easv.bar.gui.util.NodeUtils;
-import event.tickets.easv.bar.gui.util.StyleConfig;
 import event.tickets.easv.bar.gui.widgets.Dialog;
 import event.tickets.easv.bar.gui.widgets.ModalDialog;
 import event.tickets.easv.bar.gui.widgets.ModalOverlay;
 import event.tickets.easv.bar.gui.widgets.NotificationBox;
-import javafx.animation.TranslateTransition;
-import javafx.application.Platform;
 import javafx.beans.property.*;
 import javafx.beans.value.ObservableValue;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
-import javafx.util.Duration;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.kordamp.ikonli.material2.Material2OutlinedAL;
+import org.kordamp.ikonli.material2.Material2OutlinedMZ;
 
 import java.util.*;
 
@@ -116,13 +107,28 @@ public class ViewHandler {
         INSTANCE.overlay.hide();
     }
 
-    public static void notify(MessageType type, String message) {
+    public static void notify(NotificationType type, String message) {
         var notification = new Notification(message);
-        notification.setGraphic(new FontIcon(Material2OutlinedAL.ERROR_OUTLINE));
-        notification.getStyleClass().addAll(Styles.DANGER, Styles.INTERACTIVE);
         notification.setPrefHeight(Region.USE_PREF_SIZE);
         notification.setMaxHeight(Region.USE_PREF_SIZE);
 
+        notification.setGraphic(switch (type) {
+            case REGULAR -> new FontIcon(Material2OutlinedAL.CHAT_BUBBLE_OUTLINE);
+            case INFO -> new FontIcon(Material2OutlinedAL.HELP_OUTLINE);
+            case SUCCESS -> new FontIcon(Material2OutlinedAL.CHECK_CIRCLE_OUTLINE);
+            case WARNING -> new FontIcon(Material2OutlinedMZ.OUTLINED_FLAG);
+            case FAILURE -> new FontIcon(Material2OutlinedAL.ERROR_OUTLINE);
+        });
+
+        var style = switch (type) {
+            case INFO -> Styles.ACCENT;
+            case SUCCESS -> Styles.SUCCESS;
+            case WARNING -> Styles.WARNING;
+            case FAILURE -> Styles.DANGER;
+            default -> "";
+        };
+
+        notification.getStyleClass().addAll(Styles.INTERACTIVE, style);
         INSTANCE.notificationBox.addNotification(notification);
     }
 

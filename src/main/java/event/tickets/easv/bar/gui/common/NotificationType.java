@@ -1,6 +1,6 @@
 package event.tickets.easv.bar.gui.common;
 
-public enum MessageType {
+public enum NotificationType {
     REGULAR,
     INFO,
     SUCCESS,
