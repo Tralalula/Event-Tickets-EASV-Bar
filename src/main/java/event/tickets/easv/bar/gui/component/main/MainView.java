@@ -1,9 +1,8 @@
 package event.tickets.easv.bar.gui.component.main;
 
-import atlantafx.base.controls.Breadcrumbs;
-import atlantafx.base.controls.CustomTextField;
-import atlantafx.base.controls.ModalPane;
+import atlantafx.base.controls.*;
 import atlantafx.base.theme.Styles;
+import atlantafx.base.util.Animations;
 import event.tickets.easv.bar.gui.common.*;
 import event.tickets.easv.bar.gui.component.dashboard.DashboardView;
 import event.tickets.easv.bar.gui.component.events.createevent.CreateEventView;
@@ -21,9 +20,12 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.util.Duration;
 import org.controlsfx.glyphfont.FontAwesome;
 import org.kordamp.ikonli.Ikon;
 import org.kordamp.ikonli.feather.Feather;
@@ -32,6 +34,7 @@ import org.kordamp.ikonli.fontawesome5.FontAwesomeSolid;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.kordamp.ikonli.material2.Material2AL;
 import org.kordamp.ikonli.material2.Material2MZ;
+import org.kordamp.ikonli.material2.Material2OutlinedAL;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -107,7 +110,7 @@ public class MainView implements View {
         main.setLeft(left);
         main.setCenter(center);
 
-        results.getChildren().addAll(main, ViewHandler.overlay());
+        results.getChildren().addAll(main, ViewHandler.overlay(), ViewHandler.notificationArea());
         StackPane.setAlignment(main, Pos.TOP_LEFT);
         return results;
     }

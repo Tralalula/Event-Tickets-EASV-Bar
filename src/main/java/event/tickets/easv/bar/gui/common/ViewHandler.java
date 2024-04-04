@@ -1,14 +1,26 @@
 package event.tickets.easv.bar.gui.common;
 
+import atlantafx.base.controls.Message;
 import atlantafx.base.controls.ModalPane;
+import atlantafx.base.controls.Notification;
+import atlantafx.base.theme.Styles;
+import atlantafx.base.util.Animations;
+import event.tickets.easv.bar.gui.util.NodeUtils;
 import event.tickets.easv.bar.gui.widgets.Dialog;
 import event.tickets.easv.bar.gui.widgets.ModalDialog;
 import event.tickets.easv.bar.gui.widgets.ModalOverlay;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.ReadOnlyObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.animation.TranslateTransition;
+import javafx.application.Platform;
+import javafx.beans.property.*;
 import javafx.beans.value.ObservableValue;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.StackPane;
+import javafx.util.Duration;
+import org.kordamp.ikonli.javafx.FontIcon;
+import org.kordamp.ikonli.material2.Material2OutlinedAL;
 
 import java.util.*;
 
@@ -18,6 +30,10 @@ import java.util.*;
 public class ViewHandler {
     private static final ViewHandler INSTANCE = new ViewHandler();
     private final ModalPane overlay = new ModalOverlay();
+
+    private final BooleanProperty showNotification = new SimpleBooleanProperty(false);
+    private final StackPane notificationArea = new StackPane();
+
     private final ObjectProperty<Object> currentViewData = new SimpleObjectProperty<>();
     private final ObjectProperty<WindowType> activeWindow = new SimpleObjectProperty<>(WindowType.NONE);
     private final ObjectProperty<ViewType> activeView = new SimpleObjectProperty<>(ViewType.NO_VIEW);
@@ -97,6 +113,39 @@ public class ViewHandler {
         INSTANCE.overlay.hide();
     }
 
+    public static void notify(MessageType type, String message) {
+        var notification = new Notification(message);
+        notification.setGraphic(new FontIcon(Material2OutlinedAL.ERROR_OUTLINE));
+        notification.getStyleClass().addAll(Styles.DANGER, Styles.INTERACTIVE);
+        notification.setPrefHeight(Region.USE_PREF_SIZE);
+        notification.setMaxHeight(Region.USE_PREF_SIZE);
+        StackPane.setAlignment(notification, Pos.TOP_RIGHT);
+        StackPane.setMargin(notification, new Insets(0, 10, 0, 0));
+
+
+        notification.setOnClose(e -> {
+            var out = Animations.slideOutRight(notification, Duration.millis(250));
+            out.setOnFinished(f -> {
+                notificationArea().getChildren().remove(notification);
+                INSTANCE.showNotification.set(false);
+            });
+            out.playFromStart();
+        });
+
+
+        INSTANCE.showNotification.set(true);
+        var slideIn = new TranslateTransition(Duration.millis(200), notification);
+        notification.setTranslateX(420);
+        slideIn.setFromX(300);
+        slideIn.setToX(0);
+        slideIn.setFromY(68);
+        if (notificationArea().getChildren().isEmpty()) {
+            notificationArea().getChildren().add(notification);
+        }
+        slideIn.setDelay(Duration.millis(50));
+        slideIn.play();
+    }
+
     public static ObservableValue<Object> currentViewDataProperty() {
         return INSTANCE.currentViewData;
     }
@@ -165,6 +214,12 @@ public class ViewHandler {
 
     public static ModalPane overlay() {
         return INSTANCE.overlay;
+    }
+
+    public static StackPane notificationArea() {
+        INSTANCE.notificationArea.setPickOnBounds(false);
+        NodeUtils.bindVisibility(INSTANCE.notificationArea, INSTANCE.showNotification);
+        return INSTANCE.notificationArea;
     }
 
     private void changeViewInstance(ViewType newView) {
