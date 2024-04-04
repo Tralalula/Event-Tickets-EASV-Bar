@@ -5,6 +5,7 @@ import event.tickets.easv.bar.bll.EntityManager;
 import event.tickets.easv.bar.gui.common.Action.CreateEvent;
 import event.tickets.easv.bar.gui.common.ActionHandler;
 import event.tickets.easv.bar.gui.common.EventModel;
+import event.tickets.easv.bar.gui.util.BackgroundExecutor;
 import event.tickets.easv.bar.util.AppConfig;
 import event.tickets.easv.bar.util.FileManagementService;
 import event.tickets.easv.bar.util.Result;
@@ -37,23 +38,12 @@ public class CreateEventController {
     }
 
     void onCreateEvent(Runnable postTaskGuiActions) {
-        Task<Result<Event>> createTask = new Task<>() {
-            @Override
-            protected Result<Event> call() {
-                return createEvent();
-            }
-        };
-
-        createTask.setOnSucceeded(evt -> {
-            postTaskGuiActions.run();
-
-            var result = createTask.getValue();
-            if (result.isSuccess()) ActionHandler.handle(new CreateEvent(EventModel.fromEntity(result.get())));
-
-            // todo: håndter failure
-        });
-
-        new Thread(createTask).start();
+        BackgroundExecutor.performBackgroundTask(
+                this::createEvent,
+                postTaskGuiActions,
+                success -> ActionHandler.handle(new CreateEvent(EventModel.fromEntity(success.get()))),
+                failure -> System.out.println("Fejl: " + failure)
+        );
     }
 
     private Result<Event> createEvent() {
