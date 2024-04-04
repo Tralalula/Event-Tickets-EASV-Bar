@@ -6,9 +6,11 @@ import atlantafx.base.controls.Notification;
 import atlantafx.base.theme.Styles;
 import atlantafx.base.util.Animations;
 import event.tickets.easv.bar.gui.util.NodeUtils;
+import event.tickets.easv.bar.gui.util.StyleConfig;
 import event.tickets.easv.bar.gui.widgets.Dialog;
 import event.tickets.easv.bar.gui.widgets.ModalDialog;
 import event.tickets.easv.bar.gui.widgets.ModalOverlay;
+import event.tickets.easv.bar.gui.widgets.NotificationBox;
 import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
 import javafx.beans.property.*;
@@ -18,6 +20,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.kordamp.ikonli.material2.Material2OutlinedAL;
@@ -32,7 +35,7 @@ public class ViewHandler {
     private final ModalPane overlay = new ModalOverlay();
 
     private final BooleanProperty showNotification = new SimpleBooleanProperty(false);
-    private final StackPane notificationArea = new StackPane();
+    private final NotificationBox notificationBox = new NotificationBox();
 
     private final ObjectProperty<Object> currentViewData = new SimpleObjectProperty<>();
     private final ObjectProperty<WindowType> activeWindow = new SimpleObjectProperty<>(WindowType.NONE);
@@ -119,31 +122,8 @@ public class ViewHandler {
         notification.getStyleClass().addAll(Styles.DANGER, Styles.INTERACTIVE);
         notification.setPrefHeight(Region.USE_PREF_SIZE);
         notification.setMaxHeight(Region.USE_PREF_SIZE);
-        StackPane.setAlignment(notification, Pos.TOP_RIGHT);
-        StackPane.setMargin(notification, new Insets(0, 10, 0, 0));
 
-
-        notification.setOnClose(e -> {
-            var out = Animations.slideOutRight(notification, Duration.millis(250));
-            out.setOnFinished(f -> {
-                notificationArea().getChildren().remove(notification);
-                INSTANCE.showNotification.set(false);
-            });
-            out.playFromStart();
-        });
-
-
-        INSTANCE.showNotification.set(true);
-        var slideIn = new TranslateTransition(Duration.millis(200), notification);
-        notification.setTranslateX(420);
-        slideIn.setFromX(300);
-        slideIn.setToX(0);
-        slideIn.setFromY(68);
-        if (notificationArea().getChildren().isEmpty()) {
-            notificationArea().getChildren().add(notification);
-        }
-        slideIn.setDelay(Duration.millis(50));
-        slideIn.play();
+        INSTANCE.notificationBox.addNotification(notification);
     }
 
     public static ObservableValue<Object> currentViewDataProperty() {
@@ -217,9 +197,7 @@ public class ViewHandler {
     }
 
     public static StackPane notificationArea() {
-        INSTANCE.notificationArea.setPickOnBounds(false);
-        NodeUtils.bindVisibility(INSTANCE.notificationArea, INSTANCE.showNotification);
-        return INSTANCE.notificationArea;
+        return INSTANCE.notificationBox.getNotificationArea();
     }
 
     private void changeViewInstance(ViewType newView) {
