@@ -10,8 +10,6 @@ import event.tickets.easv.bar.util.AppConfig;
 import event.tickets.easv.bar.util.FileManagementService;
 import event.tickets.easv.bar.util.Result;
 import javafx.beans.binding.Bindings;
-import javafx.collections.ObservableList;
-import javafx.concurrent.Task;
 import javafx.scene.image.Image;
 import javafx.stage.FileChooser;
 

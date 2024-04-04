@@ -7,9 +7,12 @@ import event.tickets.easv.bar.bll.EmailSender;
 import event.tickets.easv.bar.bll.EntityManager;
 import event.tickets.easv.bar.bll.cryptographic.BCrypt;
 import event.tickets.easv.bar.gui.common.Action;
+import event.tickets.easv.bar.gui.common.Action.CreateEvent;
 import event.tickets.easv.bar.gui.common.Action.CreateUser;
 import event.tickets.easv.bar.gui.common.ActionHandler;
+import event.tickets.easv.bar.gui.common.EventModel;
 import event.tickets.easv.bar.gui.common.UserModel;
+import event.tickets.easv.bar.gui.util.BackgroundExecutor;
 import event.tickets.easv.bar.util.FailureType;
 import event.tickets.easv.bar.util.Generator;
 import event.tickets.easv.bar.util.Result;
@@ -36,23 +39,12 @@ public class CreateUserController {
     }
 
     void createUser(Runnable postTaskGuiActions) {
-        Task<Result<User>> createTask = new Task<>() {
-            @Override
-            protected Result<User> call() {
-                return createUser();
-            }
-        };
-
-        createTask.setOnSucceeded(evt -> {
-            postTaskGuiActions.run();
-
-            var result = createTask.getValue();
-            if (result.isSuccess()) ActionHandler.handle(new CreateUser(UserModel.fromEntity(result.get())));
-
-            // todo: håndter failure
-        });
-
-        new Thread(createTask).start();
+        BackgroundExecutor.performBackgroundTask(
+                this::createUser,
+                postTaskGuiActions,
+                success -> ActionHandler.handle(new CreateUser(UserModel.fromEntity(success.get()))),
+                failure -> System.out.println("Fejl: " + failure)
+        );
     }
 
     private Result<User> createUser() {
