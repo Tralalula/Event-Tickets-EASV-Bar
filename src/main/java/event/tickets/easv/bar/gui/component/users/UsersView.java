@@ -10,6 +10,7 @@ import event.tickets.easv.bar.gui.common.View;
 import event.tickets.easv.bar.gui.common.ViewHandler;
 import event.tickets.easv.bar.gui.common.ViewType;
 import event.tickets.easv.bar.gui.component.events.EventsView;
+import event.tickets.easv.bar.gui.util.Alerts;
 import event.tickets.easv.bar.gui.util.StyleConfig;
 import event.tickets.easv.bar.gui.widgets.CircularImageView;
 import event.tickets.easv.bar.gui.widgets.MenuItems;
@@ -30,10 +31,12 @@ import java.util.List;
 
 public class UsersView implements View {
     private static final PseudoClass HOVER_PSEUDO_CLASS = PseudoClass.getPseudoClass("hover");
+    private final DeleteUserController controller;
     private final ObservableList<UserModel> model;
     private final BooleanProperty fetchingData;
 
     public UsersView(ObservableList<UserModel> model, BooleanProperty fetchingData) {
+        this.controller = new DeleteUserController();
         this.model = model;
         this.fetchingData = fetchingData;
     }
@@ -187,7 +190,10 @@ public class UsersView implements View {
                     });
 
                     editItem.setOnAction(e -> System.out.println("Edit user: " + item.firstName().get() + " " + item.lastName().get()));
-                    deleteItem.setOnAction(e -> System.out.println("Delete user: " + item.firstName().get() + " " + item.lastName().get()));
+                    deleteItem.setOnAction(e -> Alerts.confirmDeleteUser(
+                            item,
+                            userModel -> controller.onDeleteUser(() -> {}, item))
+                    );
 
                     setGraphic(wrapper);
                 }

@@ -1,9 +1,6 @@
 package event.tickets.easv.bar.gui.common;
 
-import event.tickets.easv.bar.gui.common.Action.AssignCoordinator;
-import event.tickets.easv.bar.gui.common.Action.CreateEvent;
-import event.tickets.easv.bar.gui.common.Action.CreateUser;
-import event.tickets.easv.bar.gui.common.Action.DeleteEvent;
+import event.tickets.easv.bar.gui.common.Action.*;
 import event.tickets.easv.bar.gui.component.main.MainModel;
 import javafx.collections.ObservableList;
 
@@ -26,9 +23,14 @@ public class ActionHandler {
             case CreateEvent a -> handleCreateEvent(a);
             case DeleteEvent a -> handleDeleteEvent(a);
             case CreateUser a -> handleCreateUser(a);
+            case DeleteUser a -> handleDeleteUser(a);
             case AssignCoordinator a -> handleAssignCoordinator(a);
             default -> throw new IllegalStateException("Unexpected action type: " + action.getClass());
         }
+    }
+
+    private static void handleCreateEvent(CreateEvent action) {
+        model.eventModels().add(action.eventModel());
     }
 
     private static void handleDeleteEvent(DeleteEvent action) {
@@ -41,13 +43,20 @@ public class ActionHandler {
         }
     }
 
-    private static void handleCreateEvent(CreateEvent action) {
-        model.eventModels().add(action.eventModel());
-    }
-
     private static void handleCreateUser(CreateUser action) {
         model.userModels().add(action.userModel());
     }
+
+    private static void handleDeleteUser(DeleteUser action) {
+        Predicate<UserModel> userModelPredicate = userModel -> userModel.id().get() == action.userModel().id().get();
+        Optional<UserModel> userModel = model.userModels().stream().filter(userModelPredicate).findFirst();
+        userModel.ifPresent(model.userModels()::remove);
+
+        for (EventModel eventModel : model.eventModels()) {
+            eventModel.users().removeIf(userModelPredicate);
+        }
+    }
+
 
     private static void handleAssignCoordinator(AssignCoordinator action) {
         UserModel assignedUser = action.coordinator();

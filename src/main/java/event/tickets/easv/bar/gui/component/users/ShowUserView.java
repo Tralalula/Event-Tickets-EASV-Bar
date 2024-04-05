@@ -8,6 +8,7 @@ import event.tickets.easv.bar.gui.common.View;
 import event.tickets.easv.bar.gui.common.ViewHandler;
 import event.tickets.easv.bar.gui.component.events.EventGridView;
 import event.tickets.easv.bar.gui.component.events.EventsView;
+import event.tickets.easv.bar.gui.util.Alerts;
 import event.tickets.easv.bar.gui.util.NodeUtils;
 import event.tickets.easv.bar.gui.util.StyleConfig;
 import event.tickets.easv.bar.gui.widgets.CircularImageView;
@@ -25,11 +26,13 @@ import org.kordamp.ikonli.material2.Material2OutlinedAL;
 
 public class ShowUserView implements View {
     private final UserModel model;
+    private final DeleteUserController controller;
     private final CircularImageView circularImageView = new CircularImageView(80);
     private final EventGridView eventGridView;
 
     public ShowUserView(UserModel model) {
         this.model = model;
+        this.controller = new DeleteUserController();
         this.eventGridView = new EventGridView(model.events());
 
         ViewHandler.currentViewDataProperty().subscribe((oldData, newData) -> {
@@ -106,6 +109,11 @@ public class ShowUserView implements View {
 
         var deleteBtn = new Button(null, new FontIcon(Material2OutlinedAL.DELETE));
         deleteBtn.getStyleClass().addAll(Styles.BUTTON_CIRCLE, StyleConfig.ACTIONABLE, Styles.FLAT, Styles.DANGER);
+
+        deleteBtn.setOnAction(e -> Alerts.confirmDeleteUser(
+                model,
+                userModel -> controller.onDeleteUser(ViewHandler::previousView, model))
+        );
 
         results.getChildren().addAll(editBtn, deleteBtn);
 
