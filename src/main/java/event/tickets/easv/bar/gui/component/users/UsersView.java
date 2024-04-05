@@ -13,6 +13,7 @@ import event.tickets.easv.bar.gui.widgets.CircularImageView;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.collections.ObservableList;
+import javafx.css.PseudoClass;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -26,6 +27,7 @@ import javafx.scene.paint.Color;
 import java.util.List;
 
 public class UsersView implements View {
+    private static final PseudoClass HOVER_PSEUDO_CLASS = PseudoClass.getPseudoClass("hover");
     private final ObservableList<UserModel> model;
     private final BooleanProperty fetchingData;
 
@@ -116,10 +118,16 @@ public class UsersView implements View {
 
                 gridPane.getColumnConstraints().addAll(column1, column2, column3, column4);
 
+
                 gridPane.add(userContainer, 0, 0);
                 gridPane.add(numEventsContainer, 1, 0);
                 gridPane.add(numFinishedEventsContainer, 2, 0);
                 gridPane.add(numTicketsSoldContainer, 3, 0);
+
+                gridPane.setMouseTransparent(true);
+                gridPane.getStyleClass().addAll(StyleConfig.ROUNDING_DEFAULT, "list-cell-grid");
+
+                hoverProperty().addListener((obs, ov, nv) -> gridPane.pseudoClassStateChanged(HOVER_PSEUDO_CLASS, nv));
 
                 spacer.getStyleClass().add("list-cell-spacer");
                 spacer.addEventFilter(MouseEvent.MOUSE_CLICKED, MouseEvent::consume);
@@ -164,8 +172,6 @@ public class UsersView implements View {
 
 
                     var wrapper = new VBox(gridPane, spacer);
-                    gridPane.setMouseTransparent(true);
-                    gridPane.getStyleClass().addAll(StyleConfig.ROUNDING_DEFAULT, Styles.BG_DEFAULT);
                     wrapper.getStyleClass().add(StyleConfig.ACTIONABLE);
 
                     setGraphic(wrapper);

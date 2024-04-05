@@ -95,3 +95,11 @@
 .list-cell-spacer {
     -fx-cursor: default;
 }
+
+.list-cell-grid {
+    -fx-background-color: -color-bg-default;
+}
+
+.list-cell-grid:hover {
+    -fx-background-color: -color-neutral-muted;
+}
