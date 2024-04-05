@@ -20,10 +20,7 @@ import javafx.css.PseudoClass;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
+import javafx.scene.control.*;
 import javafx.scene.input.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
@@ -82,19 +79,13 @@ public class UsersView implements View {
             private final Region spacer = new Region();
 
             private final ContextMenu contextMenu = new ContextMenu();
+            private final MenuItem editItem = MenuItems.createItem("_Edit", Feather.EDIT);
+            private final MenuItem deleteItem = MenuItems.createItem("_Delete", Feather.TRASH_2);
 
             {
 
-                var editItem = MenuItems.createItem(
-                        "_Edit",
-                        Feather.EDIT
-                );
-                editItem.setMnemonicParsing(true);
 
-                var deleteItem = MenuItems.createItem(
-                        "_Delete",
-                        Feather.TRASH_2
-                );
+                editItem.setMnemonicParsing(true);
                 deleteItem.setMnemonicParsing(true);
 
                 contextMenu.getItems().addAll(editItem, deleteItem);
@@ -194,6 +185,9 @@ public class UsersView implements View {
                             ViewHandler.changeView(ViewType.SHOW_USER, item);
                         }
                     });
+
+                    editItem.setOnAction(e -> System.out.println("Edit user: " + item.firstName().get() + " " + item.lastName().get()));
+                    deleteItem.setOnAction(e -> System.out.println("Delete user: " + item.firstName().get() + " " + item.lastName().get()));
 
                     setGraphic(wrapper);
                 }
