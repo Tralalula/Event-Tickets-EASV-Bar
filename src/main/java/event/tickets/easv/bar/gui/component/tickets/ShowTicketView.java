@@ -9,9 +9,11 @@ import atlantafx.base.util.IntegerStringConverter;
 import event.tickets.easv.bar.be.Ticket.TicketEvent;
 import event.tickets.easv.bar.bll.TicketManager;
 import event.tickets.easv.bar.gui.common.*;
+import event.tickets.easv.bar.gui.component.events.assigncoordinator.AssignCoordinatorView;
 import event.tickets.easv.bar.gui.component.main.MainModel;
 import event.tickets.easv.bar.gui.util.NodeUtils;
 import event.tickets.easv.bar.gui.util.StyleConfig;
+import event.tickets.easv.bar.gui.widgets.Buttons;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.FloatProperty;
@@ -147,7 +149,9 @@ public class ShowTicketView implements View {
 
                 assignButton.setOnAction(event -> {
                     TicketEventModel rowData = getTableView().getItems().get(getIndex());
-                    ViewHandler.changeView(ViewType.ASSIGN_TICKET_VIEW, rowData);
+                    if (rowData.left().get() > 0)
+                        ViewHandler.showOverlay("Assign ticket", assignCustomer(rowData), 300, 350);
+                    //ViewHandler.changeView(ViewType.ASSIGN_TICKET_VIEW, rowData);
                 });
             }
 
@@ -177,6 +181,37 @@ public class ShowTicketView implements View {
         table.getStyleClass().add(StyleConfig.ACTIONABLE);
 
         return table;
+    }
+
+    public VBox assignCustomer(TicketEventModel ticketEventModel) {
+        VBox vBox = new VBox(10);
+
+        VBox email = new VBox(0);
+        Label emailLabel = new Label("Customer email:");
+        TextField emailValue = new TextField();
+        emailValue.setPromptText("example@email.com");
+
+        email.getChildren().addAll(emailLabel, emailValue);
+
+        VBox amount = new VBox(0);
+        var amountLabel = new Label("Ticket quantity");
+
+        var amountValue = new Spinner<Integer>(1, 500, 1);
+        IntegerStringConverter.createFor(amountValue);
+        amountValue.getStyleClass().add(Spinner.STYLE_CLASS_SPLIT_ARROWS_HORIZONTAL);
+        amountValue.setPrefWidth(PREF_TEXTFIELD_WIDTH + 200);
+        amountValue.setEditable(true);
+
+        amount.getChildren().addAll(amountLabel, amountValue);
+
+        Button button = new Button("Send to customer");
+        button.setOnAction(e -> {
+            ticketsModel.generateTickets(ticketEventModel, amountValue.getValue(), emailValue.getText());
+        });
+
+        vBox.getChildren().addAll(email, amount, button);
+
+        return vBox;
     }
 
     private VBox addTickets() {
