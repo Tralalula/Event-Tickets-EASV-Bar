@@ -1,5 +1,6 @@
 package event.tickets.easv.bar.util;
 
+import java.util.Optional;
 import java.util.function.Consumer;
 
 /**
@@ -35,6 +36,27 @@ public sealed interface Result<T> {
         } else {
             throw new IllegalStateException("Unknown Result state");
         }
+    }
+
+    default boolean isPresent() {
+        if (this instanceof Success<?> success) {
+            Object result = success.result();
+            if (result instanceof Optional<?>) {
+                return ((Optional<?>) result).isPresent();
+            }
+        }
+        return false;
+    }
+
+    default boolean isEmpty() {
+        if (this instanceof Success<?> success) {
+            Object result = success.result();
+            if (result instanceof Optional<?>) {
+                return ((Optional<?>) result).isEmpty();
+            }
+            return false;
+        }
+        return true;
     }
 
     /**

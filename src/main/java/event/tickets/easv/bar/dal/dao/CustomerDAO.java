@@ -66,7 +66,7 @@ public class CustomerDAO implements DAO<Customer> {
 class CustomerSQLTemplate implements SQLTemplate<Customer> {
     @Override
     public String getSelectSQL() {
-        return "SELECT id, mail FROM dbo.Customers WHERE mail = ?";
+        return "SELECT * FROM dbo.Customers WHERE mail = ?";
     }
 
     @Override
@@ -101,9 +101,9 @@ class CustomerResultSetMapper implements ResultSetMapper<Customer> {
     @Override
     public Customer map(@NotNull ResultSet rs) throws SQLException {
         int id = rs.getInt("id");
-        String email = rs.getString("email");
+        String mail = rs.getString("mail");
 
-        return new Customer(id, email);
+        return new Customer(id, mail);
     }
 }
 

@@ -57,7 +57,6 @@ public class EventsView implements View {
 
     @Override
     public Region getView() {
-
         var spacer = new Region();
         Button add = Buttons.actionIconButton(Material2AL.ADD, e -> ViewHandler.changeView(ViewType.CREATE_EVENT), StyleConfig.ACTIONABLE);
         HBox.setHgrow(spacer, Priority.ALWAYS);
@@ -67,106 +66,12 @@ public class EventsView implements View {
         ProgressIndicator progressIndicator = new ProgressIndicator();
         NodeUtils.bindVisibility(progressIndicator, fetchingData);
 
-        var gridview = new GridView<EventModel>();
-        gridview.setItems(model);
-        gridview.setCellWidth(CARD_WIDTH);
-        gridview.setCellHeight(CARD_HEIGHT);
-        gridview.setCellFactory(cell -> eventCell());
-        gridview.setHorizontalCellSpacing(10);
-        gridview.setVerticalCellSpacing(10);
-        var content = new StackPane(gridview, progressIndicator);
+        var gridview = new EventGridView(model, fetchingData);
+        var content = new StackPane(gridview.getView(), progressIndicator);
 
-        gridview.setPadding(new Insets(0, 10, 10, 0));
-        var results = new VBox(header, content);
-        return results;
+        return new VBox(header, content);
     }
 
-    private GridCell<EventModel> eventCell() {
-        return new GridCell<>() {
-            private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE dd. MMMM HHmm", Locale.ENGLISH);
-
-            private final Card card = new Card();
-            private final ImageView imageView;
-            private final Label title = new Label();
-            private final Label location = new Label();
-            private final Label startDateTime = new Label();
-            private final Label endDateTime = new Label();
-            private final VBox content = new VBox(title, location, startDateTime, endDateTime);
-
-            private final Circle circle1 = new Circle(PROFILE_IMG_RADIUS);
-            private final Circle circle2 = new Circle(PROFILE_IMG_RADIUS);
-            private final Circle circle3 = new Circle(PROFILE_IMG_RADIUS);
-            private final HBox profileImages = new HBox(StyleConfig.STANDARD_SPACING, circle1, circle2, circle3);
-
-            private final Label ticketsSold = new Label("283 tickets sold");
-
-            private final BorderPane footer = new BorderPane();
-
-            {
-                title.getStyleClass().add(Styles.TITLE_3);
-                location.getStyleClass().addAll(Styles.TEXT_MUTED, Styles.TEXT_BOLD);
-                startDateTime.getStyleClass().addAll(Styles.TEXT_MUTED, Styles.TEXT_NORMAL);
-                endDateTime.getStyleClass().addAll(Styles.TEXT_MUTED, Styles.TEXT_NORMAL);
-                card.getStyleClass().addAll(Styles.ELEVATED_4, StyleConfig.EVENT_CARD);
-
-                card.setMinWidth(CARD_WIDTH);
-                card.setMinHeight(CARD_HEIGHT);
-
-                card.setMaxWidth(CARD_WIDTH);
-                card.setMaxHeight(CARD_HEIGHT);
-
-                card.setPrefWidth(CARD_WIDTH);
-                card.setPrefHeight(CARD_HEIGHT);
-
-                imageView = Images.topRoundImage(CARRD_EVENT_IMAGE_WIDTH, CARD_EVENT_IMAGE_HEIGHT, 5);
-                imageView.setFitWidth(CARRD_EVENT_IMAGE_WIDTH);
-                imageView.setFitHeight(CARD_EVENT_IMAGE_HEIGHT);
-
-                ticketsSold.getStyleClass().addAll(Styles.TEXT_SUBTLE, Styles.TEXT_BOLD);
-
-                circle1.getStyleClass().add(Styles.ELEVATED_3);
-                circle2.getStyleClass().add(Styles.ELEVATED_3);
-                circle3.getStyleClass().add(Styles.ELEVATED_3);
-
-                footer.setLeft(profileImages);
-                footer.setRight(new StackPane(ticketsSold));
-                StackPane.setAlignment(ticketsSold, Pos.BOTTOM_RIGHT);
-
-
-                card.setSubHeader(imageView);
-                card.setBody(content);
-                card.setFooter(footer);
-            }
-
-            @Override
-            protected void updateItem(EventModel item, boolean empty) {
-                super.updateItem(item, empty);
-
-                if (empty || item == null) {
-                    setGraphic(null);
-                } else {
-                    Image img = getImage(item.id().get() + "/" + item.imageName().get());
-
-                    imageView.setImage(img);
-
-                    loadImagePattern(circle1, getProfileImage("profile1.jpg"));
-                    loadImagePattern(circle2, getProfileImage("profile4.jpg"));
-                    loadImagePattern(circle3, getProfileImage("profile8.jpeg"));
-
-                    title.textProperty().bind(item.title());
-                    location.textProperty().bind(item.location());
-                    startDateTime.textProperty().bind(dateTimeBinding(item.startDate(), item.startTime(), "Starts", formatter));
-                    endDateTime.textProperty().bind(dateTimeBinding(item.endDate(), item.endTime(), "Ends", formatter));
-
-                    card.setOnMouseClicked(e -> {
-                        ViewHandler.changeView(ViewType.SHOW_EVENT, item);
-                    });
-
-                    setGraphic(card);
-                }
-            }
-        };
-    }
 
     private static final Map<String, Image> cache = new HashMap<>();
     private static final Map<String, Image> profileCache = new HashMap<>();
