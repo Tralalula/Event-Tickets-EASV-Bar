@@ -124,7 +124,6 @@ public class AssignCoordinatorView implements View {
                         initials = firstName.substring(0, 1) + lastName.substring(0, 1);
                     }
 
-                    System.out.println(initials.toUpperCase());
                     photo.setText(initials.toUpperCase());
 
                     BooleanProperty selectedProperty = model.selectionStateProperty(item);

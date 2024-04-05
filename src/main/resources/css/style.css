@@ -79,3 +79,19 @@
     -fx-text-fill: white;
     -fx-icon-color: white;
 }
+
+.bg-subtle-list {
+    -fx-background-color: -color-bg-subtle;
+}
+
+.bg-subtle-list:hover {
+    /*-fx-background-color: firebrick;*/
+}
+
+/*.list-cell:hover {*/
+/*    -fx-background-color: firebrick;*/
+/*}*/
+
+.list-cell-spacer {
+    -fx-cursor: default;
+}
