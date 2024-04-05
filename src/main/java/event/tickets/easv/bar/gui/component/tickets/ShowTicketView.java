@@ -67,6 +67,8 @@ public class ShowTicketView implements View {
             }
         });
 
+
+
         // For at sørge for den lytter til events ændringer
         checkComboBox = multiCombo();
     }
@@ -94,42 +96,42 @@ public class ShowTicketView implements View {
     }
 
     public TableView<TicketEventModel> createTicketTableView() {
-        TableColumn<TicketEventModel, String> col1 = new TableColumn<>("Title");
+        TableColumn<TicketEventModel, String> title = new TableColumn<>("Title");
 
-        col1.setCellValueFactory(cellData -> {
+        title.setCellValueFactory(cellData -> {
             if (cellData.getValue().event() != null && cellData.getValue().event().get() != null)
                 return cellData.getValue().event().get().title();
 
                 return new SimpleStringProperty("suckadoi");
         });
 
-        TableColumn<TicketEventModel, String> col2 = new TableColumn<>("Total");
-        col2.setCellValueFactory(cellData -> {
-            Integer total = cellData.getValue().total().get();
-            return new SimpleStringProperty(total + " Total");
+        TableColumn<TicketEventModel, String> total = new TableColumn<>("Total");
+        total.setCellValueFactory(cellData -> {
+            Integer totalint = cellData.getValue().total().get();
+            return new SimpleStringProperty(totalint + " Total");
         });
 
-        TableColumn<TicketEventModel, String> col3 = new TableColumn<>("Left");
-        col3.setCellValueFactory(cellData -> {
-            Integer left = cellData.getValue().left().get();
-            return new SimpleStringProperty(left + " left");
+        TableColumn<TicketEventModel, String> left = new TableColumn<>("Left");
+        left.setCellValueFactory(cellData -> {
+            Integer leftint = cellData.getValue().left().get();
+            return new SimpleStringProperty(leftint + " left");
         });
 
-        TableColumn<TicketEventModel, String> col4 = new TableColumn<>("Bought");
-        col4.setCellValueFactory(cellData -> {
-            Integer bought = cellData.getValue().bought().get();
-            return new SimpleStringProperty(bought + " bought");
+        TableColumn<TicketEventModel, String> bought = new TableColumn<>("Bought");
+        bought.setCellValueFactory(cellData -> {
+            Integer boughtint = cellData.getValue().bought().get();
+            return new SimpleStringProperty(boughtint + " Bought");
         });
 
-        TableColumn<TicketEventModel, String> col5 = new TableColumn<>("Price");
-        col5.setCellValueFactory(cellData -> {
-            Double price = cellData.getValue().price().get();
-            String formattedPrice = String.format("DKK %.2f,-", price);
+        TableColumn<TicketEventModel, String> price = new TableColumn<>("Price");
+        price.setCellValueFactory(cellData -> {
+            Double pricedouble = cellData.getValue().price().get();
+            String formattedPrice = String.format("DKK %.2f,-", pricedouble);
             return new SimpleStringProperty(formattedPrice);
         });
 
-        TableColumn<TicketEventModel, Void> col6 = new TableColumn<>("");
-        col6.setCellFactory(param -> new TableCell<>() {
+        TableColumn<TicketEventModel, Void> actionButtons = new TableColumn<>("");
+        actionButtons.setCellFactory(param -> new TableCell<>() {
             private final Button editButton = new Button(null, new FontIcon(Feather.EDIT));
             private final Button assignButton = new Button(null, new FontIcon(Material2MZ.PERSON_ADD));
 
@@ -151,7 +153,6 @@ public class ShowTicketView implements View {
                     TicketEventModel rowData = getTableView().getItems().get(getIndex());
                     if (rowData.left().get() > 0)
                         ViewHandler.showOverlay("Assign ticket", assignCustomer(rowData), 300, 350);
-                    //ViewHandler.changeView(ViewType.ASSIGN_TICKET_VIEW, rowData);
                 });
             }
 
@@ -176,7 +177,7 @@ public class ShowTicketView implements View {
         table.getStyleClass().addAll(Tweaks.NO_HEADER, Styles.STRIPED);
 
         table.setItems(model.ticketEvents());
-        table.getColumns().addAll(col1, col2, col3, col4, col5, col6);
+        table.getColumns().addAll(title, total, left, bought, price, actionButtons);
 
         table.getStyleClass().add(StyleConfig.ACTIONABLE);
 
@@ -196,7 +197,7 @@ public class ShowTicketView implements View {
         VBox amount = new VBox(0);
         var amountLabel = new Label("Ticket quantity");
 
-        var amountValue = new Spinner<Integer>(1, 500, 1);
+        var amountValue = new Spinner<Integer>(1, ticketEventModel.left().get(), 1);
         IntegerStringConverter.createFor(amountValue);
         amountValue.getStyleClass().add(Spinner.STYLE_CLASS_SPLIT_ARROWS_HORIZONTAL);
         amountValue.setPrefWidth(PREF_TEXTFIELD_WIDTH + 200);
@@ -204,13 +205,25 @@ public class ShowTicketView implements View {
 
         amount.getChildren().addAll(amountLabel, amountValue);
 
-        Button button = new Button("Send to customer");
-        button.setOnAction(e -> {
-            ticketsModel.generateTickets(ticketEventModel, amountValue.getValue(), emailValue.getText());
-        });
+        HBox addBox = new HBox(5);
 
-        vBox.getChildren().addAll(email, amount, button);
+        var add = new Button("Add");
+        var err = new Label();
+        err.getStyleClass().add(Styles.DANGER);
 
+        add.setOnAction(e -> {
+                if (ticketEventModel.left().get() < amountValue.getValue()) {
+                    err.setText("Not enough tickets left");
+                    return;
+                }
+                
+                ticketsModel.generateTickets(ticketEventModel, amountValue.getValue(), emailValue.getText());
+                table.refresh();
+            });
+
+        addBox.getChildren().addAll(add, err);
+
+        vBox.getChildren().addAll(email, amount, addBox);
         return vBox;
     }
 

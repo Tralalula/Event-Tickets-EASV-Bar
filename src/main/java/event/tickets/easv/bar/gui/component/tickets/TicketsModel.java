@@ -97,7 +97,6 @@ public class TicketsModel {
 
         Customer customer = getCustomer(email);
 
-
         for (int i = 0; i < amount; i++) {
             newEntries.add(new TicketGenerated(ticketEvent.id().get(), customer.id()));
         }
