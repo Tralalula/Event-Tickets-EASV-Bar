@@ -1,9 +1,9 @@
 package event.tickets.easv.bar.gui.component.events;
 
-import atlantafx.base.controls.Spacer;
 import atlantafx.base.theme.Styles;
 import event.tickets.easv.bar.gui.common.*;
 import event.tickets.easv.bar.gui.component.events.assigncoordinator.AssignCoordinatorView;
+import event.tickets.easv.bar.gui.util.Alerts;
 import event.tickets.easv.bar.gui.util.NodeUtils;
 import event.tickets.easv.bar.gui.util.StyleConfig;
 import event.tickets.easv.bar.gui.widgets.*;
@@ -22,7 +22,6 @@ import javafx.scene.image.WritableImage;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.kordamp.ikonli.material2.Material2AL;
 
@@ -32,7 +31,7 @@ import java.util.Optional;
 
 public class ShowEventView implements View {
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE dd. MMMM HHmm", Locale.ENGLISH);
-    private final ShowEventController controller;
+    private final DeleteEventController controller;
 
     private final EventModel model;
     private final ObservableList<UserModel> masterUserList;
@@ -41,7 +40,7 @@ public class ShowEventView implements View {
     private final TableView<TestModel> eventTicketsTableView;
 
     public ShowEventView(EventModel model, ObservableList<UserModel> masterUserList) {
-        this.controller = new ShowEventController();
+        this.controller = new DeleteEventController();
         this.model = model;
         this.masterUserList = masterUserList;
         coordinators = new HBox(StyleConfig.STANDARD_SPACING * 8);
@@ -126,7 +125,10 @@ public class ShowEventView implements View {
         var deleteBtn = new Button(null, new FontIcon(Material2AL.DELETE));
         deleteBtn.getStyleClass().addAll(Styles.BUTTON_CIRCLE, StyleConfig.ACTIONABLE, Styles.FLAT, Styles.DANGER);
 
-        deleteBtn.setOnAction(e -> confirmDelete(model.title().get()));
+        deleteBtn.setOnAction(e -> Alerts.confirmDeleteEvent(
+                model,
+                eventModel -> controller.onDeleteEvent(ViewHandler::previousView, model))
+        );
 
         var titleBox = new HBox(title, deleteBtn);
 
@@ -161,26 +163,6 @@ public class ShowEventView implements View {
         results.getChildren().addAll(headerBox, locationGuidanceBox, noteBox, coordinatorsBox, ticketsBox);
 
         return results;
-    }
-
-    private void confirmDelete(String eventTitle) {
-        var alert = new Alert(AlertType.CONFIRMATION);
-        alert.setTitle("Delete event");
-        alert.setHeaderText("Are you sure you want to delete '" + eventTitle + "'?");
-        alert.setContentText("This action cannot be undone.");
-
-        var yesBtn = new ButtonType("Yes", ButtonData.YES);
-        var noBtn = new ButtonType("No", ButtonData.NO);
-
-        alert.getButtonTypes().setAll(yesBtn, noBtn);
-        alert.initOwner(null);
-        Optional<ButtonType> result = alert.showAndWait();
-
-        if (result.isPresent() && result.get().getButtonData() == ButtonData.YES) {
-            controller.onDeleteEvent(model);
-        } else {
-            alert.close();
-        }
     }
 
 }

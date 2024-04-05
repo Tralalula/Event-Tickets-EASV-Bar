@@ -6,19 +6,26 @@ import event.tickets.easv.bar.gui.common.EventModel;
 import event.tickets.easv.bar.gui.common.View;
 import event.tickets.easv.bar.gui.common.ViewHandler;
 import event.tickets.easv.bar.gui.common.ViewType;
+import event.tickets.easv.bar.gui.util.Alerts;
 import event.tickets.easv.bar.gui.util.StyleConfig;
 import event.tickets.easv.bar.gui.widgets.Images;
+import event.tickets.easv.bar.gui.widgets.MenuItems;
 import javafx.beans.property.BooleanProperty;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.*;
 import javafx.scene.shape.Circle;
 import org.controlsfx.control.GridCell;
 import org.controlsfx.control.GridView;
+import org.kordamp.ikonli.feather.Feather;
 
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
@@ -32,10 +39,12 @@ public class EventGridView implements View {
     private static final int CARRD_EVENT_IMAGE_WIDTH = CARD_WIDTH - 2; // needs to account for a bit on each side
     private static final int CARD_EVENT_IMAGE_HEIGHT = 160;
 
+    private final DeleteEventController controller;
     private final GridView<EventModel> gridview;
     private final ObservableList<EventModel> model;
 
     public EventGridView(ObservableList<EventModel> model) {
+        this.controller = new DeleteEventController();
         this.model = model;
         gridview = new GridView<>();
     }
@@ -77,7 +86,17 @@ public class EventGridView implements View {
 
             private final BorderPane footer = new BorderPane();
 
+            private final ContextMenu contextMenu = new ContextMenu();
+            private final MenuItem editItem = MenuItems.createItem("_Edit", Feather.EDIT);
+            private final MenuItem deleteItem = MenuItems.createItem("_Delete", Feather.TRASH_2);
+
             {
+                editItem.setMnemonicParsing(true);
+                deleteItem.setMnemonicParsing(true);
+
+                contextMenu.getItems().addAll(editItem, deleteItem);
+                card.setContextMenu(contextMenu);
+
                 title.getStyleClass().add(Styles.TITLE_3);
                 location.getStyleClass().addAll(Styles.TEXT_MUTED, Styles.TEXT_BOLD);
                 startDateTime.getStyleClass().addAll(Styles.TEXT_MUTED, Styles.TEXT_NORMAL);
@@ -130,9 +149,16 @@ public class EventGridView implements View {
                     endDateTime.textProperty().bind(dateTimeBinding(item.endDate(), item.endTime(), "Ends", formatter));
 
                     card.setOnMouseClicked(e -> {
-                        ViewHandler.changeView(ViewType.SHOW_EVENT, item);
+                        if (e.getButton() == MouseButton.PRIMARY) {
+                            ViewHandler.changeView(ViewType.SHOW_EVENT, item);
+                        }
                     });
 
+                    editItem.setOnAction(e -> System.out.println("Edit event: " + item.title().get()));
+                    deleteItem.setOnAction(e -> Alerts.confirmDeleteEvent(
+                            item,
+                            eventModel -> controller.onDeleteEvent(() -> {}, item))
+                    );
                     setGraphic(card);
                 }
             }
