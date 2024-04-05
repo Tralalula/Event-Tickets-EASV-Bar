@@ -41,12 +41,6 @@ import java.util.Locale;
 import java.util.Map;
 
 public class EventsView implements View {
-    private static final int CARD_WIDTH = 326;
-    private static final int CARD_HEIGHT = 370;
-    private static final int PROFILE_IMG_RADIUS = 20;
-    private static final int CARRD_EVENT_IMAGE_WIDTH = CARD_WIDTH - 2; // needs to account for a bit on each side
-    private static final int CARD_EVENT_IMAGE_HEIGHT = 160;
-
     private final ObservableList<EventModel> model;
     private final BooleanProperty fetchingData;
 
@@ -66,7 +60,7 @@ public class EventsView implements View {
         ProgressIndicator progressIndicator = new ProgressIndicator();
         NodeUtils.bindVisibility(progressIndicator, fetchingData);
 
-        var gridview = new EventGridView(model, fetchingData);
+        var gridview = new EventGridView(model);
         var content = new StackPane(gridview.getView(), progressIndicator);
 
         return new VBox(header, content);

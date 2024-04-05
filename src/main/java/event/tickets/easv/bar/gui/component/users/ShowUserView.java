@@ -6,6 +6,7 @@ import event.tickets.easv.bar.gui.common.EventModel;
 import event.tickets.easv.bar.gui.common.UserModel;
 import event.tickets.easv.bar.gui.common.View;
 import event.tickets.easv.bar.gui.common.ViewHandler;
+import event.tickets.easv.bar.gui.component.events.EventGridView;
 import event.tickets.easv.bar.gui.component.events.EventsView;
 import event.tickets.easv.bar.gui.util.NodeUtils;
 import event.tickets.easv.bar.gui.util.StyleConfig;
@@ -17,21 +18,19 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import org.kordamp.ikonli.feather.Feather;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.kordamp.ikonli.material2.Material2OutlinedAL;
 
 public class ShowUserView implements View {
     private final UserModel model;
-    private final ObservableList<EventModel> masterEventList;
     private final CircularImageView circularImageView = new CircularImageView(80);
+    private final EventGridView eventGridView;
 
     public ShowUserView(UserModel model, ObservableList<EventModel> masterEventList) {
         this.model = model;
-        this.masterEventList = masterEventList;
+        this.eventGridView = new EventGridView(model.events());
 
         ViewHandler.currentViewDataProperty().subscribe((oldData, newData) -> {
             if (newData instanceof UserModel) {
@@ -48,6 +47,8 @@ public class ShowUserView implements View {
                 }
 
                 circularImageView.setText(initials.toUpperCase());
+
+                eventGridView.setItems(model.events());
             }
         });
     }
@@ -57,7 +58,33 @@ public class ShowUserView implements View {
         var results = new VBox(StyleConfig.STANDARD_SPACING);
         results.getStyleClass().addAll(StyleConfig.PADDING_DEFAULT);
 
-        results.getChildren().add(userDataContainer());
+        var eventGridContainer = eventGridContainer();
+        VBox.setVgrow(eventGridContainer, Priority.ALWAYS);
+        results.getChildren().addAll(userDataContainer(), eventGridContainer);
+
+        return results;
+    }
+
+    private Node eventGridContainer() {
+        var results = new VBox(StyleConfig.STANDARD_SPACING);
+        results.getStyleClass().addAll(StyleConfig.PADDING_DEFAULT);
+
+        var title = new Label();
+        title.textProperty().bind(Bindings.createStringBinding(() -> {
+            String name = model.firstName().get();
+            if (name == null) return "";
+            if (name.endsWith("s")) {
+                return name + "' upcoming events";
+            } else {
+                return name + "'s upcoming events";
+            }
+        }, model.firstName()));
+        title.getStyleClass().addAll(Styles.TITLE_3, Styles.TEXT_BOLD);
+
+        var eventGrid = eventGridView.getView();
+        VBox.setVgrow(eventGrid, Priority.ALWAYS);
+
+        results.getChildren().addAll(title, eventGrid);
 
         return results;
     }

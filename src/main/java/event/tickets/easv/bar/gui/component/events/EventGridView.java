@@ -32,16 +32,15 @@ public class EventGridView implements View {
     private static final int CARRD_EVENT_IMAGE_WIDTH = CARD_WIDTH - 2; // needs to account for a bit on each side
     private static final int CARD_EVENT_IMAGE_HEIGHT = 160;
 
+    private final GridView<EventModel> gridview;
     private final ObservableList<EventModel> model;
-    private final BooleanProperty fetchingData;
 
-    public EventGridView(ObservableList<EventModel> model, BooleanProperty fetchingData) {
+    public EventGridView(ObservableList<EventModel> model) {
         this.model = model;
-        this.fetchingData = fetchingData;
+        gridview = new GridView<>();
     }
 
     public Region getView() {
-        var gridview = new GridView<EventModel>();
         gridview.setItems(model);
         gridview.setCellWidth(CARD_WIDTH);
         gridview.setCellHeight(CARD_HEIGHT);
@@ -51,6 +50,10 @@ public class EventGridView implements View {
 
         gridview.setPadding(new Insets(0, 10, 10, 0));
         return gridview;
+    }
+
+    public void setItems(ObservableList<EventModel> items) {
+        gridview.setItems(items);
     }
 
     private GridCell<EventModel> eventCell() {
