@@ -28,7 +28,7 @@ public class ShowUserView implements View {
     private final CircularImageView circularImageView = new CircularImageView(80);
     private final EventGridView eventGridView;
 
-    public ShowUserView(UserModel model, ObservableList<EventModel> masterEventList) {
+    public ShowUserView(UserModel model) {
         this.model = model;
         this.eventGridView = new EventGridView(model.events());
 
