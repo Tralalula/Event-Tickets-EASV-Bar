@@ -1,6 +1,7 @@
 package event.tickets.easv.bar.gui.component.tickets;
 
 import event.tickets.easv.bar.be.Customer;
+import event.tickets.easv.bar.be.Event;
 import event.tickets.easv.bar.be.Ticket.Ticket;
 import event.tickets.easv.bar.be.Ticket.TicketEvent;
 import event.tickets.easv.bar.be.Ticket.TicketGenerated;
@@ -78,13 +79,27 @@ public class TicketsModel {
         return newEntries;
     }
 
+    public Customer getCustomer(String email) {
+        Result<Optional<Customer>> exists = entityManager.get(Customer.class, email);
+        Customer createdCustomer = null;
+
+        if(exists.isSuccess()) {
+            Optional<Customer> customer = exists.get();
+            createdCustomer = customer.isEmpty() ? handleCustomer(entityManager.add(new Customer(email))) : customer.get();
+        }
+
+        return createdCustomer;
+    }
+
     //TODO: Refactor
     public List<TicketGenerated> generateTickets(TicketEventModel ticketEvent, int amount, String email) {
         List<TicketGenerated> newEntries = new ArrayList<>();
-        Customer createdCustomer = handleCustomer(entityManager.add(new Customer(email)));
+
+        Customer customer = getCustomer(email);
+
 
         for (int i = 0; i < amount; i++) {
-            newEntries.add(new TicketGenerated(ticketEvent.id().get(), createdCustomer.id()));
+            newEntries.add(new TicketGenerated(ticketEvent.id().get(), customer.id()));
         }
 
         Result<List<TicketGenerated>> result = entityManager.addAll(newEntries);

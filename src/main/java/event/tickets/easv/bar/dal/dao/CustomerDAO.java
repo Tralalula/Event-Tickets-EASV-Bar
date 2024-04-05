@@ -101,7 +101,7 @@ class CustomerResultSetMapper implements ResultSetMapper<Customer> {
     @Override
     public Customer map(@NotNull ResultSet rs) throws SQLException {
         int id = rs.getInt("id");
-        String email = rs.getString("email");
+        String email = rs.getString("mail");
 
         return new Customer(id, email);
     }
