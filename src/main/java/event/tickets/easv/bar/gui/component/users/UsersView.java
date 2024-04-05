@@ -7,9 +7,12 @@ import atlantafx.base.theme.Tweaks;
 import event.tickets.easv.bar.be.enums.Rank;
 import event.tickets.easv.bar.gui.common.UserModel;
 import event.tickets.easv.bar.gui.common.View;
+import event.tickets.easv.bar.gui.common.ViewHandler;
+import event.tickets.easv.bar.gui.common.ViewType;
 import event.tickets.easv.bar.gui.component.events.EventsView;
 import event.tickets.easv.bar.gui.util.StyleConfig;
 import event.tickets.easv.bar.gui.widgets.CircularImageView;
+import event.tickets.easv.bar.gui.widgets.MenuItems;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.collections.ObservableList;
@@ -17,12 +20,14 @@ import javafx.css.PseudoClass;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
-import javafx.scene.input.MouseEvent;
+import javafx.scene.input.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import org.kordamp.ikonli.feather.Feather;
 
 import java.util.List;
 
@@ -48,12 +53,6 @@ public class UsersView implements View {
         userList.setCellFactory(c -> {
             var cell = userCell();
             cell.getStyleClass().add("bg-subtle-list"); // eh, added own in style.css because AtlantaFX didn't apply?
-            cell.setOnMouseClicked(e -> {
-                var user = cell.getItem();
-                System.out.println("User clicked: " + user.firstName().get() + " " + user.lastName().get());
-            });
-//
-////            cell.setPadding(new Insets(StyleConfig.STANDARD_SPACING));
             return cell;
         });
 
@@ -80,9 +79,27 @@ public class UsersView implements View {
 
             private final GridPane gridPane = new GridPane();
 
-            final Region spacer = new Region();
+            private final Region spacer = new Region();
+
+            private final ContextMenu contextMenu = new ContextMenu();
 
             {
+
+                var editItem = MenuItems.createItem(
+                        "_Edit",
+                        Feather.EDIT
+                );
+                editItem.setMnemonicParsing(true);
+
+                var deleteItem = MenuItems.createItem(
+                        "_Delete",
+                        Feather.TRASH_2
+                );
+                deleteItem.setMnemonicParsing(true);
+
+                contextMenu.getItems().addAll(editItem, deleteItem);
+                setContextMenu(contextMenu);
+
                 spacer.setPrefHeight(10);
                 spacer.setMinHeight(10);
                 spacer.setMaxHeight(10);
@@ -169,10 +186,14 @@ public class UsersView implements View {
                     numFinishedEventsLabel.setText("375");
                     numTicketsSoldLabel.setText("283");
 
-
-
                     var wrapper = new VBox(gridPane, spacer);
                     wrapper.getStyleClass().add(StyleConfig.ACTIONABLE);
+
+                    wrapper.setOnMouseClicked(event -> {
+                        if (event.getButton() == MouseButton.PRIMARY) {
+                            ViewHandler.changeView(ViewType.SHOW_USER, item);
+                        }
+                    });
 
                     setGraphic(wrapper);
                 }

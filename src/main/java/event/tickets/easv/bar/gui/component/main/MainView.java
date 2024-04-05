@@ -2,45 +2,35 @@ package event.tickets.easv.bar.gui.component.main;
 
 import atlantafx.base.controls.*;
 import atlantafx.base.theme.Styles;
-import atlantafx.base.util.Animations;
 import event.tickets.easv.bar.gui.common.*;
 import event.tickets.easv.bar.gui.component.dashboard.DashboardView;
 import event.tickets.easv.bar.gui.component.events.createevent.CreateEventView;
 import event.tickets.easv.bar.gui.component.events.EventsView;
 import event.tickets.easv.bar.gui.component.events.ShowEventView;
 import event.tickets.easv.bar.gui.component.tickets.*;
+import event.tickets.easv.bar.gui.component.users.ShowUserView;
 import event.tickets.easv.bar.gui.component.users.UsersView;
 import event.tickets.easv.bar.gui.component.users.createuser.CreateUserView;
 import event.tickets.easv.bar.gui.util.StyleConfig;
 import event.tickets.easv.bar.gui.util.*;
 import event.tickets.easv.bar.util.SessionManager;
-import javafx.beans.binding.Bindings;
-import javafx.beans.value.ObservableValue;
 import javafx.css.PseudoClass;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
-import javafx.util.Duration;
-import org.controlsfx.glyphfont.FontAwesome;
 import org.kordamp.ikonli.Ikon;
 import org.kordamp.ikonli.feather.Feather;
-import org.kordamp.ikonli.fontawesome5.FontAwesomeRegular;
 import org.kordamp.ikonli.fontawesome5.FontAwesomeSolid;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.kordamp.ikonli.material2.Material2AL;
 import org.kordamp.ikonli.material2.Material2MZ;
-import org.kordamp.ikonli.material2.Material2OutlinedAL;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Stream;
 
 public class MainView implements View {
     private static final PseudoClass ACTIVE_PSEUDO_CLASS = PseudoClass.getPseudoClass("active");
@@ -59,6 +49,7 @@ public class MainView implements View {
     private final Region assignTicketView;
 
     private final Region usersView;
+    private final Region showUserView;
     private final Region createUserView;
 
     private Breadcrumbs<String> crumbs;
@@ -85,6 +76,7 @@ public class MainView implements View {
         this.assignTicketView = new AssignTicketView(ticketsModel).getView();
 
         this.createUserView = new CreateUserView().getView();
+        this.showUserView = new ShowUserView(UserModel.Empty(), model.eventModels()).getView();
         this.usersView = new UsersView(model.userModels(), model.fetchingUsersProperty()).getView();
     }
 
@@ -140,10 +132,11 @@ public class MainView implements View {
         NodeUtils.bindVisibility(ticketsView, ViewHandler.activeViewProperty().isEqualTo(ViewType.TICKETS));
         NodeUtils.bindVisibility(showTicketView, ViewHandler.activeViewProperty().isEqualTo(ViewType.SHOW_TICKET));
         NodeUtils.bindVisibility(assignTicketView, ViewHandler.activeViewProperty().isEqualTo(ViewType.ASSIGN_TICKET_VIEW));
-        NodeUtils.bindVisibility(createUserView, ViewHandler.activeViewProperty().isEqualTo(ViewType.CREATE_USER));
         NodeUtils.bindVisibility(usersView, ViewHandler.activeViewProperty().isEqualTo(ViewType.USERS));
+        NodeUtils.bindVisibility(showUserView, ViewHandler.activeViewProperty().isEqualTo(ViewType.SHOW_USER));
+        NodeUtils.bindVisibility(createUserView, ViewHandler.activeViewProperty().isEqualTo(ViewType.CREATE_USER));
 
-        var content = new StackPane(authView, dashboardView, eventsView, createEventView, showEventView, ticketsView, showTicketView, assignTicketView, createUserView, usersView);
+        var content = new StackPane(authView, dashboardView, eventsView, createEventView, showEventView, ticketsView, showTicketView, assignTicketView, usersView, showUserView, createUserView);
 
         var scrollPane = new ScrollPane(content);
         scrollPane.setFitToHeight(true);
