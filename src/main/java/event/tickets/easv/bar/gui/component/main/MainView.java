@@ -1,6 +1,8 @@
 package event.tickets.easv.bar.gui.component.main;
 
 import atlantafx.base.controls.*;
+import atlantafx.base.theme.PrimerDark;
+import atlantafx.base.theme.PrimerLight;
 import atlantafx.base.theme.Styles;
 import event.tickets.easv.bar.gui.common.*;
 import event.tickets.easv.bar.gui.component.dashboard.DashboardView;
@@ -14,6 +16,7 @@ import event.tickets.easv.bar.gui.component.users.createuser.CreateUserView;
 import event.tickets.easv.bar.gui.util.StyleConfig;
 import event.tickets.easv.bar.gui.util.*;
 import event.tickets.easv.bar.util.SessionManager;
+import javafx.application.Application;
 import javafx.css.PseudoClass;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -204,10 +207,13 @@ public class MainView implements View {
 
         var modeSwitch = new Button(null, lightTheme);
         modeSwitch.getStyleClass().addAll(Styles.BUTTON_ICON, Styles.FLAT);
-        modeSwitch.setOnAction(new EventHandler<ActionEvent>() {
-            public void handle(ActionEvent event) {
-                modeSwitch.setGraphic(modeSwitch.getGraphic() == lightTheme ? darkTheme : lightTheme);
-            }
+
+        final boolean[] isDarkTheme = {false};
+
+        modeSwitch.setOnAction(event -> {
+            isDarkTheme[0] = !isDarkTheme[0];
+            setTheme(isDarkTheme[0]);
+            modeSwitch.setGraphic(isDarkTheme[0] ? darkTheme : lightTheme);
         });
 
         MenuItem logoutMenuItem = new MenuItem("Log out");
@@ -235,6 +241,14 @@ public class MainView implements View {
         results.getChildren().addAll(minimizeMaximize, title, search, spacer, languageSelect, modeSwitch, settings);
 
         return results;
+    }
+
+    private void setTheme(boolean isDark) {
+        if (isDark) {
+            Application.setUserAgentStylesheet(new PrimerDark().getUserAgentStylesheet());
+        } else {
+            Application.setUserAgentStylesheet(new PrimerLight().getUserAgentStylesheet());
+        }
     }
 
     private Region sidebar() {
