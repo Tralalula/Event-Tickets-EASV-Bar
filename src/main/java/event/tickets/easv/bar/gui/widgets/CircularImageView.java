@@ -1,9 +1,11 @@
 package event.tickets.easv.bar.gui.widgets;
 
 import atlantafx.base.theme.Styles;
+import event.tickets.easv.bar.gui.util.StyleConfig;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
@@ -14,13 +16,15 @@ public class CircularImageView extends StackPane {
     private final StackPane placeholder;
     private final Circle circle;
     private final Label label;
+    private final Region circleRegion;
 
     public CircularImageView(double radius) {
         super();
         this.label = new Label("");
         this.circle = new Circle(radius);
         this.imageView = Images.circle(radius);
-        this.placeholder = placeholder(radius);
+        this.circleRegion = new Region();
+        this.placeholder = placeholder();
     }
 
     public CircularImageView(double radius, String text) {
@@ -28,7 +32,8 @@ public class CircularImageView extends StackPane {
         this.label = new Label(text);
         this.circle = new Circle(radius);
         this.imageView = Images.circle(radius);
-        this.placeholder = placeholder(radius);
+        this.circleRegion = new Region();
+        this.placeholder = placeholder();
     }
 
     public void setImage(Image image) {
@@ -43,15 +48,11 @@ public class CircularImageView extends StackPane {
         return new StackPane(placeholder, imageView);
     }
 
-    public void setFill(Paint color) {
-        circle.setFill(color);
-    }
+    private StackPane placeholder() {
+        label.getStyleClass().addAll(Styles.TEXT_BOLD, StyleConfig.CIRCLE_PLACEHOLDER_TEXT);
+        circleRegion.setShape(circle);
+        circleRegion.getStyleClass().add(StyleConfig.CIRCLE_PLACEHOLDER);
 
-    private StackPane placeholder(double radius) {
-        circle.setFill(Color.LIGHTGRAY);
-
-        label.getStyleClass().add(Styles.TEXT_BOLD);
-
-        return new StackPane(circle, label);
+        return new StackPane(circleRegion, label);
     }
 }

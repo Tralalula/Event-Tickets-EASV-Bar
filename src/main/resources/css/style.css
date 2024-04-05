@@ -40,7 +40,7 @@
 }
 
 .nav-icon {
-    -fx-icon-color: black;
+    -fx-icon-color: -color-neutral-emphasis-plus;
     -fx-icon-size: 24px;
 }
 
@@ -49,7 +49,7 @@
 }
 
 .nav-button:active {
-    -fx-background-color: #009FE3;
+    -fx-background-color: -color-accent-emphasis;
 }
 
 .nav-button:hover {
@@ -57,40 +57,32 @@
 }
 
 .nav-button:active:hover {
-    -fx-background-color: #009FE3;
+    -fx-background-color: -color-accent-emphasis;
 }
 
 .nav-text:active,
 .nav-text:active:hover,
 .nav-icon:active,
 .nav-icon:active:hover {
-    -fx-text-fill: white;
-    -fx-icon-color: white;
+    -fx-text-fill: -color-bg-default;
+    -fx-icon-color: -color-bg-default
 }
 
 .nav-button:hover .nav-text,
 .nav-button:hover .nav-icon {
-    -fx-text-fill: #009FE3;
-    -fx-icon-color: #009FE3;
+    -fx-text-fill: -color-accent-emphasis;
+    -fx-icon-color: -color-accent-emphasis;
 }
 
 .nav-button:active:hover .nav-text,
 .nav-button:active:hover .nav-icon {
-    -fx-text-fill: white;
-    -fx-icon-color: white;
+    -fx-text-fill: -color-bg-default;
+    -fx-icon-color: -color-bg-default;
 }
 
 .bg-subtle-list {
     -fx-background-color: -color-bg-subtle;
 }
-
-.bg-subtle-list:hover {
-    /*-fx-background-color: firebrick;*/
-}
-
-/*.list-cell:hover {*/
-/*    -fx-background-color: firebrick;*/
-/*}*/
 
 .list-cell-spacer {
     -fx-cursor: default;
@@ -102,4 +94,12 @@
 
 .list-cell-grid:hover {
     -fx-background-color: -color-neutral-muted;
+}
+
+.circle-placeholder {
+    -fx-background-color: -color-neutral-emphasis-plus;
+}
+
+.circle-placeholder-text {
+    -fx-text-fill: -color-bg-default;
 }

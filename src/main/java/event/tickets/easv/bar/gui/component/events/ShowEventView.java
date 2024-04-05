@@ -105,7 +105,6 @@ public class ShowEventView implements View {
         for (UserModel userModel : users) {
             var photo = new CircularImageView(24, "OK");
             String imageName = userModel.id().get() + "/" + userModel.imageName().get();
-            photo.setFill(Color.WHITE);
             photo.setImage(EventsView.getProfileImage(imageName));
 
             var name = Labels.styledLabel(userModel.username(), Styles.TEXT_NORMAL);

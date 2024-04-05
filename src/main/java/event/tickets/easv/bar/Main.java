@@ -1,5 +1,6 @@
 package event.tickets.easv.bar;
 
+import atlantafx.base.theme.NordLight;
 import atlantafx.base.theme.PrimerDark;
 import atlantafx.base.theme.PrimerLight;
 import event.tickets.easv.bar.gui.common.ViewHandler;

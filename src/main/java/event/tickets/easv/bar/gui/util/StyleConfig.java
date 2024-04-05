@@ -11,6 +11,9 @@ public class StyleConfig {
 
     public static final String EVENT_CARD = "event-card";
 
+    public static final String CIRCLE_PLACEHOLDER = "circle-placeholder";
+    public static final String CIRCLE_PLACEHOLDER_TEXT = "circle-placeholder-text";
+
     public static final String EASV_BLUE = "#009FE3";
     public static final String EASV_YELLOW = "#FABB2D";
     public static final String EASV_RED = "#CD383A";
