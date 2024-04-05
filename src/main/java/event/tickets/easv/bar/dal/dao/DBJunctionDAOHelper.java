@@ -143,7 +143,11 @@ public class DBJunctionDAOHelper<A extends Entity<A>, B extends Entity<B>> imple
     @Override
     @SuppressWarnings("unchecked")
     public Result<Boolean> deleteAssociationsFor(Entity<?> entity) {
-        if (entity == null) throw new IllegalArgumentException("Entity must not be null");
+        try {
+            setupDBConnector();
+        } catch (IOException e) {
+            return Failure.of(FailureType.IO_FAILURE, "DBJunctionDAOHelper.deleteAssociationsFor() - Failed to read from the data source", e);
+        }
 
         if (classA.isAssignableFrom(entity.getClass())) {
             A aEntity = (A) entity;

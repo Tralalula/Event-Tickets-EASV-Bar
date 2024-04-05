@@ -1,5 +1,6 @@
 package event.tickets.easv.bar.gui.component.events;
 
+import atlantafx.base.controls.Spacer;
 import atlantafx.base.theme.Styles;
 import event.tickets.easv.bar.gui.common.*;
 import event.tickets.easv.bar.gui.component.events.assigncoordinator.AssignCoordinatorView;
@@ -11,9 +12,9 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelReader;
@@ -22,13 +23,17 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import org.kordamp.ikonli.javafx.FontIcon;
 import org.kordamp.ikonli.material2.Material2AL;
 
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
+import java.util.Optional;
 
 public class ShowEventView implements View {
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE dd. MMMM HHmm", Locale.ENGLISH);
+    private final ShowEventController controller;
+
     private final EventModel model;
     private final ObservableList<UserModel> masterUserList;
     private final ImageView image;
@@ -36,6 +41,7 @@ public class ShowEventView implements View {
     private final TableView<TestModel> eventTicketsTableView;
 
     public ShowEventView(EventModel model, ObservableList<UserModel> masterUserList) {
+        this.controller = new ShowEventController();
         this.model = model;
         this.masterUserList = masterUserList;
         coordinators = new HBox(StyleConfig.STANDARD_SPACING * 8);
@@ -48,14 +54,6 @@ public class ShowEventView implements View {
         image.setPickOnBounds(true);
         image.setFitWidth(1200);
         image.setFitHeight(300);
-
-        masterUserList.addListener((ListChangeListener<? super UserModel>) c -> {
-            System.out.println("wtf");
-        });
-
-        model.users().addListener((ListChangeListener<? super UserModel>) c -> {
-            System.out.println("yosfsjfsjdfjsdf");
-        });
 
         ViewHandler.currentViewDataProperty().subscribe((oldData, newData) -> {
             if (newData instanceof EventModel) {
@@ -122,12 +120,21 @@ public class ShowEventView implements View {
         results.setPadding(new Insets(10));
         results.setFillWidth(true);
 
+
+
         var title = Labels.styledLabel(model.title(), Styles.TITLE_1);
+        var deleteBtn = new Button(null, new FontIcon(Material2AL.DELETE));
+        deleteBtn.getStyleClass().addAll(Styles.BUTTON_CIRCLE, StyleConfig.ACTIONABLE, Styles.FLAT, Styles.DANGER);
+
+        deleteBtn.setOnAction(e -> confirmDelete(model.title().get()));
+
+        var titleBox = new HBox(title, deleteBtn);
+
         var location = Labels.styledLabel(model.location(), Styles.TITLE_4);
         var startDateTime = Labels.styledLabel(EventsView.dateTimeBinding(model.startDate(), model.startTime(), "Starts", formatter));
         var endDateTime = Labels.styledLabel(EventsView.dateTimeBinding(model.endDate(), model.endTime(), "Ends", formatter));
 
-        var headerBox = new VBox(image, title, location, startDateTime, endDateTime);
+        var headerBox = new VBox(image, titleBox, location, startDateTime, endDateTime);
 
         var locationGuidanceText = Labels.styledLabel("Location guidance", Styles.TEXT_BOLD);
         var locationGuidance = Labels.styledLabel(model.locationGuidance());
@@ -156,5 +163,24 @@ public class ShowEventView implements View {
         return results;
     }
 
+    private void confirmDelete(String eventTitle) {
+        var alert = new Alert(AlertType.CONFIRMATION);
+        alert.setTitle("Delete event");
+        alert.setHeaderText("Are you sure you want to delete '" + eventTitle + "'?");
+        alert.setContentText("This action cannot be undone.");
+
+        var yesBtn = new ButtonType("Yes", ButtonData.YES);
+        var noBtn = new ButtonType("No", ButtonData.NO);
+
+        alert.getButtonTypes().setAll(yesBtn, noBtn);
+        alert.initOwner(null);
+        Optional<ButtonType> result = alert.showAndWait();
+
+        if (result.isPresent() && result.get().getButtonData() == ButtonData.YES) {
+            controller.onDeleteEvent(model);
+        } else {
+            alert.close();
+        }
+    }
 
 }
