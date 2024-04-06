@@ -61,7 +61,7 @@ public class UsersView implements View {
         userList.getStyleClass().addAll(Tweaks.EDGE_TO_EDGE);
         userList.setCellFactory(c -> {
             var cell = userCell();
-            cell.getStyleClass().add("bg-subtle-list"); // eh, added own in style.css because AtlantaFX didn't apply?
+            cell.getStyleClass().add("bg-subtle-list");
             return cell;
         });
 

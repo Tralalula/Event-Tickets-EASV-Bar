@@ -15,6 +15,6 @@ public class EventModelWrapper {
 
     @Override
     public String toString() {
-        return eventModel.title().get(); // Assuming title() returns a String property
+        return eventModel.title().get();
     }
 }

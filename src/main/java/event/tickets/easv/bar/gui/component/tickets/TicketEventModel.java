@@ -4,6 +4,7 @@ import event.tickets.easv.bar.be.Event;
 import event.tickets.easv.bar.be.Ticket.TicketEvent;
 import event.tickets.easv.bar.gui.common.EventModel;
 import event.tickets.easv.bar.gui.common.TestModel;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -51,6 +52,7 @@ public class TicketEventModel {
         this.bought.set(ticketEventModel.bought.get());
         this.price.set(ticketEventModel.price.get());
         this.event.set(ticketEventModel.event.get());
+        this.ticketsGenerated = ticketEventModel.ticketsGenerated;
     }
 
     public IntegerProperty id() {
@@ -61,18 +63,18 @@ public class TicketEventModel {
         return eventId;
     }
 
-
     public IntegerProperty total() {
         return total;
     }
 
-
     public IntegerProperty left() {
+        left.bind(Bindings.subtract(total, bought));
         return left;
     }
 
 
     public IntegerProperty bought() {
+        bought.bind(Bindings.size(ticketsGenerated));
         return bought;
     }
 

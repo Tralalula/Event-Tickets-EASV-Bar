@@ -49,7 +49,6 @@ public class MainView implements View {
     private final Region showEventView;
     private final Region ticketsView;
     private final Region showTicketView;
-    private final Region assignTicketView;
 
     private final Region usersView;
     private final Region showUserView;
@@ -76,8 +75,6 @@ public class MainView implements View {
 
         TicketsModel ticketsModel = new TicketsModel(model);
         this.showTicketView = new ShowTicketView(model, ticketsModel).getView();
-        this.assignTicketView = new AssignTicketView(ticketsModel).getView();
-
         this.createUserView = new CreateUserView().getView();
         this.showUserView = new ShowUserView().getView();
         this.usersView = new UsersView(model.userModels(), model.fetchingUsersProperty(), model.eventsUsersSynchronizedProperty()).getView();
@@ -134,12 +131,11 @@ public class MainView implements View {
         NodeUtils.bindVisibility(showEventView, ViewHandler.activeViewProperty().isEqualTo(ViewType.SHOW_EVENT));
         NodeUtils.bindVisibility(ticketsView, ViewHandler.activeViewProperty().isEqualTo(ViewType.TICKETS));
         NodeUtils.bindVisibility(showTicketView, ViewHandler.activeViewProperty().isEqualTo(ViewType.SHOW_TICKET));
-        NodeUtils.bindVisibility(assignTicketView, ViewHandler.activeViewProperty().isEqualTo(ViewType.ASSIGN_TICKET_VIEW));
         NodeUtils.bindVisibility(usersView, ViewHandler.activeViewProperty().isEqualTo(ViewType.USERS));
         NodeUtils.bindVisibility(showUserView, ViewHandler.activeViewProperty().isEqualTo(ViewType.SHOW_USER));
         NodeUtils.bindVisibility(createUserView, ViewHandler.activeViewProperty().isEqualTo(ViewType.CREATE_USER));
 
-        var content = new StackPane(authView, dashboardView, eventsView, createEventView, showEventView, ticketsView, showTicketView, assignTicketView, usersView, showUserView, createUserView);
+        var content = new StackPane(authView, dashboardView, eventsView, createEventView, showEventView, ticketsView, showTicketView, usersView, showUserView, createUserView);
 
         var scrollPane = new ScrollPane(content);
         scrollPane.setFitToHeight(true);
