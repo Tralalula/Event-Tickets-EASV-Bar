@@ -16,6 +16,10 @@ public class BindingsUtils {
         return Bindings.createStringBinding(() -> StringUtils.initialize(firstName.get(), lastName.get()).toUpperCase(), firstName, lastName);
     }
 
+    public static StringBinding initialize(StringProperty stringProperty) {
+        return Bindings.createStringBinding(() -> StringUtils.initialize(stringProperty.get(), "").toUpperCase(), stringProperty);
+    }
+
     public static StringBinding dateTimeBinding(ObjectProperty<LocalDate> dateProperty,
                                                 ObjectProperty<LocalTime> timeProperty,
                                                 String prefix,

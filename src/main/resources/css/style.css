@@ -111,3 +111,9 @@
 .circle-placeholder-text {
     -fx-text-fill: -color-bg-default;
 }
+
+.listview-wrapper .list-view .scroll-bar:vertical {
+    -fx-opacity: 0;
+    -fx-pref-width: 0;
+    -fx-max-width: 0;
+}
