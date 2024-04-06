@@ -2,10 +2,7 @@ package event.tickets.easv.bar.gui.component.users;
 
 import atlantafx.base.controls.Spacer;
 import atlantafx.base.theme.Styles;
-import event.tickets.easv.bar.gui.common.EventModel;
-import event.tickets.easv.bar.gui.common.UserModel;
-import event.tickets.easv.bar.gui.common.View;
-import event.tickets.easv.bar.gui.common.ViewHandler;
+import event.tickets.easv.bar.gui.common.*;
 import event.tickets.easv.bar.gui.component.events.EventGridView;
 import event.tickets.easv.bar.gui.component.events.EventsView;
 import event.tickets.easv.bar.gui.util.Alerts;
@@ -25,19 +22,33 @@ import org.kordamp.ikonli.javafx.FontIcon;
 import org.kordamp.ikonli.material2.Material2OutlinedAL;
 
 public class ShowUserView implements View {
-    private final UserModel model;
+    private UserModel model = UserModel.Empty();
     private final DeleteUserController controller;
     private final CircularImageView circularImageView = new CircularImageView(80);
     private final EventGridView eventGridView;
 
-    public ShowUserView(UserModel model) {
-        this.model = model;
+    public ShowUserView() {
         this.controller = new DeleteUserController();
         this.eventGridView = new EventGridView(model.events());
 
+        ViewHandler.activeViewProperty().addListener((obs, ov, nv) -> {
+            if (nv == ViewType.SHOW_USER) {
+                Object data = ViewHandler.currentViewDataProperty().get();
+                System.out.println("ShowUserView - data: " + data);
+                System.out.println("ShowUserView - data: " + ((UserModel) data).events());
+            }
+        });
+
         ViewHandler.currentViewDataProperty().subscribe((oldData, newData) -> {
             if (newData instanceof UserModel) {
-                model.update((UserModel) newData);
+                System.out.println("ShowUserView - newData: " + newData);
+                System.out.println("ShowUserView - newData: " + ((UserModel) newData).events());
+//                System.out.println("ShowUserView: " + model.id().get() + " -> " + ((UserModel) newData).id().get());
+//                System.out.println("ShowUserView: " + model.username().get() + " -> " + ((UserModel) newData).username().get());
+//                System.out.println("ShowUserView: " + model.events() + " -> " + ((UserModel) newData).events());
+//                System.out.println("ShowUserView: " + model.events().size() + " -> " + ((UserModel) newData).events().size());
+
+                this.model.update((UserModel) newData);
                 circularImageView.setImage(EventsView.getProfileImage(model.id().get() + "/" + model.imageName().get()));
 
                 String firstName = model.firstName().get();
@@ -51,6 +62,8 @@ public class ShowUserView implements View {
 
                 circularImageView.setText(initials.toUpperCase());
 
+//                System.out.println("ShowUserView - model.events().size(): " + model.events().size());
+//                System.out.println("ShowUserView - model.events().size(): " + model.events());
                 eventGridView.setItems(model.events());
             }
         });

@@ -37,6 +37,7 @@ public class AssignCoordinatorView implements View {
     public AssignCoordinatorView(EventModel currentEventModel, ObservableList<UserModel> masterUserList) {
         this.model = new AssignCoordinatorModel();
         this.currentEventModel = currentEventModel;
+        System.out.println(currentEventModel);
         this.controller = new AssignCoordinatorController(model, this.currentEventModel);
 
         initializeExcludePredicate();

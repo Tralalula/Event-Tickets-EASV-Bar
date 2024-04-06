@@ -55,6 +55,10 @@ public class UserModel {
         this.theme.set(userModel.theme.get());
         this.language.set(userModel.language.get());
         this.fontSize.set(userModel.fontSize.get());
+
+//        System.out.println("Updating events");
+//        System.out.println("this: " + this.events.size() + ", " + this.events);
+//        System.out.println("userModel: " + userModel.events.size() + ", " + userModel.events);
         this.events = userModel.events;
     }
 

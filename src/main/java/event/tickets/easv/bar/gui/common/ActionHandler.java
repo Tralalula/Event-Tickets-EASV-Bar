@@ -72,19 +72,37 @@ public class ActionHandler {
         UserModel assignedUser = action.coordinator();
         EventModel assignedEvent = action.eventModel();
 
-        for (EventModel eventModel : model.eventModels()) {
-            if (eventModel.id().get() == assignedEvent.id().get()) {
-                eventModel.users().add(assignedUser);
+        System.out.println("Assigned user: " + assignedUser);
+        System.out.println("Assigned user id: " + assignedUser.id().get());
+
+        System.out.println("Assigned event: " + assignedEvent);
+        System.out.println("Assigned event id: " + assignedEvent.id().get());
+
+
+        System.out.println("Assigned User events before: " + assignedUser.events());
+        System.out.println("Assigned Event users before: " + assignedEvent.users());
+
+        // masterlists
+        for (UserModel userModel : model.userModels()) {
+            if (userModel.id().get() == assignedUser.id().get()) {
+                System.out.println("User events before: " + userModel.events());
+                userModel.events().add(assignedEvent);
+                System.out.println("User events after: " + userModel.events());
                 break;
             }
         }
 
-        for (UserModel userModel : model.userModels()) {
-            if (userModel.id().get() == assignedUser.id().get()) {
-                userModel.events().add(assignedEvent);
+        for (EventModel eventModel : model.eventModels()) {
+            if (eventModel.id().get() == assignedEvent.id().get()) {
+                System.out.println("Event users before: " + eventModel.users());
+                eventModel.users().add(assignedUser);
+                System.out.println("Event users after: " + eventModel.users());
                 break;
             }
         }
+
+        System.out.println("Assigned User events after: " + assignedUser.events());
+        System.out.println("Assigned Event users after: " + assignedEvent.users());
     }
 
 }
