@@ -9,6 +9,7 @@ import event.tickets.easv.bar.gui.common.View;
 import event.tickets.easv.bar.gui.common.ViewHandler;
 import event.tickets.easv.bar.gui.component.events.EventGridView;
 import event.tickets.easv.bar.gui.util.StyleConfig;
+import event.tickets.easv.bar.gui.widgets.Clock;
 import event.tickets.easv.bar.gui.widgets.Labels;
 import javafx.beans.property.BooleanProperty;
 import javafx.collections.ObservableList;
@@ -83,7 +84,9 @@ public class DashboardView implements View {
     public Node calender() {
         var results = new VBox(StyleConfig.STANDARD_SPACING);
         results.setPadding(new Insets(0, 10, 0, 0));
+
         var cal = new Calendar(TODAY);
+        cal.setTopNode(new Clock());
         cal.setShowWeekNumbers(true);
 
         results.setAlignment(Pos.TOP_RIGHT);
