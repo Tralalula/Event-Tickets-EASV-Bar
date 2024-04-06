@@ -211,7 +211,8 @@ public class EntityManager {
 
     public Result<Boolean> resetPassword(User user, String newPassword) {
         UserDAO userDAO = (UserDAO) daos.get(User.class);
-        return userDAO.resetPassword(user, newPassword);
+
+        return userDAO.resetPassword(user, User.hashPassword(newPassword));
     }
 
     /**
@@ -229,7 +230,7 @@ public class EntityManager {
     public static void main(String[] args) {
         EntityManager entityManager = new EntityManager();
 
-        System.out.println(entityManager.resetPassword(new User(1, "test", ""), BCrypt.hashpw("kakao", BCrypt.gensalt(10))));
+        System.out.println(entityManager.resetPassword(new User(1, "test", ""), "kartoffel"));
 
     }
 }

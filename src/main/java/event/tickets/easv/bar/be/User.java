@@ -97,8 +97,12 @@ public class User implements Entity<User> {
     }
 
     public void setHashedPassword(String str) {
+        this.hashedPassword = User.hashPassword(str);
+    }
+
+    public static String hashPassword(String plainTextPassword) {
         String salt = BCrypt.gensalt(10);
-        this.hashedPassword = BCrypt.hashpw(str, salt);
+        return BCrypt.hashpw(plainTextPassword, salt);
     }
 
     public String username() {
