@@ -29,6 +29,8 @@ public class MainModel {
     private final BooleanProperty ticketEventsFetched = new SimpleBooleanProperty(false);
     private final BooleanProperty ticketsGeneratedFetched = new SimpleBooleanProperty(false);
 
+    private final BooleanProperty eventsUsersSynchronized = new SimpleBooleanProperty(false);
+
     private final StringProperty username = new SimpleStringProperty();
 
     private final ObservableList<TicketModel> ticketModels = FXCollections.observableArrayList();
@@ -94,5 +96,9 @@ public class MainModel {
 
     public BooleanProperty ticketsGeneratedProperty() {
         return ticketsGeneratedFetched;
+    }
+
+    public BooleanProperty eventsUsersSynchronizedProperty() {
+        return eventsUsersSynchronized;
     }
 }

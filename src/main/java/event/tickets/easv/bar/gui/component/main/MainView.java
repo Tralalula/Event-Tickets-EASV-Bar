@@ -80,7 +80,7 @@ public class MainView implements View {
 
         this.createUserView = new CreateUserView().getView();
         this.showUserView = new ShowUserView().getView();
-        this.usersView = new UsersView(model.userModels(), model.fetchingUsersProperty()).getView();
+        this.usersView = new UsersView(model.userModels(), model.fetchingUsersProperty(), model.eventsUsersSynchronizedProperty()).getView();
     }
 
     @Override

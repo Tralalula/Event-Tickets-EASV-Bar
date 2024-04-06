@@ -67,6 +67,8 @@ public class MainController {
             );
             userModel.setEvents(associatedEvents);
         }
+
+        model.eventsUsersSynchronizedProperty().set(true);
     }
 
     private void syncAssociations() {

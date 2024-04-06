@@ -13,6 +13,8 @@ import event.tickets.easv.bar.gui.widgets.CircularImageView;
 import event.tickets.easv.bar.gui.widgets.MenuItems;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.css.PseudoClass;
@@ -23,6 +25,7 @@ import javafx.scene.control.*;
 import javafx.scene.input.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.util.Subscription;
 import org.kordamp.ikonli.feather.Feather;
 import org.kordamp.ikonli.javafx.FontIcon;
 
@@ -33,11 +36,13 @@ public class UsersView implements View {
     private final DeleteUserController controller;
     private final ObservableList<UserModel> model;
     private final BooleanProperty fetchingData;
+    private final BooleanProperty eventsUsersSynchronized;
 
-    public UsersView(ObservableList<UserModel> model, BooleanProperty fetchingData) {
+    public UsersView(ObservableList<UserModel> model, BooleanProperty fetchingData, BooleanProperty eventsUsersSynchronized) {
         this.controller = new DeleteUserController();
         this.model = model;
         this.fetchingData = fetchingData;
+        this.eventsUsersSynchronized = eventsUsersSynchronized;
     }
 
     @Override
@@ -58,6 +63,17 @@ public class UsersView implements View {
             cell.getStyleClass().add("bg-subtle-list"); // eh, added own in style.css because AtlantaFX didn't apply?
             return cell;
         });
+
+        ChangeListener<Boolean> synchronizationListener = new ChangeListener<>() {
+            @Override
+            public void changed(ObservableValue<? extends Boolean> obs, Boolean ov, Boolean nv) {
+                if (nv) {
+                    userList.refresh();
+                    obs.removeListener(this);
+                }
+            }
+        };
+        eventsUsersSynchronized.addListener(synchronizationListener);
 
         VBox.setVgrow(userList, Priority.ALWAYS);
 
