@@ -5,10 +5,8 @@ import event.tickets.easv.bar.gui.util.StyleConfig;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
-import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
-
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneId;

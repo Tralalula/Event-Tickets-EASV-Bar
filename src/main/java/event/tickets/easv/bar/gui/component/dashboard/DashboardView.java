@@ -12,34 +12,43 @@ import event.tickets.easv.bar.gui.util.StyleConfig;
 import event.tickets.easv.bar.gui.widgets.Clock;
 import event.tickets.easv.bar.gui.widgets.Labels;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.geometry.*;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
 import javafx.scene.layout.*;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Comparator;
 
-import static javafx.scene.layout.Region.USE_COMPUTED_SIZE;
-import static javafx.scene.layout.Region.USE_PREF_SIZE;
 
 public class DashboardView implements View {
+    private static final LocalDate TODAY = LocalDate.now(ZoneId.systemDefault());
+
     private final ObservableList<EventModel> eventsMasterList;
     private final BooleanProperty fetchingData;
     private final BooleanProperty eventsUsersSynchronized;
-    private static final LocalDate TODAY = LocalDate.now(ZoneId.systemDefault());
+    private final ListView<EventModel> eventListView;
+    private final ObjectProperty<LocalDate> selectedDate = new SimpleObjectProperty<>(TODAY);
+    private final FilteredList<EventModel> filteredEventsForDate;
 
 
     public DashboardView(ObservableList<EventModel> eventsMasterList, BooleanProperty fetchingData, BooleanProperty eventsUsersSynchronized) {
         this.eventsMasterList = eventsMasterList;
         this.fetchingData = fetchingData;
         this.eventsUsersSynchronized = eventsUsersSynchronized;
+        this.eventListView = new ListView<>();
+        this.filteredEventsForDate = new FilteredList<>(eventsMasterList);
+
+        filteredEventsForDate.setPredicate(eventModel -> eventModel.startDate().get().equals(selectedDate.get()));
+        eventListView.setItems(filteredEventsForDate);
     }
+
 
     @Override
     public Region getView() {
@@ -89,9 +98,18 @@ public class DashboardView implements View {
         cal.setTopNode(new Clock());
         cal.setShowWeekNumbers(true);
 
+        cal.valueProperty().addListener((obs, ov, nv) -> {
+            selectedDate.set(nv);
+            updateEventListView();
+        });
+
         results.setAlignment(Pos.TOP_RIGHT);
 
-        results.getChildren().addAll(cal);
+        results.getChildren().addAll(cal, eventListView);
         return results;
+    }
+
+    private void updateEventListView() {
+        filteredEventsForDate.setPredicate(eventModel -> eventModel.startDate().get().equals(selectedDate.get()));
     }
 }
