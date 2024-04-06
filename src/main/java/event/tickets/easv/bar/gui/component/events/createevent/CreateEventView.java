@@ -3,11 +3,14 @@ package event.tickets.easv.bar.gui.component.events.createevent;
 import atlantafx.base.theme.Styles;
 import event.tickets.easv.bar.gui.common.EventModel;
 import event.tickets.easv.bar.gui.common.View;
+import event.tickets.easv.bar.gui.common.ViewHandler;
+import event.tickets.easv.bar.gui.common.ViewType;
 import event.tickets.easv.bar.gui.util.NodeUtils;
 import event.tickets.easv.bar.gui.util.StyleConfig;
 import event.tickets.easv.bar.gui.widgets.DatePickers;
 import event.tickets.easv.bar.gui.widgets.Labels;
 import event.tickets.easv.bar.gui.widgets.TextFields;
+import javafx.beans.property.ObjectProperty;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -20,17 +23,38 @@ import javafx.scene.layout.*;
 public class CreateEventView implements View {
     private final CreateEventModel model;
     private final CreateEventController controller;
+    private final EventModel eventModelToBeEdited;
 
     public CreateEventView() {
         this.model = new CreateEventModel();
         this.controller = new CreateEventController(model);
+        this.eventModelToBeEdited = EventModel.Empty();
+
+        ViewHandler.activeViewProperty().subscribe((oldView, newView) -> {
+            if (newView == ViewType.CREATE_EVENT) {
+                model.reset();
+                model.viewTitleProperty().set("Create event");
+                model.isCreatingProperty().set(true);
+            }
+
+            if (newView == ViewType.EDIT_EVENT) {
+                Object data = ViewHandler.currentViewDataProperty().get();
+                if (data instanceof EventModel) {
+                    eventModelToBeEdited.update((EventModel) data);
+                    model.set(eventModelToBeEdited);
+                    model.isCreatingProperty().set(false);
+                }
+                model.viewTitleProperty().set("Edit event");
+            }
+        });
     }
 
     @Override
     public Region getView() {
         var results = new VBox(StyleConfig.STANDARD_SPACING * 2);
 
-        var title = Labels.styledLabel("Create event", Styles.TITLE_1);
+        var title = Labels.styledLabel(model.viewTitleProperty(), Styles.TITLE_1);
+
         title.setAlignment(Pos.CENTER);
         title.setMaxWidth(Double.MAX_VALUE);
 
@@ -48,12 +72,24 @@ public class CreateEventView implements View {
     }
 
     private Node createSaveButton() {
-        var saveButton = new Button("Create event");
+        var saveButton = new Button("");
+        saveButton.textProperty().bind(model.viewTitleProperty());
+
         saveButton.disableProperty().bind(model.okToCreateProperty().not());
         saveButton.setOnAction(evt -> {
             saveButton.disableProperty().unbind();
             saveButton.setDisable(true);
-            controller.onCreateEvent(() -> saveButton.disableProperty().bind(model.okToCreateProperty().not()));
+            if (model.isCreatingProperty().get()) {
+                controller.onCreateEvent(() -> {
+                    saveButton.disableProperty().bind(model.okToCreateProperty().not());
+                    ViewHandler.previousView();
+                });
+            } else {
+                controller.onEditEvent(() -> {
+                    saveButton.disableProperty().bind(model.okToCreateProperty().not());
+                    ViewHandler.previousView();
+                }, eventModelToBeEdited);
+            }
         });
 
         saveButton.getStyleClass().addAll(StyleConfig.ACTIONABLE, Styles.ACCENT);

@@ -130,7 +130,7 @@ public class MainView implements View {
         NodeUtils.bindVisibility(authView, ViewHandler.activeWindowProperty().isEqualTo(WindowType.AUTH));
         NodeUtils.bindVisibility(dashboardView, ViewHandler.activeViewProperty().isEqualTo(ViewType.DASHBOARD));
         NodeUtils.bindVisibility(eventsView, ViewHandler.activeViewProperty().isEqualTo(ViewType.EVENTS));
-        NodeUtils.bindVisibility(createEventView, ViewHandler.activeViewProperty().isEqualTo(ViewType.CREATE_EVENT));
+        NodeUtils.bindVisibility(createEventView, ViewHandler.activeViewProperty().isEqualTo(ViewType.CREATE_EVENT).or(ViewHandler.activeViewProperty().isEqualTo(ViewType.EDIT_EVENT)));
         NodeUtils.bindVisibility(showEventView, ViewHandler.activeViewProperty().isEqualTo(ViewType.SHOW_EVENT));
         NodeUtils.bindVisibility(ticketsView, ViewHandler.activeViewProperty().isEqualTo(ViewType.TICKETS));
         NodeUtils.bindVisibility(showTicketView, ViewHandler.activeViewProperty().isEqualTo(ViewType.SHOW_TICKET));

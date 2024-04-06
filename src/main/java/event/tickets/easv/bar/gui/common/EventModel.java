@@ -49,6 +49,10 @@ public class EventModel {
         return new EventModel();
     }
 
+    public boolean isEmpty() {
+        return this.id.get() < 0;
+    }
+
     public void update(EventModel eventModel) {
         this.id.set(eventModel.id.get());
         this.title.set(eventModel.title.get());
@@ -130,4 +134,9 @@ public class EventModel {
     public void setTests(ObservableList<TestModel> tests) { this.tests = tests; }
 
     public ObservableList<TestModel> tests() { return tests; }
+
+    @Override
+    public String toString() {
+        return id.get() + " " + title.get() + " " + startDate.get() + " " + startTime.get() + " " + location.get() + " " + locationGuidance.get() + " " + extraInfo.get();
+    }
 }

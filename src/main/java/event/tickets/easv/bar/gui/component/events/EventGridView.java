@@ -154,7 +154,11 @@ public class EventGridView implements View {
                         }
                     });
 
-                    editItem.setOnAction(e -> System.out.println("Edit event: " + item.title().get()));
+                    editItem.setOnAction(e -> {
+                        ViewHandler.changeView(ViewType.EDIT_EVENT, item);
+                    });
+
+
                     deleteItem.setOnAction(e -> Alerts.confirmDeleteEvent(
                             item,
                             eventModel -> controller.onDeleteEvent(() -> {}, item))

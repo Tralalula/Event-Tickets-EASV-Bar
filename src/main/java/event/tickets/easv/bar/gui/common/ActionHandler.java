@@ -21,6 +21,7 @@ public class ActionHandler {
     public static void handle(Action action) {
         switch (action) {
             case CreateEvent a -> handleCreateEvent(a);
+            case EditEvent a -> handleEditEvent(a);
             case DeleteEvent a -> handleDeleteEvent(a);
             case CreateUser a -> handleCreateUser(a);
             case DeleteUser a -> handleDeleteUser(a);
@@ -31,6 +32,15 @@ public class ActionHandler {
 
     private static void handleCreateEvent(CreateEvent action) {
         model.eventModels().add(action.eventModel());
+    }
+
+    private static void handleEditEvent(EditEvent action) {
+        for (EventModel eventModel : model.eventModels()) {
+            if (eventModel.id().get() == action.original().id().get()) {
+                eventModel.update(action.updated());
+                break;
+            }
+        }
     }
 
     private static void handleDeleteEvent(DeleteEvent action) {

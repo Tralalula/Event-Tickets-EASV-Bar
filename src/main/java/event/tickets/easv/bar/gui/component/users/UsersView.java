@@ -5,10 +5,7 @@ import atlantafx.base.controls.Tile;
 import atlantafx.base.theme.Styles;
 import atlantafx.base.theme.Tweaks;
 import event.tickets.easv.bar.be.enums.Rank;
-import event.tickets.easv.bar.gui.common.UserModel;
-import event.tickets.easv.bar.gui.common.View;
-import event.tickets.easv.bar.gui.common.ViewHandler;
-import event.tickets.easv.bar.gui.common.ViewType;
+import event.tickets.easv.bar.gui.common.*;
 import event.tickets.easv.bar.gui.component.events.EventsView;
 import event.tickets.easv.bar.gui.util.Alerts;
 import event.tickets.easv.bar.gui.util.StyleConfig;
@@ -16,6 +13,7 @@ import event.tickets.easv.bar.gui.widgets.CircularImageView;
 import event.tickets.easv.bar.gui.widgets.MenuItems;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.css.PseudoClass;
 import javafx.geometry.Insets;
@@ -175,6 +173,7 @@ public class UsersView implements View {
                                     case ADMIN -> "Admin";
                                     case EVENT_COORDINATOR -> "Event coordinator";
                                 }, item.rank()));
+
 
                     numEventsLabel.textProperty().bind(Bindings.size(item.events()).asString());
                     numFinishedEventsLabel.setText("375");

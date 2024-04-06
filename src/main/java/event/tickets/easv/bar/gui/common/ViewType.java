@@ -23,6 +23,7 @@ public enum ViewType {
     // Events
     EVENTS(WindowType.MAIN_APP),
     CREATE_EVENT(WindowType.MAIN_APP, EVENTS),
+    EDIT_EVENT(WindowType.MAIN_APP, EVENTS),
     SHOW_EVENT(WindowType.MAIN_APP, EVENTS),
     ASSIGN_TICKET(WindowType.MAIN_APP, SHOW_EVENT),
 

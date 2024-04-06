@@ -132,7 +132,7 @@ public class ViewHandler {
         INSTANCE.notificationBox.addNotification(notification);
     }
 
-    public static ObservableValue<Object> currentViewDataProperty() {
+    public static ObjectProperty<Object> currentViewDataProperty() {
         return INSTANCE.currentViewData;
     }
 
