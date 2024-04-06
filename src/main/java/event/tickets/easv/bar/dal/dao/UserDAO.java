@@ -83,8 +83,15 @@ public class UserDAO implements DAO<User>, UserAuthDAO {
     }
 
     @Override
-    public Result<Boolean> resetPassword(String usernameOrMail) {
-        return null;
+    public Result<Boolean> resetPassword(User user, String newPassword) {
+        return daoHelper.updateField(
+                user,
+                new User(user.id(), user.username(), newPassword),
+                "UPDATE dbo.Users SET password = ? WHERE id = ?;",
+                (stmt, original, updatedData) -> {
+                    stmt.setString(1, updatedData.hashedPassword());
+                    stmt.setInt(2, original.id());
+                });
     }
 }
 

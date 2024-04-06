@@ -289,6 +289,25 @@ public class DBDaoHelper<T extends Entity<T>> implements DAO<T> {
         }
     }
 
+    public Result<Boolean> updateField(T original, T updatedData, String updateSQL, UpdateParameterSetter<T> updateParameterSetter) {
+        try {
+            setupDBConnector();
+        } catch (IOException e) {
+            return Failure.of(FailureType.IO_FAILURE, "DBDaoHelper.updateEntityByField() - Failed to read from the data source", e);
+        }
+
+        try (Connection conn = dbConnector.connection();
+             PreparedStatement stmt = conn.prepareStatement(updateSQL)) {
+            updateParameterSetter.setParameters(stmt, original, updatedData);
+
+            original.update(updatedData);
+            int rowsAffected = stmt.executeUpdate();
+            return Success.of(rowsAffected > 0);
+        } catch (SQLException e) {
+            return Failure.of(FailureType.DB_DATA_RETRIEVAL_FAILURE, "DBDaoHelper.updateEntityByField() - Failed to update entity in the database", e);
+        }
+    }
+
     /**
      * Should be called internally by every method that tries to perform database operations.
      */

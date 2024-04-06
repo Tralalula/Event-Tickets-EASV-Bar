@@ -7,5 +7,5 @@ import java.util.Optional;
 
 public interface UserAuthDAO {
     Result<Optional<User>> getUserByUsernameOrMail(String usernameOrMail);
-    Result<Boolean> resetPassword(String usernameOrMail);
+    Result<Boolean> resetPassword(User user, String usernameOrMail);
 }
