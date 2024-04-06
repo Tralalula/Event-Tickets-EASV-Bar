@@ -24,6 +24,7 @@ public class CircularImageView extends StackPane {
         this.circle = new Circle(radius);
         this.imageView = Images.circle(radius);
         this.circleRegion = new Region();
+        circleRegion.setMaxSize(radius * 2, radius * 2);
         this.placeholder = placeholder();
     }
 
@@ -33,6 +34,7 @@ public class CircularImageView extends StackPane {
         this.circle = new Circle(radius);
         this.imageView = Images.circle(radius);
         this.circleRegion = new Region();
+        circleRegion.setMaxSize(radius * 2, radius * 2);
         this.placeholder = placeholder();
     }
 

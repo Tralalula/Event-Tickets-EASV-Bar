@@ -31,23 +31,8 @@ public class ShowUserView implements View {
         this.controller = new DeleteUserController();
         this.eventGridView = new EventGridView(model.events());
 
-        ViewHandler.activeViewProperty().addListener((obs, ov, nv) -> {
-            if (nv == ViewType.SHOW_USER) {
-                Object data = ViewHandler.currentViewDataProperty().get();
-                System.out.println("ShowUserView - data: " + data);
-                System.out.println("ShowUserView - data: " + ((UserModel) data).events());
-            }
-        });
-
         ViewHandler.currentViewDataProperty().subscribe((oldData, newData) -> {
             if (newData instanceof UserModel) {
-                System.out.println("ShowUserView - newData: " + newData);
-                System.out.println("ShowUserView - newData: " + ((UserModel) newData).events());
-//                System.out.println("ShowUserView: " + model.id().get() + " -> " + ((UserModel) newData).id().get());
-//                System.out.println("ShowUserView: " + model.username().get() + " -> " + ((UserModel) newData).username().get());
-//                System.out.println("ShowUserView: " + model.events() + " -> " + ((UserModel) newData).events());
-//                System.out.println("ShowUserView: " + model.events().size() + " -> " + ((UserModel) newData).events().size());
-
                 this.model.update((UserModel) newData);
                 circularImageView.setImage(EventsView.getProfileImage(model.id().get() + "/" + model.imageName().get()));
 
@@ -61,9 +46,6 @@ public class ShowUserView implements View {
                 }
 
                 circularImageView.setText(initials.toUpperCase());
-
-//                System.out.println("ShowUserView - model.events().size(): " + model.events().size());
-//                System.out.println("ShowUserView - model.events().size(): " + model.events());
                 eventGridView.setItems(model.events());
             }
         });

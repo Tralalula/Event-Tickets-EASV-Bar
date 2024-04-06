@@ -1,9 +1,7 @@
 package event.tickets.easv.bar.gui.component.main;
 
 import atlantafx.base.controls.*;
-import atlantafx.base.theme.PrimerDark;
-import atlantafx.base.theme.PrimerLight;
-import atlantafx.base.theme.Styles;
+import atlantafx.base.theme.*;
 import event.tickets.easv.bar.gui.common.*;
 import event.tickets.easv.bar.gui.component.dashboard.DashboardView;
 import event.tickets.easv.bar.gui.component.events.createevent.CreateEventView;

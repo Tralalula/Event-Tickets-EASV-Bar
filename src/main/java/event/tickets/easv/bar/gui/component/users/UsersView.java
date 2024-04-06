@@ -140,7 +140,6 @@ public class UsersView implements View {
 
                 gridPane.getColumnConstraints().addAll(column1, column2, column3, column4);
 
-
                 gridPane.add(userContainer, 0, 0);
                 gridPane.add(numEventsContainer, 1, 0);
                 gridPane.add(numFinishedEventsContainer, 2, 0);
