@@ -1,10 +1,12 @@
 package event.tickets.easv.bar.gui.common;
 
 import event.tickets.easv.bar.be.Event;
+import event.tickets.easv.bar.gui.component.events.EventsView;
 import event.tickets.easv.bar.gui.component.tickets.TicketEventModel;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.scene.image.Image;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -23,6 +25,8 @@ public class EventModel {
     private ObservableList<UserModel> users = FXCollections.observableArrayList();
     private ObservableList<TestModel> tests = FXCollections.observableArrayList();
 
+    private final ObjectProperty<Image> image = new SimpleObjectProperty<>();
+
     public EventModel() {
 
     }
@@ -39,6 +43,8 @@ public class EventModel {
         endTime.set(event.endTime());
         locationGuidance.set(event.locationGuidance());
         extraInfo.set(event.extraInfo());
+
+        image.set(EventsView.getImage(event.id() + "/" + event.imageName()));
     }
 
     public static EventModel fromEntity(Event event) {
@@ -66,6 +72,8 @@ public class EventModel {
         this.extraInfo.set(eventModel.extraInfo.get());
         this.users = eventModel.users;
         this.tests = eventModel.tests;
+
+        this.image.set(eventModel.image.get());
     }
 
     public Event toEntity() {
@@ -134,6 +142,10 @@ public class EventModel {
     public void setTests(ObservableList<TestModel> tests) { this.tests = tests; }
 
     public ObservableList<TestModel> tests() { return tests; }
+
+    public ObjectProperty<Image> image() {
+        return image;
+    }
 
     @Override
     public String toString() {

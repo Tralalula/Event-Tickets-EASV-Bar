@@ -135,9 +135,7 @@ public class EventGridView implements View {
                 if (empty || item == null) {
                     setGraphic(null);
                 } else {
-                    Image img = getImage(item.id().get() + "/" + item.imageName().get());
-
-                    imageView.setImage(img);
+                    imageView.imageProperty().bind(item.image());
 
                     loadImagePattern(circle1, getProfileImage("profile1.jpg"));
                     loadImagePattern(circle2, getProfileImage("profile4.jpg"));
