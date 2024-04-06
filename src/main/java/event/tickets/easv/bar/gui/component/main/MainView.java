@@ -64,7 +64,7 @@ public class MainView implements View {
             throw new RuntimeException("Fejl opstået");
         }
 
-        this.dashboardView = new DashboardView().getView();
+        this.dashboardView = new DashboardView(model.eventModels(), model.fetchingEventsProperty(), model.eventsUsersSynchronizedProperty()).getView();
         this.eventsView = new EventsView(model.eventModels(), model.fetchingEventsProperty(), model.eventsUsersSynchronizedProperty()).getView();
         this.createEventView = new CreateEventView().getView();
         this.showEventView = new ShowEventView(model.eventModels(), model.userModels()).getView();
