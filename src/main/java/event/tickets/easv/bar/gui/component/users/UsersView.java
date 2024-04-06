@@ -24,6 +24,7 @@ import javafx.scene.input.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import org.kordamp.ikonli.feather.Feather;
+import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.List;
 
@@ -44,6 +45,10 @@ public class UsersView implements View {
         var placeholder = new Label("No users found");
         placeholder.getStyleClass().add(Styles.TITLE_4);
 
+        var addUserButton = new Button("", new FontIcon(Feather.USER_PLUS));
+        addUserButton.getStyleClass().addAll(StyleConfig.ACTIONABLE, Styles.BUTTON_OUTLINED, Styles.FLAT);
+        addUserButton.setOnAction(e -> ViewHandler.changeView(ViewType.CREATE_USER));
+
         var userList = new ListView<UserModel>();
         userList.setItems(model);
         userList.setPlaceholder(placeholder);
@@ -56,7 +61,7 @@ public class UsersView implements View {
 
         VBox.setVgrow(userList, Priority.ALWAYS);
 
-        return new VBox(StyleConfig.STANDARD_SPACING, userList);
+        return new VBox(StyleConfig.STANDARD_SPACING, addUserButton, userList);
     }
 
     private ListCell<UserModel> userCell() {
