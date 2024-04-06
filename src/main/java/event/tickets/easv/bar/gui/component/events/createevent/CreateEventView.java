@@ -120,7 +120,7 @@ public class CreateEventView implements View {
 
     private Node titledImageUpload(String text) {
         int uploadAreaWidth = 200;
-        int uploadAreHeight = 150;
+        int uploadAreHeight = 170;
         int imageWidth = uploadAreaWidth * 2;
         int imageHeight = uploadAreHeight * 2;
 
@@ -130,6 +130,7 @@ public class CreateEventView implements View {
         uploadArea.setMinSize(uploadAreaWidth, uploadAreHeight);
 
         var promptText = new Label("Click here to browse");
+        promptText.getStyleClass().add(Styles.TEXT_BOLD);
 
         var imageView = new ImageView();
         imageView.setPreserveRatio(true);
@@ -147,9 +148,15 @@ public class CreateEventView implements View {
         uploadArea.getChildren().add(container);
 
         uploadArea.setOnMouseClicked(evt -> controller.findImage());
-
         uploadArea.getStyleClass().addAll(StyleConfig.ROUNDING_DEFAULT, StyleConfig.PADDING_DEFAULT, StyleConfig.ACTIONABLE, Styles.BG_NEUTRAL_MUTED);
-        StackPane.setAlignment(container, Pos.CENTER);
+
+        uploadArea.hoverProperty().subscribe(() -> {
+            if (uploadArea.isHover()) {
+                uploadArea.getStyleClass().add(Styles.BG_ACCENT_MUTED);
+            } else {
+                uploadArea.getStyleClass().remove(Styles.BG_ACCENT_MUTED);
+            }
+        });
 
         return new VBox(title, uploadArea);
     }
