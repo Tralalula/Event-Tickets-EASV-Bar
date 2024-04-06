@@ -96,6 +96,14 @@
     -fx-background-color: -color-neutral-muted;
 }
 
+.list-cell-grid-top {
+    -fx-background-radius: 5 5 0 0;
+}
+
+.list-cell-grid-bottom {
+    -fx-background-radius: 0 0 5 5;
+}
+
 .circle-placeholder {
     -fx-background-color: -color-neutral-emphasis-plus;
 }
