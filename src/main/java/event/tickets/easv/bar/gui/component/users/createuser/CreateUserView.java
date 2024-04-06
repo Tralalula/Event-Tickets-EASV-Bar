@@ -1,14 +1,14 @@
 package event.tickets.easv.bar.gui.component.users.createuser;
 
 import atlantafx.base.theme.Styles;
-import event.tickets.easv.bar.be.User;
 import event.tickets.easv.bar.be.enums.Rank;
 import event.tickets.easv.bar.gui.common.UserModel;
 import event.tickets.easv.bar.gui.common.View;
+import event.tickets.easv.bar.gui.common.ViewHandler;
+import event.tickets.easv.bar.gui.common.ViewType;
 import event.tickets.easv.bar.gui.util.StyleConfig;
 import event.tickets.easv.bar.gui.widgets.Labels;
 import event.tickets.easv.bar.gui.widgets.TextFields;
-import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -24,17 +24,36 @@ import static javafx.scene.layout.Region.USE_PREF_SIZE;
 public class CreateUserView implements View {
     private final CreateUserModel model;
     private final CreateUserController controller;
+    private final UserModel userToBeEdited = UserModel.Empty();
 
     public CreateUserView() {
         this.model = new CreateUserModel();
         this.controller = new CreateUserController(model);
+
+        ViewHandler.activeViewProperty().subscribe((oldView, newView) -> {
+            if (newView == ViewType.CREATE_USER) {
+                model.reset();
+                model.viewTitleProperty().set("Create user");
+                model.isCreatingProperty().set(true);
+            }
+
+            if (newView == ViewType.EDIT_USER) {
+                Object data = ViewHandler.currentViewDataProperty().get();
+                if (data instanceof UserModel) {
+                    userToBeEdited.update((UserModel) data);
+                    model.set(userToBeEdited);
+                    model.isCreatingProperty().set(false);
+                }
+                model.viewTitleProperty().set("Edit user");
+            }
+        });
     }
 
     @Override
     public Region getView() {
         var results = new VBox(StyleConfig.STANDARD_SPACING * 2);
 
-        var title = Labels.styledLabel("Create user", Styles.TITLE_1);
+        var title = Labels.styledLabel(model.viewTitleProperty(), Styles.TITLE_1);
         title.setAlignment(Pos.CENTER);
         title.setMaxWidth(Double.MAX_VALUE);
 
@@ -118,12 +137,25 @@ public class CreateUserView implements View {
     }
 
     private Node createSaveButton() {
-        var saveButton = new Button("Create user");
+        var saveButton = new Button("");
+        saveButton.textProperty().bind(model.viewTitleProperty());
+
         saveButton.disableProperty().bind(model.okToCreateProperty().not());
         saveButton.setOnAction(evt -> {
             saveButton.disableProperty().unbind();
             saveButton.setDisable(true);
-            controller.createUser(() -> saveButton.disableProperty().bind(model.okToCreateProperty().not()));
+
+            if (model.isCreatingProperty().get()) {
+                controller.onCreateUser(() -> {
+                    saveButton.disableProperty().bind(model.okToCreateProperty().not());
+                    ViewHandler.previousView();
+                });
+            } else {
+                controller.onEditUser(() -> {
+                    saveButton.disableProperty().bind(model.okToCreateProperty().not());
+                    ViewHandler.previousView();
+                }, userToBeEdited);
+            }
         });
 
         saveButton.getStyleClass().addAll(StyleConfig.ACTIONABLE, Styles.ACCENT);

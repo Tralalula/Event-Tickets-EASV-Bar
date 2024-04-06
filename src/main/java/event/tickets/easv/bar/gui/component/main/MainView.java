@@ -131,7 +131,7 @@ public class MainView implements View {
         NodeUtils.bindVisibility(showTicketView, ViewHandler.activeViewProperty().isEqualTo(ViewType.SHOW_TICKET));
         NodeUtils.bindVisibility(usersView, ViewHandler.activeViewProperty().isEqualTo(ViewType.USERS));
         NodeUtils.bindVisibility(showUserView, ViewHandler.activeViewProperty().isEqualTo(ViewType.SHOW_USER));
-        NodeUtils.bindVisibility(createUserView, ViewHandler.activeViewProperty().isEqualTo(ViewType.CREATE_USER));
+        NodeUtils.bindVisibility(createUserView, ViewHandler.activeViewProperty().isEqualTo(ViewType.CREATE_USER).or(ViewHandler.activeViewProperty().isEqualTo(ViewType.EDIT_USER)));
 
         var content = new StackPane(authView, dashboardView, eventsView, createEventView, showEventView, ticketsView, showTicketView, usersView, showUserView, createUserView);
 

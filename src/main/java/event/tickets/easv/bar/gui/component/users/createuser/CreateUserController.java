@@ -1,28 +1,18 @@
 package event.tickets.easv.bar.gui.component.users.createuser;
 
-import com.resend.core.exception.ResendException;
 import event.tickets.easv.bar.be.User;
 import event.tickets.easv.bar.be.enums.Rank;
-import event.tickets.easv.bar.bll.EmailSender;
 import event.tickets.easv.bar.bll.EntityManager;
-import event.tickets.easv.bar.bll.cryptographic.BCrypt;
-import event.tickets.easv.bar.gui.common.Action;
-import event.tickets.easv.bar.gui.common.Action.CreateEvent;
 import event.tickets.easv.bar.gui.common.Action.CreateUser;
+import event.tickets.easv.bar.gui.common.Action.EditUser;
 import event.tickets.easv.bar.gui.common.ActionHandler;
-import event.tickets.easv.bar.gui.common.EventModel;
 import event.tickets.easv.bar.gui.common.UserModel;
+import event.tickets.easv.bar.gui.common.ViewHandler;
 import event.tickets.easv.bar.gui.util.BackgroundExecutor;
-import event.tickets.easv.bar.util.FailureType;
 import event.tickets.easv.bar.util.Generator;
 import event.tickets.easv.bar.util.Result;
 import event.tickets.easv.bar.util.Result.Success;
-import event.tickets.easv.bar.util.Result.Failure;
 import javafx.beans.binding.Bindings;
-import javafx.collections.ObservableList;
-import javafx.concurrent.Task;
-
-import java.io.IOException;
 
 public class CreateUserController {
     private final CreateUserModel model;
@@ -38,13 +28,57 @@ public class CreateUserController {
         ));
     }
 
-    void createUser(Runnable postTaskGuiActions) {
+    void onCreateUser(Runnable postTaskGuiActions) {
         BackgroundExecutor.performBackgroundTask(
                 this::createUser,
                 postTaskGuiActions,
                 success -> ActionHandler.handle(new CreateUser(UserModel.fromEntity(success.get()))),
                 failure -> System.out.println("Fejl: " + failure)
         );
+    }
+
+    void onEditUser(Runnable postTaskGuiActions, UserModel userModel) {
+        BackgroundExecutor.performBackgroundTask(
+                () -> editUser(userModel),
+                postTaskGuiActions,
+                success -> {
+                    ActionHandler.handle(new EditUser(userModel, success.get()));
+                    ViewHandler.currentViewDataProperty().set(success.get()); // need a better solution than this, but it works for now
+                },
+                System.out::println
+        );
+    }
+
+    private Result<UserModel> editUser(UserModel userModel) {
+        String username = model.usernameProperty().get();
+        String mail = model.mailProperty().get();
+        Rank rank = model.rankProperty().get();
+        String firstName = model.firstNameProperty().get();
+        String lastName = model.lastNameProperty().get();
+        String location = model.locationProperty().get();
+        String phoneNumber = model.phoneNumberProperty().get();
+
+        var editedUser = new User(
+                userModel.id().get(),
+                username,
+                mail,
+                firstName,
+                lastName,
+                location,
+                phoneNumber,
+                userModel.imageName().get(),
+                rank, userModel.theme().get(),
+                userModel.language().get(),
+                userModel.fontSize().get()
+        );
+
+        var result = new EntityManager().update(userModel.toEntity(), editedUser);
+
+        if (result.isFailure()) return result.failAs();
+
+        var updated = UserModel.fromEntity(editedUser);
+
+        return Success.of(updated);
     }
 
     private Result<User> createUser() {

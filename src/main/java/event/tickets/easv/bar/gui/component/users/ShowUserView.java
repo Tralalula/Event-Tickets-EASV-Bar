@@ -94,6 +94,8 @@ public class ShowUserView implements View {
         var editBtn = new Button(null, new FontIcon(Material2OutlinedAL.EDIT));
         editBtn.getStyleClass().addAll(Styles.BUTTON_CIRCLE, StyleConfig.ACTIONABLE, Styles.FLAT);
 
+        editBtn.setOnAction(e -> ViewHandler.changeView(ViewType.EDIT_USER, model));
+
         var deleteBtn = new Button(null, new FontIcon(Material2OutlinedAL.DELETE));
         deleteBtn.getStyleClass().addAll(Styles.BUTTON_CIRCLE, StyleConfig.ACTIONABLE, Styles.FLAT, Styles.DANGER);
 

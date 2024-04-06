@@ -24,9 +24,19 @@ public class ActionHandler {
             case EditEvent a -> handleEditEvent(a);
             case DeleteEvent a -> handleDeleteEvent(a);
             case CreateUser a -> handleCreateUser(a);
+            case EditUser a -> handleEditUser(a);
             case DeleteUser a -> handleDeleteUser(a);
             case AssignCoordinator a -> handleAssignCoordinator(a);
             default -> throw new IllegalStateException("Unexpected action type: " + action.getClass());
+        }
+    }
+
+    private static void handleEditUser(EditUser action) {
+        for (UserModel userModel : model.userModels()) {
+            if (userModel.id().get() == action.original().id().get()) {
+                userModel.update(action.updated());
+                break;
+            }
         }
     }
 

@@ -1,38 +1,25 @@
 package event.tickets.easv.bar.gui.component.users;
 
-import atlantafx.base.controls.Spacer;
-import atlantafx.base.controls.Tile;
 import atlantafx.base.theme.Styles;
 import atlantafx.base.theme.Tweaks;
-import event.tickets.easv.bar.be.enums.Rank;
 import event.tickets.easv.bar.gui.common.*;
-import event.tickets.easv.bar.gui.component.events.EventsView;
 import event.tickets.easv.bar.gui.util.Alerts;
 import event.tickets.easv.bar.gui.util.BindingsUtils;
 import event.tickets.easv.bar.gui.util.Listeners;
 import event.tickets.easv.bar.gui.util.StyleConfig;
 import event.tickets.easv.bar.gui.widgets.CircularImageView;
 import event.tickets.easv.bar.gui.widgets.MenuItems;
-import event.tickets.easv.bar.util.StringUtils;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.css.PseudoClass;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.input.*;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
-import javafx.util.Subscription;
 import org.kordamp.ikonli.feather.Feather;
 import org.kordamp.ikonli.javafx.FontIcon;
-
-import java.util.List;
 
 public class UsersView implements View {
     private static final PseudoClass HOVER_PSEUDO_CLASS = PseudoClass.getPseudoClass("hover");
@@ -76,8 +63,14 @@ public class UsersView implements View {
 
     private ListCell<UserModel> userCell() {
         return new ListCell<>() {
-            private final Tile userContainer = new Tile();
-            private final CircularImageView profileImage;
+
+            private final CircularImageView profileImage = new CircularImageView(32);;
+
+            private final HBox userContainer = new HBox(StyleConfig.STANDARD_SPACING);
+            private final VBox userContainerText = new VBox(StyleConfig.STANDARD_SPACING);
+            private final Label userFullNameLabel = new Label();
+            private final Label userRankLabel = new Label();
+
             private final VBox numEventsContainer = new VBox(StyleConfig.STANDARD_SPACING);
             private final Label numEventsLabel = new Label();
             private final Label numEventsDescription = new Label("Events");
@@ -107,24 +100,30 @@ public class UsersView implements View {
                 contextMenu.getItems().addAll(editItem, deleteItem);
                 setContextMenu(contextMenu);
 
-                spacer.setPrefHeight(10);
-                spacer.setMinHeight(10);
-                spacer.setMaxHeight(10);
+                spacer.setPrefHeight(StyleConfig.STANDARD_SPACING);
+                spacer.setMinHeight(StyleConfig.STANDARD_SPACING);
+                spacer.setMaxHeight(StyleConfig.STANDARD_SPACING);
 
-                profileImage = new CircularImageView(32);
 
+                userContainer.getChildren().addAll(profileImage.get(), userContainerText);
+                userContainer.setPadding(new Insets(StyleConfig.STANDARD_SPACING));
+                userContainerText.getChildren().addAll(userFullNameLabel, userRankLabel);
                 numEventsContainer.getChildren().addAll(numEventsLabel, numEventsDescription);
                 numFinishedEventsContainer.getChildren().addAll(numFinishedEventsLabel, numFinishedEventsDescription);
                 numTicketsSoldContainer.getChildren().addAll(numTicketsSoldLabel, numTicketsSoldDescription);
 
+                userContainer.setAlignment(Pos.CENTER_LEFT);
+                userContainerText.setAlignment(Pos.CENTER_LEFT);
                 numEventsContainer.setAlignment(Pos.CENTER_LEFT);
                 numFinishedEventsContainer.setAlignment(Pos.CENTER_LEFT);
                 numTicketsSoldContainer.setAlignment(Pos.CENTER_LEFT);
 
+                userFullNameLabel.getStyleClass().add(Styles.TEXT_BOLD);
                 numEventsLabel.getStyleClass().add(Styles.TEXT_BOLD);
                 numFinishedEventsLabel.getStyleClass().add(Styles.TEXT_BOLD);
                 numTicketsSoldLabel.getStyleClass().addAll(Styles.TEXT_BOLD, Styles.ACCENT);
 
+                userRankLabel.getStyleClass().add(Styles.TEXT_MUTED);
                 numEventsDescription.getStyleClass().add(Styles.TEXT_MUTED);
                 numFinishedEventsDescription.getStyleClass().add(Styles.TEXT_MUTED);
                 numTicketsSoldDescription.getStyleClass().add(Styles.TEXT_MUTED);
@@ -169,11 +168,10 @@ public class UsersView implements View {
                     profileImage.imageProperty().bind(item.image());
                     profileImage.textProperty().bind(BindingsUtils.initialize(item.firstName(), item.lastName()));
 
-                    userContainer.setGraphic(profileImage.get());
-                    userContainer.titleProperty().bind(Bindings.concat(item.firstName(), " ", item.lastName()));
-                    userContainer.getStyleClass().add(Styles.TEXT_BOLD);
 
-                    userContainer.descriptionProperty().bind(Bindings.createObjectBinding(
+                    userFullNameLabel.textProperty().bind(Bindings.concat(item.firstName(), " ", item.lastName()));
+
+                    userRankLabel.textProperty().bind(Bindings.createObjectBinding(
                             () -> switch (item.rank().get()) {
                                     case ADMIN -> "Admin";
                                     case EVENT_COORDINATOR -> "Event coordinator";
@@ -193,7 +191,8 @@ public class UsersView implements View {
                         }
                     });
 
-                    editItem.setOnAction(e -> System.out.println("Edit user: " + item.firstName().get() + " " + item.lastName().get()));
+                    editItem.setOnAction(e -> ViewHandler.changeView(ViewType.EDIT_USER, item));
+
                     deleteItem.setOnAction(e -> Alerts.confirmDeleteUser(
                             item,
                             userModel -> controller.onDeleteUser(() -> {}, item))

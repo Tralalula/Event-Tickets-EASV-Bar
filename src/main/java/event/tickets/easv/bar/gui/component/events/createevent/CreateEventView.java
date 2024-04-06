@@ -79,6 +79,7 @@ public class CreateEventView implements View {
         saveButton.setOnAction(evt -> {
             saveButton.disableProperty().unbind();
             saveButton.setDisable(true);
+
             if (model.isCreatingProperty().get()) {
                 controller.onCreateEvent(() -> {
                     saveButton.disableProperty().bind(model.okToCreateProperty().not());
