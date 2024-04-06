@@ -58,9 +58,14 @@ public class ShowEventView implements View {
             if (newData instanceof EventModel) {
                 model.update((EventModel) newData);
                 Image img = EventsView.getImage(model.id().get() + "/" + model.imageName().get());
-                PixelReader reader = img.getPixelReader();
-                WritableImage newImage = new WritableImage(reader, 0, 0, (int) img.getWidth(), 300);
-                image.setImage(newImage);
+                try {
+                    PixelReader reader = img.getPixelReader();
+                    WritableImage newImage = new WritableImage(reader, 0, 0, (int) img.getWidth(), 300);
+                    image.setImage(newImage);
+                } catch (Exception e) {
+                    System.out.println("fuck mit liv, luk røven...");
+                }
+
 
                 updateCoordinatorsView(model.users());
 
