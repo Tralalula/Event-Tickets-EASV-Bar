@@ -149,8 +149,8 @@ public class EventGridView implements View {
 
                     title.textProperty().bind(item.title());
                     location.textProperty().bind(item.location());
-                    startDateTime.textProperty().bind(dateTimeBinding(item.startDate(), item.startTime(), "Starts", formatter));
-                    endDateTime.textProperty().bind(dateTimeBinding(item.endDate(), item.endTime(), "Ends", formatter));
+                    startDateTime.textProperty().bind(BindingsUtils.dateTimeBinding(item.startDate(), item.startTime(), "Starts", formatter));
+                    endDateTime.textProperty().bind(BindingsUtils.dateTimeBinding(item.endDate(), item.endTime(), "Ends", formatter));
 
                     card.setOnMouseClicked(e -> {
                         if (e.getButton() == MouseButton.PRIMARY) {

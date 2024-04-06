@@ -1,7 +1,7 @@
 package event.tickets.easv.bar.gui.component.events.createevent;
 
 import event.tickets.easv.bar.gui.common.EventModel;
-import event.tickets.easv.bar.gui.component.events.EventsView;
+import event.tickets.easv.bar.gui.util.ImageUtils;
 import javafx.beans.property.*;
 import javafx.scene.image.Image;
 
@@ -38,7 +38,7 @@ public class CreateEventModel {
         extraInfo.set(eventModel.extraInfo().get());
         locationGuidance.set(eventModel.locationGuidance().get());
         imagePath.set("");
-        image.set(EventsView.getImage(eventModel.id().get() + "/" + eventModel.imageName().get()));
+        image.set(ImageUtils.getImage(eventModel.id().get() + "/" + eventModel.imageName().get()));
     }
 
     public void reset() {

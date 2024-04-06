@@ -141,8 +141,8 @@ public class ShowEventView implements View {
         var titleBox = new HBox(title, editBtn, deleteBtn);
 
         var location = Labels.styledLabel(eventModelToShow.location(), Styles.TITLE_4);
-        var startDateTime = Labels.styledLabel(EventsView.dateTimeBinding(eventModelToShow.startDate(), eventModelToShow.startTime(), "Starts", formatter));
-        var endDateTime = Labels.styledLabel(EventsView.dateTimeBinding(eventModelToShow.endDate(), eventModelToShow.endTime(), "Ends", formatter));
+        var startDateTime = Labels.styledLabel(BindingsUtils.dateTimeBinding(eventModelToShow.startDate(), eventModelToShow.startTime(), "Starts", formatter));
+        var endDateTime = Labels.styledLabel(BindingsUtils.dateTimeBinding(eventModelToShow.endDate(), eventModelToShow.endTime(), "Ends", formatter));
 
         var headerBox = new VBox(image, titleBox, location, startDateTime, endDateTime);
 

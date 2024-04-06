@@ -4,7 +4,7 @@ import event.tickets.easv.bar.be.User;
 import event.tickets.easv.bar.be.enums.Language;
 import event.tickets.easv.bar.be.enums.Rank;
 import event.tickets.easv.bar.be.enums.Theme;
-import event.tickets.easv.bar.gui.component.events.EventsView;
+import event.tickets.easv.bar.gui.util.ImageUtils;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -45,7 +45,7 @@ public class UserModel {
         language.set(user.language());
         fontSize.set(user.fontSize());
 
-        image.set(EventsView.getProfileImage(user.id() + "/" + user.imageName()));
+        image.set(ImageUtils.getProfileImage(user.id() + "/" + user.imageName()));
     }
 
     public void update(UserModel userModel) {

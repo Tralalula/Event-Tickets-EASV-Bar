@@ -1,8 +1,7 @@
 package event.tickets.easv.bar.gui.common;
 
 import event.tickets.easv.bar.be.Event;
-import event.tickets.easv.bar.gui.component.events.EventsView;
-import event.tickets.easv.bar.gui.component.tickets.TicketEventModel;
+import event.tickets.easv.bar.gui.util.ImageUtils;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -44,7 +43,7 @@ public class EventModel {
         locationGuidance.set(event.locationGuidance());
         extraInfo.set(event.extraInfo());
 
-        image.set(EventsView.getImage(event.id() + "/" + event.imageName()));
+        image.set(ImageUtils.getImage(event.id() + "/" + event.imageName()));
     }
 
     public static EventModel fromEntity(Event event) {
