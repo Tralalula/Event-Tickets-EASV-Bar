@@ -8,6 +8,7 @@ import event.tickets.easv.bar.be.enums.Rank;
 import event.tickets.easv.bar.gui.common.*;
 import event.tickets.easv.bar.gui.component.events.EventsView;
 import event.tickets.easv.bar.gui.util.Alerts;
+import event.tickets.easv.bar.gui.util.Listeners;
 import event.tickets.easv.bar.gui.util.StyleConfig;
 import event.tickets.easv.bar.gui.widgets.CircularImageView;
 import event.tickets.easv.bar.gui.widgets.MenuItems;
@@ -64,16 +65,7 @@ public class UsersView implements View {
             return cell;
         });
 
-        ChangeListener<Boolean> synchronizationListener = new ChangeListener<>() {
-            @Override
-            public void changed(ObservableValue<? extends Boolean> obs, Boolean ov, Boolean nv) {
-                if (nv) {
-                    userList.refresh();
-                    obs.removeListener(this);
-                }
-            }
-        };
-        eventsUsersSynchronized.addListener(synchronizationListener);
+        Listeners.addOnceChangeListener(eventsUsersSynchronized, userList::refresh);
 
         VBox.setVgrow(userList, Priority.ALWAYS);
 
