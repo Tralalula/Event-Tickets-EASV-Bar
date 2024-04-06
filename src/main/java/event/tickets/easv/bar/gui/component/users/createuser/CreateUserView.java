@@ -6,9 +6,11 @@ import event.tickets.easv.bar.gui.common.UserModel;
 import event.tickets.easv.bar.gui.common.View;
 import event.tickets.easv.bar.gui.common.ViewHandler;
 import event.tickets.easv.bar.gui.common.ViewType;
+import event.tickets.easv.bar.gui.util.NodeUtils;
 import event.tickets.easv.bar.gui.util.StyleConfig;
 import event.tickets.easv.bar.gui.widgets.Labels;
 import event.tickets.easv.bar.gui.widgets.TextFields;
+import javafx.application.Platform;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -65,7 +67,7 @@ public class CreateUserView implements View {
                 TextFields.promptedTextField("Mail", model.mailProperty()),
                 TextFields.promptedTextField("Location", model.locationProperty()),
                 TextFields.promptedTextField("Phone number", model.phoneNumberProperty()),
-                createSaveButton()
+                buttons()
         );
         results.setPadding(new Insets(10));
         return results;
@@ -108,7 +110,6 @@ public class CreateUserView implements View {
         gridPane.add(adminRadio, 0, 0);
         gridPane.add(coordinatorRadio, 1, 0);
 
-        // Optional: Add some spacing between the columns
         gridPane.setHgap(StyleConfig.STANDARD_SPACING);
 
         return gridPane;
@@ -161,5 +162,32 @@ public class CreateUserView implements View {
         saveButton.getStyleClass().addAll(StyleConfig.ACTIONABLE, Styles.ACCENT);
         saveButton.setMaxWidth(Double.MAX_VALUE);
         return saveButton;
+    }
+
+    private Node resetPassword() {
+        var resetPasswordButton = new Button("Reset password");
+        resetPasswordButton.setOnAction(evt -> {
+            controller.onResetPassword();
+        });
+
+        resetPasswordButton.getStyleClass().addAll(StyleConfig.ACTIONABLE, Styles.DANGER);
+        resetPasswordButton.setMaxWidth(Double.MAX_VALUE);
+        return resetPasswordButton;
+    }
+
+    public Node buttons() {
+        var resetPswBtn = resetPassword();
+        var saveBtn = createSaveButton();
+
+        HBox.setHgrow(resetPswBtn, Priority.ALWAYS);
+        HBox.setHgrow(saveBtn, Priority.ALWAYS);
+
+        NodeUtils.bindVisibility(resetPswBtn, model.isCreatingProperty().not());
+
+        HBox hbox = new HBox(StyleConfig.STANDARD_SPACING, resetPswBtn, saveBtn);
+        hbox.setAlignment(Pos.CENTER);
+        hbox.setMaxWidth(Double.MAX_VALUE);
+
+        return hbox;
     }
 }

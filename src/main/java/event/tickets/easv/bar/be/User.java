@@ -70,17 +70,17 @@ public class User implements Entity<User> {
     }
 
 
-    public User(int id, String username, String imageName) {
+    public User(int id, String username, String hashedPassword) {
         this.id = id;
         this.username = username;
-        this.imageName = imageName;
+        this.hashedPassword = hashedPassword;
     }
 
-    public User(int id, String username, String password, String imageName) {
+    public User(int id, String username, String mail, String hashedPassword) {
         this.id = id;
         this.username = username;
-        this.hashedPassword = password;
-        this.imageName = imageName;
+        this.mail = mail;
+        this.hashedPassword = hashedPassword;
     }
 
     public User(String username, String password) {

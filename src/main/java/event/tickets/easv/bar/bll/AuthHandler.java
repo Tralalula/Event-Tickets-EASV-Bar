@@ -23,11 +23,11 @@ public class AuthHandler {
         return dbUser;
     }
 
-    public User createUser(User user) throws Exception {
+/*    public User createUser(User user) throws Exception {
         user.setHashedPassword(user.hashedPassword());
 
         return authDAO.createUser(user);
-    }
+    }*/
 
     public boolean userExists(String username) throws Exception {
         return authDAO.userExists(username);

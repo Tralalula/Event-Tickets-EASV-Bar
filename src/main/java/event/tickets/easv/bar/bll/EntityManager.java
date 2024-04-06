@@ -4,6 +4,7 @@ import event.tickets.easv.bar.be.Customer;
 import event.tickets.easv.bar.be.Entity;
 import event.tickets.easv.bar.be.Event;
 import event.tickets.easv.bar.be.User;
+import event.tickets.easv.bar.bll.cryptographic.BCrypt;
 import event.tickets.easv.bar.dal.dao.*;
 import event.tickets.easv.bar.dal.dao.Ticket.*;
 import event.tickets.easv.bar.dal.database.EntityAssociation;
@@ -191,6 +192,23 @@ public class EntityManager {
         if (associatesResult != null) associatesResult.ifSuccess(entity::setAssociations);
     }
 
+    public Result<User> loginUser(String usernameOrMail, String password) {
+        UserDAO userDAO = (UserDAO) daos.get(User.class);
+        Result<Optional<User>> result = userDAO.getUserByUsernameOrMail(usernameOrMail);
+
+        if (result.isFailure()) return result.failAs();
+
+        Optional<User> userOptional = result.get();
+        if (userOptional.isEmpty()) return Success.of(null);
+
+        User user = userOptional.get();
+        if (!BCrypt.checkpw(password, user.hashedPassword())) {
+            return Success.of(null);
+        }
+
+        return Success.of(user);
+    }
+
     /**
      * For testing purposes only
      */
@@ -204,11 +222,9 @@ public class EntityManager {
      * @param args unused
      */
     public static void main(String[] args) {
-/*        Result<List<new EntityManager()
-                .get(Event.class)
-                .withAssociation(User.class)
-                .fetch();
-        );*/
+        EntityManager entityManager = new EntityManager();
+
+        System.out.println(entityManager.loginUser("test", "test"));
 
     }
 }

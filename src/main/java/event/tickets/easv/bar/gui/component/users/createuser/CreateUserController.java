@@ -49,36 +49,8 @@ public class CreateUserController {
         );
     }
 
-    private Result<UserModel> editUser(UserModel userModel) {
-        String username = model.usernameProperty().get();
-        String mail = model.mailProperty().get();
-        Rank rank = model.rankProperty().get();
-        String firstName = model.firstNameProperty().get();
-        String lastName = model.lastNameProperty().get();
-        String location = model.locationProperty().get();
-        String phoneNumber = model.phoneNumberProperty().get();
-
-        var editedUser = new User(
-                userModel.id().get(),
-                username,
-                mail,
-                firstName,
-                lastName,
-                location,
-                phoneNumber,
-                userModel.imageName().get(),
-                rank, userModel.theme().get(),
-                userModel.language().get(),
-                userModel.fontSize().get()
-        );
-
-        var result = new EntityManager().update(userModel.toEntity(), editedUser);
-
-        if (result.isFailure()) return result.failAs();
-
-        var updated = UserModel.fromEntity(editedUser);
-
-        return Success.of(updated);
+    void onResetPassword() {
+        System.out.println("hey");
     }
 
     private Result<User> createUser() {
@@ -109,6 +81,38 @@ public class CreateUserController {
         }*/
 
         return result;
+    }
+
+    private Result<UserModel> editUser(UserModel userModel) {
+        String username = model.usernameProperty().get();
+        String mail = model.mailProperty().get();
+        Rank rank = model.rankProperty().get();
+        String firstName = model.firstNameProperty().get();
+        String lastName = model.lastNameProperty().get();
+        String location = model.locationProperty().get();
+        String phoneNumber = model.phoneNumberProperty().get();
+
+        var editedUser = new User(
+                userModel.id().get(),
+                username,
+                mail,
+                firstName,
+                lastName,
+                location,
+                phoneNumber,
+                userModel.imageName().get(),
+                rank, userModel.theme().get(),
+                userModel.language().get(),
+                userModel.fontSize().get()
+        );
+
+        var result = new EntityManager().update(userModel.toEntity(), editedUser);
+
+        if (result.isFailure()) return result.failAs();
+
+        var updated = UserModel.fromEntity(editedUser);
+
+        return Success.of(updated);
     }
 
     private boolean isDataValid() {

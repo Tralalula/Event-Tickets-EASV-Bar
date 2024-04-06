@@ -4,15 +4,20 @@ import event.tickets.easv.bar.be.User;
 import event.tickets.easv.bar.be.enums.Language;
 import event.tickets.easv.bar.be.enums.Rank;
 import event.tickets.easv.bar.be.enums.Theme;
+import event.tickets.easv.bar.bll.cryptographic.BCrypt;
 import event.tickets.easv.bar.dal.database.*;
+import event.tickets.easv.bar.util.FailureType;
 import event.tickets.easv.bar.util.Result;
+import event.tickets.easv.bar.util.Result.Failure;
+import event.tickets.easv.bar.util.Result.Success;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.IOException;
 import java.sql.*;
 import java.util.List;
 import java.util.Optional;
 
-public class UserDAO implements DAO<User> {
+public class UserDAO implements DAO<User>, UserAuthDAO {
     private final DBDaoHelper<User> daoHelper;
 
     public UserDAO() {
@@ -59,6 +64,27 @@ public class UserDAO implements DAO<User> {
     @Override
     public Result<Boolean> delete(User entity) {
         return daoHelper.delete(entity);
+    }
+
+    @Override
+    public Result<Optional<User>> getUserByUsernameOrMail(String usernameOrMail) {
+        return DBDaoHelper.getEntityByField(
+                usernameOrMail,
+                "SELECT id, username, mail, password FROM dbo.Users WHERE username = ? OR mail = ?;",
+                rs -> {
+                    int id = rs.getInt("id");
+                    String username = rs.getString("username");
+                    String mail = rs.getString("mail");
+                    String hashedPassword = rs.getString("password");
+
+                    return new User(id, username, mail, hashedPassword);
+                },
+                2);
+    }
+
+    @Override
+    public Result<Boolean> resetPassword(String usernameOrMail) {
+        return null;
     }
 }
 

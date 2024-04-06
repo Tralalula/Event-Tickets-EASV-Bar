@@ -2,6 +2,8 @@ package event.tickets.easv.bar.gui.component.main;
 
 import event.tickets.easv.bar.be.User;
 import event.tickets.easv.bar.bll.AuthHandler;
+import event.tickets.easv.bar.bll.EntityManager;
+import event.tickets.easv.bar.util.Result;
 import event.tickets.easv.bar.util.SessionManager;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -25,13 +27,20 @@ public class AuthModel {
         String password = passwordProperty().get();
 
         // Authenticate brugeren
-        User authenticatedUser = authHandler.loginUser(new User(username, password));
+        Result<User> authenticatedUser = new EntityManager().loginUser(username, password);
 
-        if (authenticatedUser != null) {
-            SessionManager.getInstance().login(authenticatedUser);
-            return true;
-        } else
-            return false;
+        if (authenticatedUser.isFailure()) return false;
+
+        if (authenticatedUser.get() == null) return false;
+
+        SessionManager.getInstance().login(authenticatedUser.get());
+        return true;
+
+//        if (authenticatedUser != null) {
+//            SessionManager.getInstance().login(authenticatedUser);
+//            return true;
+//        } else
+//            return false;
 
     }
 
