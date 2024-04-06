@@ -63,7 +63,7 @@ public class ShowEventView implements View {
                     WritableImage newImage = new WritableImage(reader, 0, 0, (int) img.getWidth(), 300);
                     image.setImage(newImage);
                 } catch (Exception e) {
-                    System.out.println("fuck mit liv, luk røven...");
+                    System.out.println("fuck mit liv, skal lige huske at fikse det her...");
                 }
 
 
@@ -128,14 +128,19 @@ public class ShowEventView implements View {
 
         var title = Labels.styledLabel(model.title(), Styles.TITLE_1);
         var deleteBtn = new Button(null, new FontIcon(Material2AL.DELETE));
-        deleteBtn.getStyleClass().addAll(Styles.BUTTON_CIRCLE, StyleConfig.ACTIONABLE, Styles.FLAT, Styles.DANGER);
+        deleteBtn.getStyleClass().addAll(Styles.BUTTON_CIRCLE, StyleConfig.ACTIONABLE, Styles.FLAT);
+
+        var editBtn = new Button(null, new FontIcon(Material2AL.EDIT));
+        editBtn.getStyleClass().addAll(Styles.BUTTON_CIRCLE, StyleConfig.ACTIONABLE, Styles.FLAT);
 
         deleteBtn.setOnAction(e -> Alerts.confirmDeleteEvent(
                 model,
                 eventModel -> controller.onDeleteEvent(ViewHandler::previousView, model))
         );
 
-        var titleBox = new HBox(title, deleteBtn);
+        editBtn.setOnAction(e -> ViewHandler.changeView(ViewType.EDIT_EVENT, model));
+
+        var titleBox = new HBox(title, editBtn, deleteBtn);
 
         var location = Labels.styledLabel(model.location(), Styles.TITLE_4);
         var startDateTime = Labels.styledLabel(EventsView.dateTimeBinding(model.startDate(), model.startTime(), "Starts", formatter));

@@ -52,7 +52,10 @@ public class CreateEventController {
         BackgroundExecutor.performBackgroundTask(
                 () -> editEvent(eventModel),
                 postTaskGuiActions,
-                success -> ActionHandler.handle(new EditEvent(eventModel, success.get())),
+                success -> {
+                    ActionHandler.handle(new EditEvent(eventModel, success.get()));
+                    ViewHandler.currentViewDataProperty().set(success.get()); // need a better solution than this, but it works for now
+                },
                 System.out::println
         );
     }
