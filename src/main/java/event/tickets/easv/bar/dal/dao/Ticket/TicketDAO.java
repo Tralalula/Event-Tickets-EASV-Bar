@@ -63,6 +63,7 @@ public class TicketDAO implements DAO<Ticket> {
 }
 
 class TicketSQLTemplate implements SQLTemplate<Ticket> {
+
     @Override
     public String getSelectSQL() {
         return "SELECT * FROM dbo.Ticket WHERE id = ?";

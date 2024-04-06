@@ -29,17 +29,34 @@ public class TicketsModel {
         this.entityManager = new EntityManager();
     }
 
-    public Ticket addTicket(Ticket ticket) {
-        Result<Ticket> result = entityManager.add(ticket);
+    private boolean isEmpty(String str) {
+        return str == null || str.trim().isEmpty();
+    }
 
+    private boolean ticketExists(Ticket ticket) {
+        for (TicketModel t : model.ticketModels())
+            if (t.title().get().equals(ticket.getTitle()) && t.type().get().equals(ticket.getType()))
+                return true;
+
+        return false;
+    }
+
+    public Ticket addTicket(Ticket ticket) throws Exception {
+        if (isEmpty(ticket.getTitle()))
+            throw new Exception("Title cannot be empty");
+
+        if (ticketExists(ticket))
+            throw new Exception("Ticket already exists");
+
+        // Tilføj til databasen
+        Result<Ticket> result = entityManager.add(ticket);
         switch (result) {
             case Result.Success<Ticket> s -> {
                 model.ticketModels().add(TicketModel.fromEntity(s.result()));
                 return s.result();
             }
-            case Result.Failure<Ticket> f -> System.out.println("Error: " + f.cause());
+            case Result.Failure<Ticket> f -> throw new Exception("Error occurred while trying to add ticket\n" + f.cause());
         }
-        return null;
     }
 
     public List<TicketEvent> addToEvent(TicketModel ticketModel, MainModel main, int ticketId, int total, double price, List<EventModel> events) {

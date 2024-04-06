@@ -116,8 +116,12 @@ public class TicketsView implements View {
 
         var button = new Button("Add ticket");
         button.setOnAction(e -> {
-            Ticket createdTicket = ticketsModel.addTicket(new Ticket(tf.getText(), type.getValue()));
-            //model.ticketModels().add(TicketModel.fromEntity(createdTicket));
+            try {
+                ticketsModel.addTicket(new Ticket(tf.getText(), type.getValue()));
+            } catch (Exception ex) {
+                ViewHandler.notify(NotificationType.FAILURE, ex.getMessage());
+            }
+
         });
 
         main.getChildren().addAll(title, tf,  typeTitle, type, button);
