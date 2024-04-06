@@ -15,6 +15,7 @@ import javafx.scene.shape.Circle;
 
 public class CircularImageView extends StackPane {
     private final ImageView imageView;
+    private final StackPane container;
     private final StackPane placeholder;
     private final Circle circle;
     private final Label label;
@@ -28,6 +29,7 @@ public class CircularImageView extends StackPane {
         this.circleRegion = new Region();
         circleRegion.setMaxSize(radius * 2, radius * 2);
         this.placeholder = placeholder();
+        this.container = createContainer();
     }
 
     public CircularImageView(double radius, String text) {
@@ -38,6 +40,7 @@ public class CircularImageView extends StackPane {
         this.circleRegion = new Region();
         circleRegion.setMaxSize(radius * 2, radius * 2);
         this.placeholder = placeholder();
+        this.container = createContainer();
     }
 
 //    public void setImage(Image image) {
@@ -56,8 +59,12 @@ public class CircularImageView extends StackPane {
 //        label.setText(text);
 //    }
 
-    public StackPane get() {
+    private StackPane createContainer() {
         return new StackPane(placeholder, imageView);
+    }
+
+    public StackPane get() {
+        return this.container;
     }
 
     private StackPane placeholder() {

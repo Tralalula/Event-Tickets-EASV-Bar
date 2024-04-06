@@ -2,27 +2,23 @@ package event.tickets.easv.bar.gui.component.events;
 
 import atlantafx.base.controls.Card;
 import atlantafx.base.theme.Styles;
-import event.tickets.easv.bar.gui.common.EventModel;
-import event.tickets.easv.bar.gui.common.View;
-import event.tickets.easv.bar.gui.common.ViewHandler;
-import event.tickets.easv.bar.gui.common.ViewType;
-import event.tickets.easv.bar.gui.util.Alerts;
-import event.tickets.easv.bar.gui.util.StyleConfig;
+import event.tickets.easv.bar.gui.common.*;
+import event.tickets.easv.bar.gui.util.*;
+import event.tickets.easv.bar.gui.widgets.CircularImageView;
 import event.tickets.easv.bar.gui.widgets.Images;
 import event.tickets.easv.bar.gui.widgets.MenuItems;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
-import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.*;
-import javafx.scene.shape.Circle;
 import org.controlsfx.control.GridCell;
 import org.controlsfx.control.GridView;
 import org.kordamp.ikonli.feather.Feather;
@@ -42,11 +38,15 @@ public class EventGridView implements View {
     private final DeleteEventController controller;
     private final GridView<EventModel> gridview;
     private final ObservableList<EventModel> model;
+    private final BooleanProperty eventsUsersSynchronized;
 
-    public EventGridView(ObservableList<EventModel> model) {
+    public EventGridView(ObservableList<EventModel> model, BooleanProperty eventsUsersSynchronized) {
         this.controller = new DeleteEventController();
         this.model = model;
-        gridview = new GridView<>();
+        this.gridview = new GridView<>();
+        this.eventsUsersSynchronized = eventsUsersSynchronized;
+
+        Listeners.addOnceChangeListener(eventsUsersSynchronized, () -> setItems(model));
     }
 
     public Region getView() {
@@ -77,10 +77,10 @@ public class EventGridView implements View {
             private final Label endDateTime = new Label();
             private final VBox content = new VBox(title, location, startDateTime, endDateTime);
 
-            private final Circle circle1 = new Circle(PROFILE_IMG_RADIUS);
-            private final Circle circle2 = new Circle(PROFILE_IMG_RADIUS);
-            private final Circle circle3 = new Circle(PROFILE_IMG_RADIUS);
-            private final HBox profileImages = new HBox(StyleConfig.STANDARD_SPACING, circle1, circle2, circle3);
+            private final CircularImageView photo1 = new CircularImageView(PROFILE_IMG_RADIUS);
+            private final CircularImageView photo2 = new CircularImageView(PROFILE_IMG_RADIUS);
+            private final CircularImageView photo3 = new CircularImageView(PROFILE_IMG_RADIUS);
+            private final HBox profileImages = new HBox(StyleConfig.STANDARD_SPACING, photo1.get(), photo2.get(), photo3.get());
 
             private final Label ticketsSold = new Label("283 tickets sold");
 
@@ -137,9 +137,15 @@ public class EventGridView implements View {
                 } else {
                     imageView.imageProperty().bind(item.image());
 
-                    loadImagePattern(circle1, getProfileImage("profile1.jpg"));
-                    loadImagePattern(circle2, getProfileImage("profile4.jpg"));
-                    loadImagePattern(circle3, getProfileImage("profile8.jpeg"));
+                    updatePhotos(item, photo1, photo2, photo3);
+
+                    item.users().addListener((ListChangeListener.Change<? extends UserModel> c) -> {
+                        updatePhotos(item, photo1, photo2, photo3);
+                    });
+
+                    NodeUtils.bindVisibility(photo1.get(), Bindings.size(item.users()).greaterThan(0));
+                    NodeUtils.bindVisibility(photo2.get(), Bindings.size(item.users()).greaterThan(1));
+                    NodeUtils.bindVisibility(photo3.get(), Bindings.size(item.users()).greaterThan(2));
 
                     title.textProperty().bind(item.title());
                     location.textProperty().bind(item.location());
@@ -165,5 +171,19 @@ public class EventGridView implements View {
                 }
             }
         };
+    }
+
+    private void updatePhotos(EventModel item, CircularImageView photo1, CircularImageView photo2, CircularImageView photo3) {
+        for (int i = 0; i < item.users().size(); i++) {
+            CircularImageView photo = switch (i) {
+                case 0 -> photo1;
+                case 1 -> photo2;
+                case 2 -> photo3;
+                default -> throw new IllegalStateException("Unexpected value: " + i);
+            };
+
+            photo.textProperty().bind(BindingsUtils.initialize(item.users().get(i).firstName(), item.users().get(i).lastName()));
+            photo.imageProperty().bind(item.users().get(i).image());
+        }
     }
 }

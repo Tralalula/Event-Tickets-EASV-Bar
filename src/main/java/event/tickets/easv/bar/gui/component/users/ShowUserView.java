@@ -11,6 +11,7 @@ import event.tickets.easv.bar.gui.util.NodeUtils;
 import event.tickets.easv.bar.gui.util.StyleConfig;
 import event.tickets.easv.bar.gui.widgets.CircularImageView;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.BooleanProperty;
 import javafx.collections.ObservableList;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
@@ -27,10 +28,12 @@ public class ShowUserView implements View {
     private final DeleteUserController controller;
     private final CircularImageView circularImageView = new CircularImageView(80);
     private final EventGridView eventGridView;
+    private final BooleanProperty eventsUsersSynchronized;
 
-    public ShowUserView() {
+    public ShowUserView(BooleanProperty eventsUsersSynchronized) {
         this.controller = new DeleteUserController();
-        this.eventGridView = new EventGridView(model.events());
+        this.eventsUsersSynchronized = eventsUsersSynchronized;
+        this.eventGridView = new EventGridView(model.events(), eventsUsersSynchronized);
 
         ViewHandler.currentViewDataProperty().subscribe((oldData, newData) -> {
             if (newData instanceof UserModel) {

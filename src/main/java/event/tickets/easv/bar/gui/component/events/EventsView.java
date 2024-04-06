@@ -43,10 +43,12 @@ import java.util.Map;
 public class EventsView implements View {
     private final ObservableList<EventModel> model;
     private final BooleanProperty fetchingData;
+    private final BooleanProperty eventsUsersSynchronized;
 
-    public EventsView(ObservableList<EventModel> model, BooleanProperty fetchingData) {
+    public EventsView(ObservableList<EventModel> model, BooleanProperty fetchingData, BooleanProperty eventsUsersSynchronized) {
         this.model = model;
         this.fetchingData = fetchingData;
+        this.eventsUsersSynchronized = eventsUsersSynchronized;
     }
 
     @Override
@@ -60,7 +62,7 @@ public class EventsView implements View {
         ProgressIndicator progressIndicator = new ProgressIndicator();
         NodeUtils.bindVisibility(progressIndicator, fetchingData);
 
-        var gridview = new EventGridView(model);
+        var gridview = new EventGridView(model, eventsUsersSynchronized);
         var content = new StackPane(gridview.getView(), progressIndicator);
 
         return new VBox(header, content);
