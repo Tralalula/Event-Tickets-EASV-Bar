@@ -1,6 +1,7 @@
 package event.tickets.easv.bar.gui.util;
 
 import event.tickets.easv.bar.gui.common.EventModel;
+import event.tickets.easv.bar.gui.common.TicketModel;
 import event.tickets.easv.bar.gui.common.UserModel;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -18,6 +19,10 @@ public class Alerts {
 
     public static void confirmDeleteUser(UserModel userModel, Consumer<UserModel> onConfirm) {
         confirmDelete(userModel, onConfirm, "user", userModel.firstName().get() + " " + userModel.lastName().get());
+    }
+
+    public static void confirmDeleteTicket(TicketModel ticketModel, Consumer<TicketModel> onConfirm) {
+        confirmDelete(ticketModel, onConfirm, "ticket", ticketModel.title().get());
     }
 
     public static <T> void confirmDelete(T entityModel, Consumer<T> onConfirm, String entityType, String entityName) {
