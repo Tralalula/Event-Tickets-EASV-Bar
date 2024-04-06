@@ -163,6 +163,8 @@ public class AuthView implements View {
                             ViewHandler.changeView(ViewType.DASHBOARD);
                             username.setText("");
                             password.setText("");
+                        } else {
+                            err.setText("Forkert login");
                         }
                     } catch (Exception e) {
                         err.setText("Forkert login");

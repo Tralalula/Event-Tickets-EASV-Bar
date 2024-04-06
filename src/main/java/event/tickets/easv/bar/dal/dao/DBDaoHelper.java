@@ -258,33 +258,34 @@ public class DBDaoHelper<T extends Entity<T>> implements DAO<T> {
         }
     }
 
-    public static <T> Result<Optional<T>> getEntityByField(Object id, String selectSQL, ResultSetMapper<T> resultSetMapper, int numParams) {
+    public Result<Optional<T>> getEntityByField(Object id, String selectSQL, ResultSetMapper<T> resultSetMapper, int numParams) {
         try {
-            DBConnector dbConnector = new DBConnector();
-            try (Connection conn = dbConnector.connection();
-                 PreparedStatement stmt = conn.prepareStatement(selectSQL)) {
-                for (int i = 1; i < numParams + 1; i++) {
-                    switch (id) {
-                        case String s -> stmt.setString(i, s);
-                        case Integer in -> stmt.setInt(i, in);
-                        default -> {
-                            return Failure.of(FailureType.INVALID_ENTITY_TYPE, "DBDaoHelper.getEntityByField() - Unexpected entity type: " + id.getClass().getName());
-                        }
+            setupDBConnector();
+        } catch (IOException e) {
+            return Failure.of(FailureType.IO_FAILURE, "DBDaoHelper.delete() - Failed to read from the data source", e);
+        }
+
+        try (Connection conn = dbConnector.connection();
+             PreparedStatement stmt = conn.prepareStatement(selectSQL)) {
+            for (int i = 1; i < numParams + 1; i++) {
+                switch (id) {
+                    case String s -> stmt.setString(i, s);
+                    case Integer in -> stmt.setInt(i, in);
+                    default -> {
+                        return Failure.of(FailureType.INVALID_ENTITY_TYPE, "DBDaoHelper.getEntityByField() - Unexpected entity type: " + id.getClass().getName());
                     }
                 }
-
-                ResultSet rs = stmt.executeQuery();
-
-                if (rs.next()) {
-                    return Success.of(Optional.of(resultSetMapper.map(rs)));
-                } else {
-                    return Success.of(Optional.empty());
-                }
-            } catch (SQLException e) {
-                return Failure.of(FailureType.DB_DATA_RETRIEVAL_FAILURE, "DBDaoHelper.getEntityByField() - Failed to retrieve data from the database", e);
             }
-        } catch (IOException e) {
-            return Failure.of(FailureType.IO_FAILURE, "DBDaoHelper.getEntityByField() - Failed to read from the data source", e);
+
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                return Success.of(Optional.of(resultSetMapper.map(rs)));
+            } else {
+                return Success.of(Optional.empty());
+            }
+        } catch (SQLException e) {
+            return Failure.of(FailureType.DB_DATA_RETRIEVAL_FAILURE, "DBDaoHelper.getEntityByField() - Failed to retrieve data from the database", e);
         }
     }
 

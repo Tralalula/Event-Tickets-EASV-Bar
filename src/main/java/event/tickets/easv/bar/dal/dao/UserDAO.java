@@ -68,7 +68,7 @@ public class UserDAO implements DAO<User>, UserAuthDAO {
 
     @Override
     public Result<Optional<User>> getUserByUsernameOrMail(String usernameOrMail) {
-        return DBDaoHelper.getEntityByField(
+        return daoHelper.getEntityByField(
                 usernameOrMail,
                 "SELECT id, username, mail, password FROM dbo.Users WHERE username = ? OR mail = ?;",
                 rs -> {
