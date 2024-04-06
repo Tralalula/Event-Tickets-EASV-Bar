@@ -90,7 +90,7 @@ public class ShowTicketView implements View {
 
         StackPane stackPane = new StackPane(ticketEventList);
         VBox.setVgrow(stackPane, Priority.ALWAYS);
-        
+
         return new VBox(StyleConfig.STANDARD_SPACING, ticketDetails(), stackPane);
     }
 
@@ -311,15 +311,24 @@ public class ShowTicketView implements View {
 
                     gridPane.setPadding(new Insets(0, CELL_PADDING * 2, 0, CELL_PADDING * 2));
 
+                    var assignButton = new Button(null, new FontIcon(Material2MZ.PERSON_ADD));
                     var editButton = new Button(null, new FontIcon(Feather.EDIT));
                     var deleteButton = new Button(null, new FontIcon(Feather.TRASH));
+
+                    assignButton.getStyleClass().addAll(
+                            Styles.BUTTON_ICON, Styles.FLAT, Styles.ACCENT, Styles.TITLE_4
+                    );
+
+                    assignButton.setOnAction(event -> {
+                        ViewHandler.showOverlay("Assign ticket", assignCustomer(item), 300, 350);
+                    });
 
                     editButton.getStyleClass().addAll(
                             Styles.BUTTON_ICON, Styles.FLAT, Styles.ACCENT, Styles.TITLE_4
                     );
 
                     editButton.setOnAction(event -> {
-                        ViewHandler.changeView(ViewType.SHOW_TICKET, item);
+                        //ViewHandler.changeView(ViewType.SHOW_TICKET, item);
                     });
 
                     deleteButton.getStyleClass().addAll(
@@ -330,7 +339,7 @@ public class ShowTicketView implements View {
                         // intet endnu
                     });
 
-                    HBox buttons = new HBox(editButton, deleteButton);
+                    HBox buttons = new HBox(assignButton, editButton, deleteButton);
                     buttons.setPadding(new Insets(0, CELL_PADDING, 0, 0));
                     buttons.setAlignment(Pos.CENTER_RIGHT);
                     buttons.setSpacing(20);
@@ -355,7 +364,7 @@ public class ShowTicketView implements View {
 
                     wrapper.setOnMouseClicked(event -> {
                         if (event.getButton() == MouseButton.PRIMARY) {
-                            ViewHandler.changeView(ViewType.SHOW_TICKET, item);
+                           // ViewHandler.changeView(ViewType.SHOW_TICKET, item);
                         }
                     });
 
@@ -400,14 +409,12 @@ public class ShowTicketView implements View {
         err.getStyleClass().add(Styles.DANGER);
 
         add.setOnAction(e -> {
-                if (ticketEventModel.left().get() < amountValue.getValue()) {
-                    err.setText("Not enough tickets left");
-                    return;
-                }
-                
+            try {
                 ticketsModel.generateTickets(ticketEventModel, amountValue.getValue(), emailValue.getText());
-                table.refresh();
-            });
+            } catch (Exception ex) {
+                ViewHandler.notify(NotificationType.FAILURE, ex.getMessage());
+            }
+        });
 
         addBox.getChildren().addAll(add, err);
 
