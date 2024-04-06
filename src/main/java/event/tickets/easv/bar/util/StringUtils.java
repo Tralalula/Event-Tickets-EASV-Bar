@@ -22,4 +22,20 @@ public class StringUtils {
         if (str == null || str.isEmpty()) return str;
         return str.substring(0, 1).toUpperCase() + str.substring(1).toLowerCase();
     }
+
+    /**
+     * Consumes a first name and a last name and produces a new string with the initials of the names.
+     * If the last name is null or empty, it uses the first two letters of the first name.
+     *
+     * @return a new string with the initials of the names.
+     */
+    public static String initialize(String firstName, String lastName) {
+        String initials;
+        if (lastName == null || lastName.isEmpty()) {
+            initials = firstName.length() > 1 ? firstName.substring(0, 2) : firstName;
+        } else {
+            initials = firstName.substring(0, 1) + lastName.substring(0, 1);
+        }
+        return initials.toUpperCase();
+    }
 }

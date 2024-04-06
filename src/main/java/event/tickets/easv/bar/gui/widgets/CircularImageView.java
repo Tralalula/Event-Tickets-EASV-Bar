@@ -2,6 +2,8 @@ package event.tickets.easv.bar.gui.widgets;
 
 import atlantafx.base.theme.Styles;
 import event.tickets.easv.bar.gui.util.StyleConfig;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.StringProperty;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -38,13 +40,21 @@ public class CircularImageView extends StackPane {
         this.placeholder = placeholder();
     }
 
-    public void setImage(Image image) {
-        imageView.setImage(image);
+//    public void setImage(Image image) {
+//        imageView.setImage(image);
+//    }
+
+    public ObjectProperty<Image> imageProperty() {
+        return imageView.imageProperty();
     }
 
-    public void setText(String text) {
-        label.setText(text);
+    public StringProperty textProperty() {
+        return label.textProperty();
     }
+
+//    public void setText(String text) {
+//        label.setText(text);
+//    }
 
     public StackPane get() {
         return new StackPane(placeholder, imageView);
@@ -54,6 +64,8 @@ public class CircularImageView extends StackPane {
         label.getStyleClass().addAll(Styles.TEXT_BOLD, StyleConfig.CIRCLE_PLACEHOLDER_TEXT);
         circleRegion.setShape(circle);
         circleRegion.getStyleClass().add(StyleConfig.CIRCLE_PLACEHOLDER);
+
+
 
         return new StackPane(circleRegion, label);
     }

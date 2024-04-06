@@ -6,6 +6,7 @@ import event.tickets.easv.bar.gui.common.*;
 import event.tickets.easv.bar.gui.component.events.EventGridView;
 import event.tickets.easv.bar.gui.component.events.EventsView;
 import event.tickets.easv.bar.gui.util.Alerts;
+import event.tickets.easv.bar.gui.util.BindingsUtils;
 import event.tickets.easv.bar.gui.util.NodeUtils;
 import event.tickets.easv.bar.gui.util.StyleConfig;
 import event.tickets.easv.bar.gui.widgets.CircularImageView;
@@ -34,18 +35,9 @@ public class ShowUserView implements View {
         ViewHandler.currentViewDataProperty().subscribe((oldData, newData) -> {
             if (newData instanceof UserModel) {
                 this.model.update((UserModel) newData);
-                circularImageView.setImage(EventsView.getProfileImage(model.id().get() + "/" + model.imageName().get()));
 
-                String firstName = model.firstName().get();
-                String lastName = model.lastName().get();
-                String initials;
-                if (lastName == null || lastName.isEmpty()) {
-                    initials = firstName.length() > 1 ? firstName.substring(0, 2) : firstName;
-                } else {
-                    initials = firstName.substring(0, 1) + lastName.substring(0, 1);
-                }
-
-                circularImageView.setText(initials.toUpperCase());
+                circularImageView.imageProperty().bind(model.image());
+                circularImageView.textProperty().bind(BindingsUtils.initialize(model.firstName(), model.lastName()));
                 eventGridView.setItems(model.events());
             }
         });

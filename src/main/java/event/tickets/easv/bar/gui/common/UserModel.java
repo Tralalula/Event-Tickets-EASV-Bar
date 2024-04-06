@@ -4,9 +4,11 @@ import event.tickets.easv.bar.be.User;
 import event.tickets.easv.bar.be.enums.Language;
 import event.tickets.easv.bar.be.enums.Rank;
 import event.tickets.easv.bar.be.enums.Theme;
+import event.tickets.easv.bar.gui.component.events.EventsView;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.scene.image.Image;
 
 public class UserModel {
     private final IntegerProperty id = new SimpleIntegerProperty();
@@ -24,6 +26,8 @@ public class UserModel {
 
     private ObservableList<EventModel> events = FXCollections.observableArrayList();
 
+    private final ObjectProperty<Image> image = new SimpleObjectProperty<>();
+
     public UserModel() {}
 
     public UserModel(User user) {
@@ -40,6 +44,8 @@ public class UserModel {
         theme.set(user.theme());
         language.set(user.language());
         fontSize.set(user.fontSize());
+
+        image.set(EventsView.getProfileImage(user.id() + "/" + user.imageName()));
     }
 
     public void update(UserModel userModel) {
@@ -56,10 +62,9 @@ public class UserModel {
         this.language.set(userModel.language.get());
         this.fontSize.set(userModel.fontSize.get());
 
-//        System.out.println("Updating events");
-//        System.out.println("this: " + this.events.size() + ", " + this.events);
-//        System.out.println("userModel: " + userModel.events.size() + ", " + userModel.events);
         this.events = userModel.events;
+
+        this.image.set(userModel.image.get());
     }
 
 
@@ -142,5 +147,9 @@ public class UserModel {
 
     public ObservableList<EventModel> events() {
         return events;
+    }
+
+    public ObjectProperty<Image> image() {
+        return image;
     }
 }

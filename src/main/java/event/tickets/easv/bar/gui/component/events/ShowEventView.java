@@ -4,9 +4,11 @@ import atlantafx.base.theme.Styles;
 import event.tickets.easv.bar.gui.common.*;
 import event.tickets.easv.bar.gui.component.events.assigncoordinator.AssignCoordinatorView;
 import event.tickets.easv.bar.gui.util.Alerts;
+import event.tickets.easv.bar.gui.util.BindingsUtils;
 import event.tickets.easv.bar.gui.util.NodeUtils;
 import event.tickets.easv.bar.gui.util.StyleConfig;
 import event.tickets.easv.bar.gui.widgets.*;
+import javafx.beans.binding.Bindings;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -101,11 +103,11 @@ public class ShowEventView implements View {
         coordinators.getChildren().clear();
 
         for (UserModel userModel : users) {
-            var photo = new CircularImageView(24, "OK");
-            String imageName = userModel.id().get() + "/" + userModel.imageName().get();
-            photo.setImage(EventsView.getProfileImage(imageName));
+            var photo = new CircularImageView(24);
+            photo.textProperty().bind(BindingsUtils.initialize(userModel.firstName(), userModel.lastName()));
+            photo.imageProperty().bind(userModel.image());
 
-            var name = Labels.styledLabel(userModel.username(), Styles.TEXT_NORMAL);
+            var name = Labels.styledLabel(Bindings.concat(userModel.firstName(), " ", userModel.lastName()), Styles.TEXT_NORMAL);
             var box = new VBox(StyleConfig.STANDARD_SPACING, photo.get(), name);
             box.setAlignment(Pos.CENTER);
 

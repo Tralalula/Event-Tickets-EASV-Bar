@@ -8,6 +8,7 @@ import event.tickets.easv.bar.gui.common.EventModel;
 import event.tickets.easv.bar.gui.common.UserModel;
 import event.tickets.easv.bar.gui.common.View;
 import event.tickets.easv.bar.gui.component.events.EventsView;
+import event.tickets.easv.bar.gui.util.BindingsUtils;
 import event.tickets.easv.bar.gui.util.StyleConfig;
 import event.tickets.easv.bar.gui.widgets.CircularImageView;
 import javafx.beans.binding.Bindings;
@@ -114,18 +115,9 @@ public class AssignCoordinatorView implements View {
                     setGraphic(null);
                 } else {
 
-                    photo.setImage(EventsView.getProfileImage(item.id().get() + "/" + item.imageName().get()));
+                    photo.imageProperty().bind(item.image());
 
-                    String firstName = item.firstName().get();
-                    String lastName = item.lastName().get();
-                    String initials;
-                    if (lastName == null || lastName.isEmpty()) {
-                        initials = firstName.length() > 1 ? firstName.substring(0, 2) : firstName;
-                    } else {
-                        initials = firstName.substring(0, 1) + lastName.substring(0, 1);
-                    }
-
-                    photo.setText(initials.toUpperCase());
+                    photo.textProperty().bind(BindingsUtils.initialize(item.firstName(), item.lastName()));
 
                     BooleanProperty selectedProperty = model.selectionStateProperty(item);
                     assignBtn.graphicProperty().bind(Bindings.when(selectedProperty)
@@ -140,8 +132,8 @@ public class AssignCoordinatorView implements View {
                     });
 
                     tile.setGraphic(photo.get());
-                    tile.setDescription(item.mail().get());
-                    tile.setTitle(firstName + " " + lastName);
+                    tile.descriptionProperty().bind(item.mail());
+                    tile.titleProperty().bind(Bindings.concat(item.firstName(), " ", item.lastName()));
                     tile.setAction(assignBtn);
                     setGraphic(tile);
                 }

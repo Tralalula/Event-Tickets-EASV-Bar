@@ -8,10 +8,12 @@ import event.tickets.easv.bar.be.enums.Rank;
 import event.tickets.easv.bar.gui.common.*;
 import event.tickets.easv.bar.gui.component.events.EventsView;
 import event.tickets.easv.bar.gui.util.Alerts;
+import event.tickets.easv.bar.gui.util.BindingsUtils;
 import event.tickets.easv.bar.gui.util.Listeners;
 import event.tickets.easv.bar.gui.util.StyleConfig;
 import event.tickets.easv.bar.gui.widgets.CircularImageView;
 import event.tickets.easv.bar.gui.widgets.MenuItems;
+import event.tickets.easv.bar.util.StringUtils;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.value.ChangeListener;
@@ -163,18 +165,9 @@ public class UsersView implements View {
                 if (empty || item == null) {
                     setGraphic(null);
                 } else {
-                    profileImage.setImage(EventsView.getProfileImage(item.id().get() + "/" + item.imageName().get()));
-
-                    String firstName = item.firstName().get();
-                    String lastName = item.lastName().get();
-                    String initials;
-                    if (lastName == null || lastName.isEmpty()) {
-                        initials = firstName.length() > 1 ? firstName.substring(0, 2) : firstName;
-                    } else {
-                        initials = firstName.substring(0, 1) + lastName.substring(0, 1);
-                    }
-
-                    profileImage.setText(initials.toUpperCase());
+//                    profileImage.setImage(EventsView.getProfileImage(item.id().get() + "/" + item.imageName().get()));
+                    profileImage.imageProperty().bind(item.image());
+                    profileImage.textProperty().bind(BindingsUtils.initialize(item.firstName(), item.lastName()));
 
                     userContainer.setGraphic(profileImage.get());
                     userContainer.titleProperty().bind(Bindings.concat(item.firstName(), " ", item.lastName()));
