@@ -6,6 +6,7 @@ import event.tickets.easv.bar.gui.common.UserModel;
 import event.tickets.easv.bar.gui.common.View;
 import event.tickets.easv.bar.gui.common.ViewHandler;
 import event.tickets.easv.bar.gui.common.ViewType;
+import event.tickets.easv.bar.gui.util.Alerts;
 import event.tickets.easv.bar.gui.util.NodeUtils;
 import event.tickets.easv.bar.gui.util.StyleConfig;
 import event.tickets.easv.bar.gui.widgets.Labels;
@@ -166,9 +167,7 @@ public class CreateUserView implements View {
 
     private Node resetPassword() {
         var resetPasswordButton = new Button("Reset password");
-        resetPasswordButton.setOnAction(evt -> {
-            controller.onResetPassword();
-        });
+        resetPasswordButton.setOnAction(evt -> confirmResetPassword());
 
         resetPasswordButton.getStyleClass().addAll(StyleConfig.ACTIONABLE, Styles.DANGER);
         resetPasswordButton.setMaxWidth(Double.MAX_VALUE);
@@ -189,5 +188,14 @@ public class CreateUserView implements View {
         hbox.setMaxWidth(Double.MAX_VALUE);
 
         return hbox;
+    }
+
+    public void confirmResetPassword() {
+        Alerts.confirm("Password reset?",
+                "You are about to reset the password!",
+                "This action cannot be undone",
+                userToBeEdited,
+                controller::onResetPassword
+        );
     }
 }

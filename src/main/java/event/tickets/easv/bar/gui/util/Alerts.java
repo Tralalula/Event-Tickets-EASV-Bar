@@ -39,4 +39,24 @@ public class Alerts {
             alert.close();
         }
     }
+
+    public static <T> void confirm(String title, String header, String content, T entityModel, Consumer<T> onConfirm) {
+        Alert alert = new Alert(AlertType.CONFIRMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(header);
+        alert.setContentText(content);
+
+        var yesBtn = new ButtonType("Yes", ButtonData.YES);
+        var noBtn = new ButtonType("No", ButtonData.NO);
+
+        alert.getButtonTypes().setAll(yesBtn, noBtn);
+        alert.initOwner(null);
+        Optional<ButtonType> result = alert.showAndWait();
+
+        if (result.isPresent() && result.get().getButtonData() == ButtonData.YES) {
+            onConfirm.accept(entityModel);
+        } else {
+            alert.close();
+        }
+    }
 }

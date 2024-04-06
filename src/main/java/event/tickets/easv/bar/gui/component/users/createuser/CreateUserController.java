@@ -49,8 +49,24 @@ public class CreateUserController {
         );
     }
 
-    void onResetPassword() {
-        System.out.println("hey");
+    void onResetPassword(UserModel userModel) {
+        BackgroundExecutor.performBackgroundTask(
+                () -> resetPassword(userModel),
+                () -> {},
+                success -> System.out.println("Success: " + success.result()),
+                failure -> System.out.println("Fejl: " + failure)
+        );
+    }
+
+    private Result<Boolean> resetPassword(UserModel userModel) {
+        String password = Generator.generatePassword(8);
+        System.out.println("Password: " + password);
+        var tempUser = new User(userModel.id().get(), userModel.username().get(), "");
+        var result = new EntityManager().resetPassword(tempUser, password);
+
+        if (result.isFailure()) return result.failAs();
+
+        return Success.of(true);
     }
 
     private Result<User> createUser() {
