@@ -12,6 +12,7 @@ import event.tickets.easv.bar.gui.util.StyleConfig;
 import event.tickets.easv.bar.gui.widgets.CircularImageView;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
@@ -24,7 +25,7 @@ import org.kordamp.ikonli.javafx.FontIcon;
 import org.kordamp.ikonli.material2.Material2OutlinedAL;
 
 public class ShowUserView implements View {
-    private UserModel model = UserModel.Empty();
+    private final UserModel model = UserModel.Empty();
     private final DeleteUserController controller;
     private final CircularImageView circularImageView = new CircularImageView(80);
     private final EventGridView eventGridView;
@@ -40,8 +41,16 @@ public class ShowUserView implements View {
                 circularImageView.imageProperty().bind(model.image());
                 circularImageView.textProperty().bind(BindingsUtils.initialize(model.firstName(), model.lastName()));
                 eventGridView.setItems(model.events());
+
+                model.events().addListener((ListChangeListener<? super EventModel>) c -> {
+                    System.out.println("Events changed: " + c);
+                    eventGridView.setItems(model.events());
+                });
+
+
             }
         });
+
     }
 
     @Override

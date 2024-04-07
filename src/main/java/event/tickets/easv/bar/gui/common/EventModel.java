@@ -10,6 +10,7 @@ import javafx.scene.image.Image;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.Objects;
 
 public class EventModel {
     private final IntegerProperty id = new SimpleIntegerProperty();
@@ -154,5 +155,18 @@ public class EventModel {
     @Override
     public String toString() {
         return id.get() + " " + title.get() + " " + startDate.get() + " " + startTime.get() + " " + location.get() + " " + locationGuidance.get() + " " + extraInfo.get();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        EventModel that = (EventModel) obj;
+        return Objects.equals(id.get(), that.id.get());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id.get());
     }
 }

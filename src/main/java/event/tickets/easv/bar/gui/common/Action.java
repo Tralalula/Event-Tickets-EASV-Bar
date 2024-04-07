@@ -9,5 +9,6 @@ public sealed interface Action {
     record SaveProfile(UserModel original, UserModel updated) implements Action {}
     record DeleteUser(UserModel userModel) implements Action {}
     record AssignCoordinator(EventModel eventModel, UserModel coordinator) implements Action {}
+    record RemoveCoordinator(EventModel eventModel, UserModel coordinator) implements Action {}
     record DeleteTicket(TicketModel ticketModel) implements Action {}
 }

@@ -113,6 +113,15 @@ public class ShowEventView implements View {
             photo.textProperty().bind(BindingsUtils.initialize(userModel.firstName(), userModel.lastName()));
             photo.imageProperty().bind(userModel.image());
 
+            var contextMenu = new ContextMenu();
+            var editItem = MenuItems.createItem("_Remove", Feather.TRASH_2);
+
+            editItem.setOnAction(e -> controller.onRemoveCoordinator(() -> {}, eventModelToShow, userModel));
+
+            contextMenu.getItems().addAll(editItem);
+
+            photo.get().setOnContextMenuRequested(e -> contextMenu.show(photo.get(), e.getScreenX(), e.getScreenY()));
+
             var name = Labels.styledLabel(Bindings.concat(userModel.firstName(), " ", userModel.lastName()), Styles.TEXT_NORMAL);
             var box = new VBox(StyleConfig.STANDARD_SPACING, photo.get(), name);
             box.setAlignment(Pos.CENTER);

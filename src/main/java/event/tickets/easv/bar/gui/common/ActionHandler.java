@@ -29,6 +29,7 @@ public class ActionHandler {
             case DeleteUser a -> handleDeleteUser(a);
             case SaveProfile a -> handleSaveProfile(a);
             case AssignCoordinator a -> handleAssignCoordinator(a);
+            case RemoveCoordinator a -> handleRemoveCoordinator(a);
             default -> throw new IllegalStateException("Unexpected action type: " + action.getClass());
         }
     }
@@ -89,37 +90,43 @@ public class ActionHandler {
         UserModel assignedUser = action.coordinator();
         EventModel assignedEvent = action.eventModel();
 
-        System.out.println("Assigned user: " + assignedUser);
-        System.out.println("Assigned user id: " + assignedUser.id().get());
-
-        System.out.println("Assigned event: " + assignedEvent);
-        System.out.println("Assigned event id: " + assignedEvent.id().get());
-
-
-        System.out.println("Assigned User events before: " + assignedUser.events());
-        System.out.println("Assigned Event users before: " + assignedEvent.users());
-
         // masterlists
         for (UserModel userModel : model.userModels()) {
             if (userModel.id().get() == assignedUser.id().get()) {
-                System.out.println("User events before: " + userModel.events());
                 userModel.events().add(assignedEvent);
-                System.out.println("User events after: " + userModel.events());
                 break;
             }
         }
 
         for (EventModel eventModel : model.eventModels()) {
             if (eventModel.id().get() == assignedEvent.id().get()) {
-                System.out.println("Event users before: " + eventModel.users());
                 eventModel.users().add(assignedUser);
-                System.out.println("Event users after: " + eventModel.users());
+                break;
+            }
+        }
+    }
+
+    private static void handleRemoveCoordinator(RemoveCoordinator action) {
+        UserModel removedUser = action.coordinator();
+        EventModel removedEvent = action.eventModel();
+
+        // masterlists
+        for (UserModel userModel : model.userModels()) {
+            if (userModel.id().get() == removedUser.id().get()) {
+                System.out.println("User.events() before: " + userModel.events());
+                System.out.println("Removing event from user: " + userModel.id().get());
+                userModel.events().remove(removedEvent);
+                System.out.println("User.events() after: " + userModel.events());
                 break;
             }
         }
 
-        System.out.println("Assigned User events after: " + assignedUser.events());
-        System.out.println("Assigned Event users after: " + assignedEvent.users());
+        for (EventModel eventModel : model.eventModels()) {
+            if (eventModel.id().get() == removedEvent.id().get()) {
+                eventModel.users().remove(removedUser);
+                break;
+            }
+        }
     }
 
 }

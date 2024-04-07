@@ -45,6 +45,7 @@ public class Alerts {
         }
     }
 
+
     public static <T> void confirm(String title, String header, String content, T entityModel, Consumer<T> onConfirm) {
         Alert alert = new Alert(AlertType.CONFIRMATION);
         alert.setTitle(title);
