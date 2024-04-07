@@ -10,6 +10,8 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
+import java.util.Optional;
+
 public class AuthModel {
 
     private AuthHandler authHandler;
@@ -33,8 +35,14 @@ public class AuthModel {
 
         if (authenticatedUser.get() == null) return false;
 
-        SessionManager.getInstance().login(authenticatedUser.get());
-        return true;
+        Result<Optional<User>> user = new EntityManager().get(User.class, authenticatedUser.get().id());
+
+        if (user.isPresent()) {
+            SessionManager.getInstance().login(user.get().get());
+            return true;
+        } else {
+            return false;
+        }
 
 //        if (authenticatedUser != null) {
 //            SessionManager.getInstance().login(authenticatedUser);

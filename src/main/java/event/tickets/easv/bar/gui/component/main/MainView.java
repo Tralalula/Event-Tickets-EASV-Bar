@@ -211,11 +211,8 @@ public class MainView implements View {
         });
 
         MenuItem logoutMenuItem = new MenuItem("Log out");
-        logoutMenuItem.setOnAction(new EventHandler<ActionEvent>() {
-            public void handle(ActionEvent event) {
-                if (SessionManager.getInstance().logout())
-                    ViewHandler.changeView(ViewType.LOGIN);
-            }
+        logoutMenuItem.setOnAction(event -> {
+            if (SessionManager.getInstance().logout()) ViewHandler.changeView(ViewType.LOGIN);
         });
 
         List<MenuItem> settingsItems = new ArrayList<>();
@@ -229,7 +226,7 @@ public class MainView implements View {
                 Styles.FLAT
         );
 
-        settings.textProperty().bind(SessionManager.getInstance().loggedInUsernameProperty());
+        settings.textProperty().bind(SessionManager.getInstance().getUserModel().firstName());
 
 
         results.getChildren().addAll(minimizeMaximize, title, search, spacer, languageSelect, modeSwitch, settings);

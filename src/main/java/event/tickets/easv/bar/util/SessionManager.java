@@ -1,6 +1,7 @@
 package event.tickets.easv.bar.util;
 
 import event.tickets.easv.bar.be.User;
+import event.tickets.easv.bar.gui.common.UserModel;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
@@ -13,6 +14,7 @@ public class SessionManager {
     private Map<String, User> sessions;
     private String loggedInUserSessionId;
     private StringProperty loggedInUsernameProperty = new SimpleStringProperty();
+    private UserModel userModel = UserModel.Empty();
 
     private SessionManager() {
         sessions = new HashMap<>();
@@ -39,7 +41,12 @@ public class SessionManager {
         String sessionId = generateSessionId();
         sessions.put(sessionId, user);
         loggedInUserSessionId = sessionId;
+
         loggedInUsernameProperty.set(user.username());
+
+        userModel.update(UserModel.fromEntity(user));
+
+
         return sessionId;
     }
 
@@ -64,6 +71,10 @@ public class SessionManager {
 
     public StringProperty loggedInUsernameProperty() {
         return loggedInUsernameProperty;
+    }
+
+    public UserModel getUserModel() {
+        return userModel;
     }
 
     public synchronized boolean logout() {
