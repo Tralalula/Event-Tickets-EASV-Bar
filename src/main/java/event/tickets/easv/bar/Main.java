@@ -19,7 +19,7 @@ public class Main extends Application {
     public void start(Stage stage) {
         Application.setUserAgentStylesheet(new PrimerLight().getUserAgentStylesheet());
 
-        stage.setScene(new Scene(new MainView().getView(), 1200, 940));
+        stage.setScene(new Scene(new MainView().getView(), 1320, 940));
         ViewHandler.changeView(ViewType.DASHBOARD);
 
         stage.setMinHeight(980);
