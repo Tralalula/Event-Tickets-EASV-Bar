@@ -25,11 +25,13 @@ public class EventsView implements View {
     private final ObservableList<EventModel> model;
     private final BooleanProperty fetchingData;
     private final BooleanProperty eventsUsersSynchronized;
+    private final BooleanProperty eventsTicketsSynchronized;
 
-    public EventsView(ObservableList<EventModel> model, BooleanProperty fetchingData, BooleanProperty eventsUsersSynchronized) {
+    public EventsView(ObservableList<EventModel> model, BooleanProperty fetchingData, BooleanProperty eventsUsersSynchronized, BooleanProperty eventsTicketsSynchronized) {
         this.model = model;
         this.fetchingData = fetchingData;
         this.eventsUsersSynchronized = eventsUsersSynchronized;
+        this.eventsTicketsSynchronized = eventsTicketsSynchronized;
     }
 
     public HBox topBar() {
@@ -59,7 +61,7 @@ public class EventsView implements View {
         ProgressIndicator progressIndicator = new ProgressIndicator();
         NodeUtils.bindVisibility(progressIndicator, fetchingData);
 
-        var gridview = new EventGridView(model, eventsUsersSynchronized);
+        var gridview = new EventGridView(model, eventsUsersSynchronized, eventsTicketsSynchronized);
         var content = new StackPane(gridview.getView(), progressIndicator);
 
         return new VBox(top, content);

@@ -40,15 +40,17 @@ public class DashboardView implements View {
     private final ObservableList<EventModel> eventsMasterList;
     private final BooleanProperty fetchingData;
     private final BooleanProperty eventsUsersSynchronized;
+    private final BooleanProperty eventTicketsSynchronized;
     private final ListView<EventModel> eventListView;
     private final ObjectProperty<LocalDate> selectedDate = new SimpleObjectProperty<>(TODAY);
     private final FilteredList<EventModel> filteredEventsForDate;
 
 
-    public DashboardView(ObservableList<EventModel> eventsMasterList, BooleanProperty fetchingData, BooleanProperty eventsUsersSynchronized) {
+    public DashboardView(ObservableList<EventModel> eventsMasterList, BooleanProperty fetchingData, BooleanProperty eventsUsersSynchronized, BooleanProperty eventTicketsSynchronized) {
         this.eventsMasterList = eventsMasterList;
         this.fetchingData = fetchingData;
         this.eventsUsersSynchronized = eventsUsersSynchronized;
+        this.eventTicketsSynchronized = eventTicketsSynchronized;
         this.eventListView = new ListView<>();
         this.filteredEventsForDate = new FilteredList<>(eventsMasterList);
 
@@ -189,7 +191,7 @@ public class DashboardView implements View {
         var sortedEvents = new SortedList<>(filteredEvents,
                 Comparator.comparing(eventModel -> eventModel.startDate().get()));
 
-        var gridView = new EventGridView(sortedEvents, eventsUsersSynchronized);
+        var gridView = new EventGridView(sortedEvents, eventsUsersSynchronized, eventTicketsSynchronized);
 
         results.getChildren().addAll(eventsTitle, gridView.getView());
         return results;

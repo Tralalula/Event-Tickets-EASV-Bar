@@ -3,12 +3,16 @@ package event.tickets.easv.bar.gui.component.events;
 import atlantafx.base.controls.Card;
 import atlantafx.base.theme.Styles;
 import event.tickets.easv.bar.gui.common.*;
+import event.tickets.easv.bar.gui.component.tickets.TicketEventModel;
 import event.tickets.easv.bar.gui.util.*;
 import event.tickets.easv.bar.gui.widgets.CircularImageView;
 import event.tickets.easv.bar.gui.widgets.Images;
 import event.tickets.easv.bar.gui.widgets.MenuItems;
 import javafx.beans.binding.Bindings;
+import javafx.beans.binding.NumberBinding;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -24,9 +28,16 @@ import org.controlsfx.control.GridView;
 import org.kordamp.ikonli.feather.Feather;
 
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
-import static event.tickets.easv.bar.gui.component.events.EventsView.*;
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.NumberBinding;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.ObservableList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class EventGridView implements View {
     private static final int CARD_WIDTH = 326;
@@ -38,15 +49,14 @@ public class EventGridView implements View {
     private final DeleteEventController controller;
     private final GridView<EventModel> gridview;
     private final ObservableList<EventModel> model;
-    private final BooleanProperty eventsUsersSynchronized;
 
-    public EventGridView(ObservableList<EventModel> model, BooleanProperty eventsUsersSynchronized) {
+    public EventGridView(ObservableList<EventModel> model, BooleanProperty eventsUsersSynchronized, BooleanProperty eventsTicketsSynchronized) {
         this.controller = new DeleteEventController();
         this.model = model;
         this.gridview = new GridView<>();
-        this.eventsUsersSynchronized = eventsUsersSynchronized;
 
         Listeners.addOnceChangeListener(eventsUsersSynchronized, () -> setItems(model));
+        Listeners.addOnceChangeListener(eventsTicketsSynchronized, () -> setItems(model));
     }
 
     public Region getView() {
@@ -82,7 +92,7 @@ public class EventGridView implements View {
             private final CircularImageView photo3 = new CircularImageView(PROFILE_IMG_RADIUS);
             private final HBox profileImages = new HBox(StyleConfig.STANDARD_SPACING, photo1.get(), photo2.get(), photo3.get());
 
-            private final Label ticketsSold = new Label("283 tickets sold");
+            private final Label ticketsSold = new Label();
 
             private final BorderPane footer = new BorderPane();
 
@@ -158,6 +168,11 @@ public class EventGridView implements View {
                     startDateTime.textProperty().bind(BindingsUtils.dateTimeBinding(item.startDate(), item.startTime(), "Starts", formatter));
                     endDateTime.textProperty().bind(BindingsUtils.dateTimeBinding(item.endDate(), item.endTime(), "Ends", formatter));
 
+
+
+                    ticketsSold.textProperty().bind(Bindings.concat("Tickets sold: ", bindTotalTicketsSold(item.tickets())));
+
+
                     card.setOnMouseClicked(e -> {
                         if (e.getButton() == MouseButton.PRIMARY) {
                             ViewHandler.changeView(ViewType.SHOW_EVENT, item);
@@ -177,6 +192,22 @@ public class EventGridView implements View {
                 }
             }
         };
+    }
+
+    public NumberBinding bindTotalTicketsSold(ObservableList<TicketEventModel> ticketEventModels) {
+        List<IntegerProperty> boughtProperties = ticketEventModels.stream()
+                                                                  .map(TicketEventModel::bought)
+                                                                  .toList();
+
+        List<ObservableValue<Integer>> boughtObservables = boughtProperties.stream()
+                                                                           .map(IntegerProperty::asObject)
+                                                                           .collect(Collectors.toList());
+
+        var boughtObservablesArray = boughtObservables.toArray(new ObservableValue[0]);
+
+        return Bindings.createIntegerBinding(() -> boughtObservables.stream()
+                                                                    .mapToInt(ObservableValue::getValue)
+                                                                    .sum(), boughtObservablesArray);
     }
 
     private void updatePhotos(EventModel item, CircularImageView photo1, CircularImageView photo2, CircularImageView photo3) {

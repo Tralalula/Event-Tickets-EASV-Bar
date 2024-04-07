@@ -64,8 +64,8 @@ public class MainView implements View {
             throw new RuntimeException("Fejl opstået");
         }
 
-        this.dashboardView = new DashboardView(model.eventModels(), model.fetchingEventsProperty(), model.eventsUsersSynchronizedProperty()).getView();
-        this.eventsView = new EventsView(model.eventModels(), model.fetchingEventsProperty(), model.eventsUsersSynchronizedProperty()).getView();
+        this.dashboardView = new DashboardView(model.eventModels(), model.fetchingEventsProperty(), model.eventsUsersSynchronizedProperty(), model.eventsTicketsSynchronizedProperty()).getView();
+        this.eventsView = new EventsView(model.eventModels(), model.fetchingEventsProperty(), model.eventsUsersSynchronizedProperty(), model.eventsTicketsSynchronizedProperty()).getView();
         this.createEventView = new CreateEventView().getView();
         this.showEventView = new ShowEventView(model.eventModels(), model.userModels(), model.ticketModels(), model.eventsTicketsSynchronizedProperty()).getView();
 
@@ -74,7 +74,7 @@ public class MainView implements View {
         TicketsModel ticketsModel = new TicketsModel(model);
         this.showTicketView = new ShowTicketView(model, ticketsModel).getView();
         this.createUserView = new CreateUserView().getView();
-        this.showUserView = new ShowUserView(model.eventsUsersSynchronizedProperty()).getView();
+        this.showUserView = new ShowUserView(model.eventsUsersSynchronizedProperty(), model.eventsTicketsSynchronizedProperty()).getView();
         this.usersView = new UsersView(model.userModels(), model.fetchingUsersProperty(), model.eventsUsersSynchronizedProperty()).getView();
     }
 

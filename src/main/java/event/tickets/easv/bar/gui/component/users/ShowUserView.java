@@ -28,12 +28,10 @@ public class ShowUserView implements View {
     private final DeleteUserController controller;
     private final CircularImageView circularImageView = new CircularImageView(80);
     private final EventGridView eventGridView;
-    private final BooleanProperty eventsUsersSynchronized;
 
-    public ShowUserView(BooleanProperty eventsUsersSynchronized) {
+    public ShowUserView(BooleanProperty eventsUsersSynchronized, BooleanProperty eventsTicketsSynchronized) {
         this.controller = new DeleteUserController();
-        this.eventsUsersSynchronized = eventsUsersSynchronized;
-        this.eventGridView = new EventGridView(model.events(), eventsUsersSynchronized);
+        this.eventGridView = new EventGridView(model.events(), eventsUsersSynchronized, eventsTicketsSynchronized);
 
         ViewHandler.currentViewDataProperty().subscribe((oldData, newData) -> {
             if (newData instanceof UserModel) {
