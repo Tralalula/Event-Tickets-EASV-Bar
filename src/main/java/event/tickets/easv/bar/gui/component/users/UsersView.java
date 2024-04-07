@@ -43,8 +43,6 @@ public class UsersView implements View {
         placeholder.getStyleClass().add(Styles.TITLE_4);
 
         var top = topBar();
-        top.setPadding(new Insets(0, 0, 0, StyleConfig.STANDARD_SPACING));
-
 
         var userList = new ListView<UserModel>();
         userList.setItems(model);

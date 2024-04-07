@@ -9,39 +9,51 @@ import event.tickets.easv.bar.gui.common.ViewHandler;
 import event.tickets.easv.bar.gui.common.ViewType;
 import event.tickets.easv.bar.gui.util.NodeUtils;
 import event.tickets.easv.bar.gui.util.StyleConfig;
-import event.tickets.easv.bar.gui.widgets.Buttons;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.layout.*;
 import org.kordamp.ikonli.feather.Feather;
 import org.kordamp.ikonli.javafx.FontIcon;
-import org.kordamp.ikonli.material2.Material2AL;
+
+import java.util.function.Predicate;
 
 public class EventsView implements View {
     private final ObservableList<EventModel> model;
     private final BooleanProperty fetchingData;
     private final BooleanProperty eventsUsersSynchronized;
     private final BooleanProperty eventsTicketsSynchronized;
+    private static final StringProperty search = new SimpleStringProperty("");
+    private final FilteredList<EventModel> filteredEventModels;
+    private EventGridView gridView;
 
-    public EventsView(ObservableList<EventModel> model, BooleanProperty fetchingData, BooleanProperty eventsUsersSynchronized, BooleanProperty eventsTicketsSynchronized) {
-        this.model = model;
+    public StringProperty searchProperty() {
+        return search;
+    }
+
+    public EventsView(ObservableList<EventModel> masterEventList, BooleanProperty fetchingData, BooleanProperty eventsUsersSynchronized, BooleanProperty eventsTicketsSynchronized) {
+        this.model = masterEventList;
         this.fetchingData = fetchingData;
         this.eventsUsersSynchronized = eventsUsersSynchronized;
         this.eventsTicketsSynchronized = eventsTicketsSynchronized;
+        this.filteredEventModels = new FilteredList<>(masterEventList);
+
+        setupSearchFilter();
     }
 
     public HBox topBar() {
         HBox top = new HBox();
         top.setPadding(new Insets(0 ,StyleConfig.STANDARD_SPACING * 3 ,0 ,StyleConfig.STANDARD_SPACING));
 
-        var search = new CustomTextField();
-        search.setPromptText("Search");
-        search.setLeft(new FontIcon(Feather.SEARCH));
-        search.setPrefWidth(250);
+        var searchField = new CustomTextField();
+        searchField.setLeft(new FontIcon(Feather.SEARCH));
+        searchField.setPrefWidth(250);
+        searchField.textProperty().bindBidirectional(searchProperty());
 
         var addEvent = new Button(null, new FontIcon(Feather.PLUS));
         addEvent.getStyleClass().addAll(
@@ -49,20 +61,32 @@ public class EventsView implements View {
         );
         addEvent.setOnAction(e -> ViewHandler.changeView(ViewType.CREATE_EVENT));
 
-        top.getChildren().addAll(search, new Spacer(), addEvent);
+        top.getChildren().addAll(searchField, new Spacer(), addEvent);
         return top;
+    }
+
+    private void setupSearchFilter() {
+        this.searchProperty().addListener((obs, ov, nv) -> {
+            Predicate<EventModel> searchPredicate = eventModel -> {
+                if (nv == null || nv.isEmpty()) {
+                    return true;
+                }
+
+                return eventModel.title().get().toLowerCase().contains(nv.toLowerCase());
+            };
+
+            filteredEventModels.setPredicate(searchPredicate);
+        });
     }
 
     @Override
     public Region getView() {
         var top = topBar();
-        top.setPadding(new Insets(0, 0, 0, StyleConfig.STANDARD_SPACING));
-
         ProgressIndicator progressIndicator = new ProgressIndicator();
         NodeUtils.bindVisibility(progressIndicator, fetchingData);
 
-        var gridview = new EventGridView(model, eventsUsersSynchronized, eventsTicketsSynchronized);
-        var content = new StackPane(gridview.getView(), progressIndicator);
+        gridView = new EventGridView(filteredEventModels, eventsUsersSynchronized, eventsTicketsSynchronized);
+        var content = new StackPane(gridView.getView(), progressIndicator);
 
         return new VBox(top, content);
     }
