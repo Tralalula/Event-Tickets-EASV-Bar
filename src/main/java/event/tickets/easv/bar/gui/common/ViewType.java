@@ -38,7 +38,10 @@ public enum ViewType {
     USERS(WindowType.MAIN_APP),
     SHOW_USER(WindowType.MAIN_APP, USERS),
     CREATE_USER(WindowType.MAIN_APP, USERS),
-    EDIT_USER(WindowType.MAIN_APP, USERS);
+    EDIT_USER(WindowType.MAIN_APP, USERS),
+
+    // Profile
+    PROFILE(WindowType.MAIN_APP);
 
     private final WindowType windowType;
     private final ViewType parent;
