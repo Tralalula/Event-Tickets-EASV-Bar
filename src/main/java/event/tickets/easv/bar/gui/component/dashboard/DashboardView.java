@@ -47,7 +47,8 @@ public class DashboardView implements View {
     private final ListView<EventModel> eventListView;
     private final ObjectProperty<LocalDate> selectedDate = new SimpleObjectProperty<>(TODAY);
     private final FilteredList<EventModel> filteredEventsForDate;
-
+    private final FilteredList<EventModel> filteredEventsAfterToday;
+    private EventGridView gridView;
 
     private Map<EventModel, List<ChangeListener<? super LocalDate>>> startDateListeners = new HashMap<>();
     private Map<EventModel, List<ChangeListener<? super LocalTime>>> startTimeListeners = new HashMap<>();
@@ -59,7 +60,9 @@ public class DashboardView implements View {
         this.eventTicketsSynchronized = eventTicketsSynchronized;
         this.eventListView = new ListView<>();
         this.filteredEventsForDate = new FilteredList<>(eventsMasterList);
+        this.filteredEventsAfterToday = new FilteredList<>(eventsMasterList);
 
+        filteredEventsAfterToday.setPredicate(eventModel -> !eventModel.startDate().get().isBefore(TODAY));
         filteredEventsForDate.setPredicate(eventModel -> eventModel.startDate().get().equals(selectedDate.get()));
 
         var sortedEventsByTime = new SortedList<>(filteredEventsForDate, Comparator.comparing(eventModel -> eventModel.startTime().get()));
@@ -82,8 +85,15 @@ public class DashboardView implements View {
         removeExistingListeners();
 
         for (EventModel eventModel : eventsMasterList) {
-            ChangeListener<LocalDate> dateListener = (obs, ov, nv) -> updateEventListView();
-            ChangeListener<LocalTime> timeListener = (obs, ov, nv) -> updateEventListView();
+            ChangeListener<LocalDate> dateListener = (obs, ov, nv) -> {
+                updateListView();
+                updateGridView();
+            };
+
+            ChangeListener<LocalTime> timeListener = (obs, ov, nv) -> {
+                updateListView();
+                updateGridView();
+            };
 
             eventModel.startDate().addListener(dateListener);
             eventModel.startTime().addListener(timeListener);
@@ -137,19 +147,23 @@ public class DashboardView implements View {
         var eventsTitle = Labels.styledLabel("Upcoming events", Styles.TITLE_2);
         eventsTitle.setPadding(new Insets(0, 0, 0, 10));
 
-        var filteredEvents = new FilteredList<>(eventsMasterList,
-                eventModel -> !eventModel.startDate().get().isBefore(TODAY));
-
         Comparator<EventModel> byDate = Comparator.comparing(eventModel -> eventModel.startDate().get());
         Comparator<EventModel> byTime = Comparator.comparing(eventModel -> eventModel.startTime().get(), Comparator.nullsFirst(Comparator.naturalOrder()));
-        var sortedEvents = new SortedList<>(filteredEvents, byDate.thenComparing(byTime));
+        var sortedEvents = new SortedList<>(filteredEventsAfterToday, byDate.thenComparing(byTime));
 
-
-        var gridView = new EventGridView(sortedEvents, eventsUsersSynchronized, eventTicketsSynchronized);
+        gridView = new EventGridView(sortedEvents, eventsUsersSynchronized, eventTicketsSynchronized);
 
 
         results.getChildren().addAll(eventsTitle, gridView.getView());
         return results;
+    }
+
+    public void updateGridView() {
+        filteredEventsAfterToday.setPredicate(eventModel -> !eventModel.startDate().get().isBefore(TODAY));
+        Comparator<EventModel> byDate = Comparator.comparing(eventModel -> eventModel.startDate().get());
+        Comparator<EventModel> byTime = Comparator.comparing(eventModel -> eventModel.startTime().get(), Comparator.nullsFirst(Comparator.naturalOrder()));
+        var sortedEvents = new SortedList<>(filteredEventsAfterToday, byDate.thenComparing(byTime));
+        gridView.setItems(sortedEvents);
     }
 
     public Node calender() {
@@ -162,7 +176,7 @@ public class DashboardView implements View {
 
         cal.valueProperty().addListener((obs, ov, nv) -> {
             selectedDate.set(nv);
-            updateEventListView();
+            updateListView();
         });
 
 
@@ -175,7 +189,7 @@ public class DashboardView implements View {
         return results;
     }
 
-    private void updateEventListView() {
+    private void updateListView() {
         filteredEventsForDate.setPredicate(eventModel -> eventModel.startDate().get().equals(selectedDate.get()));
     }
 
