@@ -21,9 +21,9 @@ public class Main extends Application {
 
         stage.setScene(new Scene(new MainView().getView(), 1340, 940));
         ViewHandler.changeView(ViewType.DASHBOARD);
-
-        stage.setMinHeight(980);
-        stage.setMinWidth(1000);
+//
+//        stage.setMinHeight(980);
+//        stage.setMinWidth(1000);
 
         stage.show();
     }
