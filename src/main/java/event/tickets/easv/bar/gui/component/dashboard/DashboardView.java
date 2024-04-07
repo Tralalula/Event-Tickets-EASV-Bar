@@ -15,6 +15,7 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -31,6 +32,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.*;
 
@@ -46,6 +48,9 @@ public class DashboardView implements View {
     private final ObjectProperty<LocalDate> selectedDate = new SimpleObjectProperty<>(TODAY);
     private final FilteredList<EventModel> filteredEventsForDate;
 
+
+    private Map<EventModel, List<ChangeListener<? super LocalDate>>> startDateListeners = new HashMap<>();
+    private Map<EventModel, List<ChangeListener<? super LocalTime>>> startTimeListeners = new HashMap<>();
 
     public DashboardView(ObservableList<EventModel> eventsMasterList, BooleanProperty fetchingData, BooleanProperty eventsUsersSynchronized, BooleanProperty eventTicketsSynchronized) {
         this.eventsMasterList = eventsMasterList;
@@ -74,15 +79,33 @@ public class DashboardView implements View {
     }
 
     private void attachStartDateListeners() {
-        for (EventModel eventModel : eventsMasterList) {
-            eventModel.startDate().addListener((obs, ov, nv) -> {
-                updateEventListView();
-            });
+        removeExistingListeners();
 
-            eventModel.startTime().addListener((obs, ov, nv) -> {
-                updateEventListView();
-            });
+        for (EventModel eventModel : eventsMasterList) {
+            ChangeListener<LocalDate> dateListener = (obs, ov, nv) -> updateEventListView();
+            ChangeListener<LocalTime> timeListener = (obs, ov, nv) -> updateEventListView();
+
+            eventModel.startDate().addListener(dateListener);
+            eventModel.startTime().addListener(timeListener);
+
+            startDateListeners.computeIfAbsent(eventModel, k -> new ArrayList<>()).add(dateListener);
+            startTimeListeners.computeIfAbsent(eventModel, k -> new ArrayList<>()).add(timeListener);
         }
+    }
+
+    private void removeExistingListeners() {
+        startDateListeners.forEach((eventModel, listeners) -> {
+            listeners.forEach(listener -> eventModel.startDate()
+                                                    .removeListener(listener));
+        });
+
+        startTimeListeners.forEach((eventModel, listeners) -> {
+                listeners.forEach(listener -> eventModel.startTime()
+                                                        .removeListener(listener));
+        });
+
+        startDateListeners.clear();
+        startTimeListeners.clear();
     }
 
 
@@ -117,10 +140,13 @@ public class DashboardView implements View {
         var filteredEvents = new FilteredList<>(eventsMasterList,
                 eventModel -> !eventModel.startDate().get().isBefore(TODAY));
 
-        var sortedEvents = new SortedList<>(filteredEvents,
-                Comparator.comparing(eventModel -> eventModel.startDate().get()));
+        Comparator<EventModel> byDate = Comparator.comparing(eventModel -> eventModel.startDate().get());
+        Comparator<EventModel> byTime = Comparator.comparing(eventModel -> eventModel.startTime().get(), Comparator.nullsFirst(Comparator.naturalOrder()));
+        var sortedEvents = new SortedList<>(filteredEvents, byDate.thenComparing(byTime));
+
 
         var gridView = new EventGridView(sortedEvents, eventsUsersSynchronized, eventTicketsSynchronized);
+
 
         results.getChildren().addAll(eventsTitle, gridView.getView());
         return results;
