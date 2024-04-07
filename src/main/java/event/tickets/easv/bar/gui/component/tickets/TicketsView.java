@@ -79,7 +79,7 @@ public class TicketsView implements View {
 
     public HBox topBar() {
         HBox top = new HBox();
-        top.setPadding(new Insets(0 ,StyleConfig.STANDARD_SPACING * 2 ,0 ,StyleConfig.STANDARD_SPACING));
+        top.setPadding(new Insets(0 ,StyleConfig.STANDARD_SPACING * 3 ,0 ,StyleConfig.STANDARD_SPACING));
 
         var search = new CustomTextField();
         search.setPromptText("Search");
@@ -90,7 +90,6 @@ public class TicketsView implements View {
         addTicket.getStyleClass().addAll(
                 Styles.BUTTON_ICON, Styles.FLAT, Styles.ACCENT, Styles.TITLE_4
         );
-
         addTicket.setOnAction(e -> ViewHandler.showOverlay("Add new Ticket", addTicket(), 300, 350));
 
         top.getChildren().addAll(search, new Spacer(), addTicket);
@@ -197,8 +196,7 @@ public class TicketsView implements View {
                 } else {
                     titleLabel.textProperty().bind(item.title());
                     typeLabel.textProperty().bind(item.type());
-
-                    eventsLabel.textProperty().bind(item.eventCount().asString());
+                    eventsLabel.textProperty().bind(item.eventCount().asString().concat(" events"));
 
                     gridPane.setPadding(new Insets(0, CELL_PADDING * 2, 0, CELL_PADDING * 2));
 
@@ -255,7 +253,7 @@ public class TicketsView implements View {
                     // deleteItem.setOnAction(e -> Alerts.confirmDeleteUser(
                     //         item,
                     //         userModel -> controller.onDeleteUser(() -> {}, item))
-                    // );
+                     //);
 
                     setGraphic(wrapper);
                 }

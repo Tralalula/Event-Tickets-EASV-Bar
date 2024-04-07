@@ -8,4 +8,5 @@ public sealed interface Action {
     record EditUser(UserModel original, UserModel updated) implements Action {}
     record DeleteUser(UserModel userModel) implements Action {}
     record AssignCoordinator(EventModel eventModel, UserModel coordinator) implements Action {}
+    record DeleteTicket(TicketModel ticketModel) implements Action {}
 }

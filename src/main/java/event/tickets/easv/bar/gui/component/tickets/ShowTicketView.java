@@ -2,55 +2,51 @@ package event.tickets.easv.bar.gui.component.tickets;
 
 import atlantafx.base.controls.CustomTextField;
 import atlantafx.base.controls.MaskTextField;
+import atlantafx.base.controls.Spacer;
 import atlantafx.base.theme.Styles;
 import atlantafx.base.theme.Tweaks;
 import atlantafx.base.util.DoubleStringConverter;
 import atlantafx.base.util.IntegerStringConverter;
-import event.tickets.easv.bar.be.Ticket.TicketEvent;
-import event.tickets.easv.bar.bll.TicketManager;
 import event.tickets.easv.bar.gui.common.*;
-import event.tickets.easv.bar.gui.component.events.assigncoordinator.AssignCoordinatorView;
 import event.tickets.easv.bar.gui.component.main.MainModel;
 import event.tickets.easv.bar.gui.util.NodeUtils;
 import event.tickets.easv.bar.gui.util.StyleConfig;
-import event.tickets.easv.bar.gui.widgets.Buttons;
+import event.tickets.easv.bar.gui.widgets.MenuItems;
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.FloatProperty;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
-import javafx.collections.transformation.FilteredList;
+import javafx.css.PseudoClass;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.VBox;
-import javafx.util.converter.FloatStringConverter;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.*;
 import org.controlsfx.control.CheckComboBox;
 import org.kordamp.ikonli.feather.Feather;
 import org.kordamp.ikonli.javafx.FontIcon;
-import org.kordamp.ikonli.material2.Material2AL;
 import org.kordamp.ikonli.material2.Material2MZ;
-import org.kordamp.ikonli.material2.Material2OutlinedMZ;
 
-import java.beans.EventHandler;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ShowTicketView implements View {
+    private TicketModel model = TicketModel.Empty();
     private final TicketsModel ticketsModel;
     private final MainModel main;
 
-    private TicketModel model = TicketModel.Empty();
+    private static final PseudoClass HOVER_PSEUDO_CLASS = PseudoClass.getPseudoClass("hover");
+    private static final int CELL_PADDING = 10;
+    private static final int CELL_HEIGHT = 50;
+
     private final Label titleLabel = new Label();
     private final Label type = new Label();
     private final Label defaultPrice = new Label();
-    private final Label defaultQuantity = new Label();
-    private final Label events = new Label();
+    private final Label eventsCount = new Label();
 
+
+    private ListView<TicketEventModel> ticketEventList = new ListView<TicketEventModel>();
     private TableView<TicketEventModel> table;
 
     private final static int PREF_TEXTFIELD_WIDTH = 200;
@@ -63,7 +59,8 @@ public class ShowTicketView implements View {
         ViewHandler.currentViewDataProperty().subscribe((oldData, newData) -> {
             if (newData instanceof TicketModel) {
                 model.update((TicketModel) newData);
-                table.setItems(model.ticketEvents());
+                ticketEventList.setItems(model.ticketEvents());
+                updateTexts();
             }
         });
 
@@ -79,20 +76,63 @@ public class ShowTicketView implements View {
     }
 
     public VBox topSection() {
-        VBox box = new VBox(5);
+        var placeholder = new Label("No tickets found");
+        placeholder.getStyleClass().add(Styles.TITLE_4);
+
+        ticketEventList.setItems(model.ticketEvents());
+        ticketEventList.setPlaceholder(placeholder);
+        ticketEventList.getStyleClass().addAll(Tweaks.EDGE_TO_EDGE);
+        ticketEventList.setCellFactory(c -> {
+            var cell = ticketCell();
+            cell.getStyleClass().add("bg-subtle-list");
+            return cell;
+        });
+
+        StackPane stackPane = new StackPane(ticketEventList);
+        VBox.setVgrow(stackPane, Priority.ALWAYS);
+
+        return new VBox(StyleConfig.STANDARD_SPACING, ticketDetails(), stackPane);
+    }
+
+    // Nogle ting vil bare ikke opdatere......................
+    private void updateTexts() {
+        eventsCount.textProperty().set(Integer.toString(model.ticketEvents().size()) + " events");
+    }
+
+    private VBox ticketDetails() {
         titleLabel.textProperty().bind(model.title());
         titleLabel.getStyleClass().add(Styles.TITLE_3);
 
         type.getStyleClass().add(Styles.TEXT_SUBTLE);
         type.textProperty().bind(model.type());
 
+        VBox top = new VBox(titleLabel, type);
+
+        eventsCount.getStyleClass().add(Styles.TEXT_SUBTLE);
+       // eventsCount.textProperty().bind(Bindings.size(model.ticketEvents()).asString().concat(" events"));
+
         defaultPrice.setText("Default price: 250 DKK,-");
 
-        var associate = new Button("Add");
-        associate.setOnAction(e -> ViewHandler.showOverlay("Add ticket to event", addTickets(), 300, 350));
+        var search = new CustomTextField();
+        search.setPromptText("Search");
+        search.setLeft(new FontIcon(Feather.SEARCH));
+        search.setPrefWidth(250);
+        search.setFocusTraversable(false);
 
-        box.getChildren().addAll(titleLabel, type, defaultPrice, associate, createTicketTableView());
-        return box;
+        var addTicketEvent = new Button(null, new FontIcon(Feather.PLUS));
+        addTicketEvent.getStyleClass().addAll(
+                Styles.BUTTON_ICON, Styles.FLAT, Styles.ACCENT, Styles.TITLE_4
+        );
+        addTicketEvent.setOnAction(e -> ViewHandler.showOverlay("Add ticket to event", addTickets(), 300, 350));
+
+        var controls = new HBox();
+        controls.getChildren().addAll(search, new Spacer(), addTicketEvent);
+
+        var details = new VBox(StyleConfig.STANDARD_SPACING);
+        details.getChildren().addAll(top, defaultPrice, eventsCount, controls);
+        details.setPadding(new Insets(0, StyleConfig.STANDARD_SPACING * 2, 0, StyleConfig.STANDARD_SPACING));
+
+        return details;
     }
 
     public TableView<TicketEventModel> createTicketTableView() {
@@ -184,6 +224,163 @@ public class ShowTicketView implements View {
         return table;
     }
 
+    private ListCell<TicketEventModel> ticketCell() {
+        return new ListCell<>() {
+            private final Label titleLabel = new Label();
+            private final Label totalLabel = new Label();
+            private final Label leftLabel = new Label();
+            private final Label boughtLabel = new Label();
+            private final Label priceLabel = new Label();
+
+            private final GridPane gridPane = new GridPane();
+            private final Region spacer = new Spacer();
+
+            private final ContextMenu contextMenu = new ContextMenu();
+            private final MenuItem editItem = MenuItems.createItem("_Edit", Feather.EDIT);
+            private final MenuItem deleteItem = MenuItems.createItem("_Delete", Feather.TRASH_2);
+            {
+                editItem.setMnemonicParsing(true);
+                deleteItem.setMnemonicParsing(true);
+
+                contextMenu.getItems().addAll(editItem, deleteItem);
+                setContextMenu(contextMenu);
+
+                spacer.setPrefHeight(0);
+                spacer.setMinHeight(0);
+                spacer.setMaxHeight(0);
+
+                spacer.setPadding(new Insets(0,CELL_PADDING * 2,0,CELL_PADDING * 2));
+                titleLabel.setPadding(new Insets(0, 0, 0, CELL_PADDING));
+
+                titleLabel.getStyleClass().add(Styles.TEXT_BOLD);
+                totalLabel.getStyleClass().add(Styles.TEXT_MUTED);
+                leftLabel.getStyleClass().add(Styles.TEXT_MUTED);
+                boughtLabel.getStyleClass().add(Styles.TEXT_MUTED);
+                priceLabel.getStyleClass().add(Styles.TEXT_MUTED);
+
+                ColumnConstraints column1 = new ColumnConstraints();
+                column1.setPercentWidth(35);
+                double width = (100 - column1.getPercentWidth()) / 3;
+
+                ColumnConstraints column2 = new ColumnConstraints();
+                column2.setPercentWidth(width);
+                ColumnConstraints column3 = new ColumnConstraints();
+                column3.setPercentWidth(width);
+                ColumnConstraints column4 = new ColumnConstraints();
+                column4.setPercentWidth(width);
+                ColumnConstraints column5 = new ColumnConstraints();
+                column5.setPercentWidth(width);
+                ColumnConstraints column6 = new ColumnConstraints();
+                column6.setPercentWidth(width);
+
+                gridPane.getColumnConstraints().addAll(column1, column2, column3, column4, column5, column6);
+
+                gridPane.add(titleLabel, 0, 0);
+                gridPane.add(totalLabel, 1, 0);
+                gridPane.add(leftLabel, 2, 0);
+                gridPane.add(boughtLabel, 3, 0);
+                gridPane.add(priceLabel, 4, 0);
+
+                gridPane.setMinHeight(CELL_HEIGHT);
+                gridPane.setAlignment(Pos.CENTER_LEFT);
+
+                gridPane.setMouseTransparent(true);
+                gridPane.getStyleClass().addAll(StyleConfig.ROUNDING_DEFAULT, "list-cell-grid");
+
+                hoverProperty().addListener((obs, ov, nv) -> gridPane.pseudoClassStateChanged(HOVER_PSEUDO_CLASS, nv));
+
+                spacer.getStyleClass().add("list-cell-spacer");
+                spacer.addEventFilter(MouseEvent.MOUSE_CLICKED, MouseEvent::consume);
+            }
+
+            @Override
+            protected void updateItem(TicketEventModel item, boolean empty) {
+                if (item == getItem() && empty == isEmpty()) return;
+
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setGraphic(null);
+                } else {
+                    //table.getColumns().addAll(title, total, left, bought, price, actionButtons);
+
+                    titleLabel.textProperty().bind(item.event().get().title());
+                    totalLabel.textProperty().bind(item.total().asString().concat(" total"));
+                    leftLabel.textProperty().bind(item.left().asString().concat(" left"));
+                    boughtLabel.textProperty().bind(item.bought().asString().concat(" bought"));
+                    priceLabel.textProperty().bind(Bindings.concat("DKK ", item.price().asString(), ",-"));
+
+                    gridPane.setPadding(new Insets(0, CELL_PADDING * 2, 0, CELL_PADDING * 2));
+
+                    var assignButton = new Button(null, new FontIcon(Material2MZ.PERSON_ADD));
+                    var editButton = new Button(null, new FontIcon(Feather.EDIT));
+                    var deleteButton = new Button(null, new FontIcon(Feather.TRASH));
+
+                    assignButton.getStyleClass().addAll(
+                            Styles.BUTTON_ICON, Styles.FLAT, Styles.ACCENT, Styles.TITLE_4
+                    );
+
+                    assignButton.setOnAction(event -> {
+                        ViewHandler.showOverlay("Assign ticket", assignCustomer(item), 300, 350);
+                    });
+
+                    editButton.getStyleClass().addAll(
+                            Styles.BUTTON_ICON, Styles.FLAT, Styles.ACCENT, Styles.TITLE_4
+                    );
+
+                    editButton.setOnAction(event -> {
+                        //ViewHandler.changeView(ViewType.SHOW_TICKET, item);
+                    });
+
+                    deleteButton.getStyleClass().addAll(
+                            Styles.BUTTON_ICON, Styles.FLAT, Styles.ACCENT, Styles.TITLE_4
+                    );
+
+                    deleteButton.setOnAction(event -> {
+                        // intet endnu
+                    });
+
+                    HBox buttons = new HBox(assignButton, editButton, deleteButton);
+                    buttons.setPadding(new Insets(0, CELL_PADDING, 0, 0));
+                    buttons.setAlignment(Pos.CENTER_RIGHT);
+                    buttons.setSpacing(20);
+
+                    StackPane stackPane = new StackPane(gridPane, buttons);
+                    stackPane.setAlignment(Pos.CENTER_LEFT);
+
+                    var wrapper = new VBox(stackPane, spacer);
+
+                    // Tilføj runde hjørner til første element
+                    /*
+                    if (getIndex() == 0) {
+                        gridPane.getStyleClass().add("list-cell-grid-top");
+                    }
+
+                    // Tilføj runde hjørner til sidste element
+                    if (getIndex() == getListView().getItems().size() - 1) {
+                        gridPane.getStyleClass().add("list-cell-grid-bottom");
+                    }*/
+
+                    wrapper.getStyleClass().add(StyleConfig.ACTIONABLE);
+
+                    wrapper.setOnMouseClicked(event -> {
+                        if (event.getButton() == MouseButton.PRIMARY) {
+                           // ViewHandler.changeView(ViewType.SHOW_TICKET, item);
+                        }
+                    });
+
+
+                    editItem.setOnAction(e -> System.out.println("Edit ticket: " + item.id().get()));
+                    // deleteItem.setOnAction(e -> Alerts.confirmDeleteUser(
+                    //         item,
+                    //         userModel -> controller.onDeleteUser(() -> {}, item))
+                    //);
+
+                    setGraphic(wrapper);
+                }
+            }
+        };
+    }
+
     public VBox assignCustomer(TicketEventModel ticketEventModel) {
         VBox vBox = new VBox(10);
 
@@ -212,14 +409,12 @@ public class ShowTicketView implements View {
         err.getStyleClass().add(Styles.DANGER);
 
         add.setOnAction(e -> {
-                if (ticketEventModel.left().get() < amountValue.getValue()) {
-                    err.setText("Not enough tickets left");
-                    return;
-                }
-                
+            try {
                 ticketsModel.generateTickets(ticketEventModel, amountValue.getValue(), emailValue.getText());
-                table.refresh();
-            });
+            } catch (Exception ex) {
+                ViewHandler.notify(NotificationType.FAILURE, ex.getMessage());
+            }
+        });
 
         addBox.getChildren().addAll(add, err);
 

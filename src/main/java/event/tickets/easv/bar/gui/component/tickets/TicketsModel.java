@@ -18,6 +18,8 @@ import javafx.collections.transformation.SortedList;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class TicketsModel {
@@ -96,7 +98,7 @@ public class TicketsModel {
         return newEntries;
     }
 
-    public Customer getCustomer(String email) {
+    public Customer getCustomer(String email) throws Exception {
         Result<Optional<Customer>> exists = entityManager.get(Customer.class, email);
         Customer createdCustomer = null;
 
@@ -108,10 +110,23 @@ public class TicketsModel {
         return createdCustomer;
     }
 
-    //TODO: Refactor
-    public List<TicketGenerated> generateTickets(TicketEventModel ticketEvent, int amount, String email) {
-        List<TicketGenerated> newEntries = new ArrayList<>();
+    private static final String EMAIL_REGEX = "^[\\w.-]+@[a-zA-Z\\d.-]+\\.[a-zA-Z]{2,}$";
+    private static final Pattern pattern = Pattern.compile(EMAIL_REGEX);
 
+    public static boolean isValidEmail(String email) {
+        Matcher matcher = pattern.matcher(email);
+        return matcher.matches();
+    }
+
+    //TODO: Refactor
+    public List<TicketGenerated> generateTickets(TicketEventModel ticketEvent, int amount, String email) throws Exception {
+        if (ticketEvent.left().get() < amount)
+            throw new Exception("Not enough tickets left");
+
+        if (!isValidEmail(email))
+            throw new Exception("Not valid email");
+
+        List<TicketGenerated> newEntries = new ArrayList<>();
         Customer customer = getCustomer(email);
 
         for (int i = 0; i < amount; i++) {
@@ -124,19 +139,16 @@ public class TicketsModel {
         return newEntries;
     }
 
-    private Customer handleCustomer(Result<Customer> result) {
+    private Customer handleCustomer(Result<Customer> result) throws Exception {
         switch (result) {
             case Result.Success<Customer> s -> {
                 return s.result();
             }
-            case Result.Failure<Customer> f -> {
-                System.out.println("Error: " + f.cause());
-                return null;
-            }
+            case Result.Failure<Customer> f -> throw new Exception("Error occurred while trying to get Customer from DB");
         }
     }
 
-    private List<TicketGenerated> handleAddGenerated(Result<List<TicketGenerated>> result, TicketEventModel ticketEvent) {
+    private List<TicketGenerated> handleAddGenerated(Result<List<TicketGenerated>> result, TicketEventModel ticketEvent) throws Exception {
         ObservableList<TicketGenerated> tickets = FXCollections.observableArrayList();
         switch (result) {
             case Result.Success<List<TicketGenerated>> s -> {
@@ -151,7 +163,7 @@ public class TicketsModel {
                 }
 
             }
-            case Result.Failure<List<TicketGenerated>> f -> System.out.println("Error: " + f.cause());
+            case Result.Failure<List<TicketGenerated>> f -> throw new Exception("Error occurred while trying to add generated to main models");
         }
 
 

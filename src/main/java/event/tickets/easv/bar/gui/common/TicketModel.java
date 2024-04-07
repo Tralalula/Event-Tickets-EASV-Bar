@@ -44,7 +44,6 @@ public class TicketModel {
         this.id.set(ticketModel.id.get());
         this.title.set(ticketModel.title.get());
         this.type.set(ticketModel.type.get());
-        this.eventCount.set(ticketModel.eventCount.get());
         this.ticketEvents = ticketModel.ticketEvents();
     }
 
