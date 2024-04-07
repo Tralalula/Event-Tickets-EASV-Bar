@@ -91,6 +91,11 @@ public class EventGridView implements View {
             private final MenuItem deleteItem = MenuItems.createItem("_Delete", Feather.TRASH_2);
 
             {
+                photo1.get().getStyleClass().addAll(Styles.INTERACTIVE, StyleConfig.ACTIONABLE);
+                photo2.get().getStyleClass().addAll(Styles.INTERACTIVE, StyleConfig.ACTIONABLE);
+                photo3.get().getStyleClass().addAll(Styles.INTERACTIVE, StyleConfig.ACTIONABLE);
+
+
                 editItem.setMnemonicParsing(true);
                 deleteItem.setMnemonicParsing(true);
 
@@ -147,6 +152,7 @@ public class EventGridView implements View {
                     NodeUtils.bindVisibility(photo2.get(), Bindings.size(item.users()).greaterThan(1));
                     NodeUtils.bindVisibility(photo3.get(), Bindings.size(item.users()).greaterThan(2));
 
+
                     title.textProperty().bind(item.title());
                     location.textProperty().bind(item.location());
                     startDateTime.textProperty().bind(BindingsUtils.dateTimeBinding(item.startDate(), item.startTime(), "Starts", formatter));
@@ -181,6 +187,14 @@ public class EventGridView implements View {
                 case 2 -> photo3;
                 default -> throw new IllegalStateException("Unexpected value: " + i);
             };
+
+            int finalI = i;
+            photo.get().setOnMouseClicked(e -> {
+                if (e.getButton() == MouseButton.PRIMARY) {
+                    ViewHandler.changeView(ViewType.SHOW_USER, item.users().get(finalI));
+                    e.consume();
+                }
+            });
 
             photo.textProperty().bind(BindingsUtils.initialize(item.users().get(i).firstName(), item.users().get(i).lastName()));
             photo.imageProperty().bind(item.users().get(i).image());
