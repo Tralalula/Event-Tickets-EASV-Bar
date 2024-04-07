@@ -106,7 +106,7 @@ public class EventGridView implements View {
                 location.getStyleClass().addAll(Styles.TEXT_MUTED, Styles.TEXT_BOLD);
                 startDateTime.getStyleClass().addAll(Styles.TEXT_MUTED, Styles.TEXT_NORMAL);
                 endDateTime.getStyleClass().addAll(Styles.TEXT_MUTED, Styles.TEXT_NORMAL);
-                card.getStyleClass().addAll(Styles.ELEVATED_4, StyleConfig.EVENT_CARD);
+                card.getStyleClass().addAll(Styles.ELEVATED_4, StyleConfig.EVENT_CARD, StyleConfig.ACTIONABLE, Styles.INTERACTIVE);
 
                 card.setMinWidth(CARD_WIDTH);
                 card.setMinHeight(CARD_HEIGHT);
