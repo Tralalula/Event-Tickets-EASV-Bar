@@ -56,7 +56,10 @@ public class DashboardView implements View {
         this.filteredEventsForDate = new FilteredList<>(eventsMasterList);
 
         filteredEventsForDate.setPredicate(eventModel -> eventModel.startDate().get().equals(selectedDate.get()));
-        eventListView.setItems(filteredEventsForDate);
+
+        var sortedEventsByTime = new SortedList<>(filteredEventsForDate, Comparator.comparing(eventModel -> eventModel.startTime().get()));
+
+        eventListView.setItems(sortedEventsByTime);
 
         eventListView.getStyleClass().addAll(Tweaks.EDGE_TO_EDGE);
         eventListView.setCellFactory(c -> {
@@ -73,11 +76,81 @@ public class DashboardView implements View {
     private void attachStartDateListeners() {
         for (EventModel eventModel : eventsMasterList) {
             eventModel.startDate().addListener((obs, ov, nv) -> {
-                if (nv.equals(selectedDate.get())) {
-                    updateEventListView();
-                }
+                updateEventListView();
+            });
+
+            eventModel.startTime().addListener((obs, ov, nv) -> {
+                updateEventListView();
             });
         }
+    }
+
+
+    @Override
+    public Region getView() {
+        var results = new GridPane();
+
+        var events = events();
+        var calender = calender();
+
+        var column1 = new ColumnConstraints();
+        column1.setHgrow(Priority.ALWAYS);
+
+        var column2 = new ColumnConstraints();
+        column2.setHgrow(Priority.NEVER);
+        column2.setPrefWidth(Region.USE_COMPUTED_SIZE);
+
+        results.getColumnConstraints().addAll(column1, column2);
+
+        results.add(events, 0, 0);
+        results.add(calender, 1, 0);
+
+        return results;
+    }
+
+    public Node events() {
+        var results = new VBox(StyleConfig.STANDARD_SPACING);
+
+        var eventsTitle = Labels.styledLabel("Upcoming events", Styles.TITLE_2);
+        eventsTitle.setPadding(new Insets(0, 0, 0, 10));
+
+        var filteredEvents = new FilteredList<>(eventsMasterList,
+                eventModel -> !eventModel.startDate().get().isBefore(TODAY));
+
+        var sortedEvents = new SortedList<>(filteredEvents,
+                Comparator.comparing(eventModel -> eventModel.startDate().get()));
+
+        var gridView = new EventGridView(sortedEvents, eventsUsersSynchronized, eventTicketsSynchronized);
+
+        results.getChildren().addAll(eventsTitle, gridView.getView());
+        return results;
+    }
+
+    public Node calender() {
+        var results = new VBox(StyleConfig.STANDARD_SPACING);
+        results.setPadding(new Insets(0, 10, 0, 0));
+
+        var cal = new Calendar(TODAY);
+        cal.setTopNode(new Clock());
+        cal.setShowWeekNumbers(true);
+
+        cal.valueProperty().addListener((obs, ov, nv) -> {
+            selectedDate.set(nv);
+            updateEventListView();
+        });
+
+
+        results.setAlignment(Pos.TOP_RIGHT);
+
+        var listViewWrapper = new StackPane(eventListView);
+        listViewWrapper.getStyleClass().add("listview-wrapper");
+
+        results.getChildren().addAll(cal, listViewWrapper);
+        return results;
+    }
+
+    private void updateEventListView() {
+        filteredEventsForDate.setPredicate(eventModel -> eventModel.startDate().get().equals(selectedDate.get()));
     }
 
     private ListCell<EventModel> eventCell() {
@@ -167,72 +240,5 @@ public class DashboardView implements View {
                 }
             }
         };
-    }
-
-    @Override
-    public Region getView() {
-        var results = new GridPane();
-
-        var events = events();
-        var calender = calender();
-
-        var column1 = new ColumnConstraints();
-        column1.setHgrow(Priority.ALWAYS);
-
-        var column2 = new ColumnConstraints();
-        column2.setHgrow(Priority.NEVER);
-        column2.setPrefWidth(Region.USE_COMPUTED_SIZE);
-
-        results.getColumnConstraints().addAll(column1, column2);
-
-        results.add(events, 0, 0);
-        results.add(calender, 1, 0);
-
-        return results;
-    }
-
-    public Node events() {
-        var results = new VBox(StyleConfig.STANDARD_SPACING);
-
-        var eventsTitle = Labels.styledLabel("Upcoming events", Styles.TITLE_2);
-        eventsTitle.setPadding(new Insets(0, 0, 0, 10));
-
-        var filteredEvents = new FilteredList<>(eventsMasterList,
-                eventModel -> !eventModel.startDate().get().isBefore(TODAY));
-
-        var sortedEvents = new SortedList<>(filteredEvents,
-                Comparator.comparing(eventModel -> eventModel.startDate().get()));
-
-        var gridView = new EventGridView(sortedEvents, eventsUsersSynchronized, eventTicketsSynchronized);
-
-        results.getChildren().addAll(eventsTitle, gridView.getView());
-        return results;
-    }
-
-    public Node calender() {
-        var results = new VBox(StyleConfig.STANDARD_SPACING);
-        results.setPadding(new Insets(0, 10, 0, 0));
-
-        var cal = new Calendar(TODAY);
-        cal.setTopNode(new Clock());
-        cal.setShowWeekNumbers(true);
-
-        cal.valueProperty().addListener((obs, ov, nv) -> {
-            selectedDate.set(nv);
-            updateEventListView();
-        });
-
-
-        results.setAlignment(Pos.TOP_RIGHT);
-
-        var listViewWrapper = new StackPane(eventListView);
-        listViewWrapper.getStyleClass().add("listview-wrapper");
-
-        results.getChildren().addAll(cal, listViewWrapper);
-        return results;
-    }
-
-    private void updateEventListView() {
-        filteredEventsForDate.setPredicate(eventModel -> eventModel.startDate().get().equals(selectedDate.get()));
     }
 }
