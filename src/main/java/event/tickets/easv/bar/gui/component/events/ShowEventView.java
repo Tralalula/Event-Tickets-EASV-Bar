@@ -15,6 +15,7 @@ import javafx.collections.ObservableList;
 import javafx.css.PseudoClass;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
@@ -48,10 +49,10 @@ public class ShowEventView implements View {
         this.coordinators = new HBox(StyleConfig.STANDARD_SPACING * 8);
         this.ticketsListView = new ListView<>();
 
-        image = new ImageView();
+        image = Images.round(400, 250, 8, 8, 8, 8);
         image.setPreserveRatio(true);
         image.setPickOnBounds(true);
-        image.setFitWidth(1200);
+        image.setFitWidth(400);
         image.setFitHeight(300);
 
         ViewHandler.currentViewDataProperty().subscribe((oldData, newData) -> {
@@ -130,7 +131,35 @@ public class ShowEventView implements View {
 
 
 
-        var title = Labels.styledLabel(eventModelToShow.title(), Styles.TITLE_1);
+
+        var coordinatorsText = Labels.styledLabel("Event coordinators", Styles.TITLE_3);
+        var spacer = new Region();
+        var add = Buttons.actionIconButton(Material2AL.ADD, e -> ViewHandler.showOverlay("Add coordinator", new AssignCoordinatorView(findModelById(eventModelToShow.id().get()), masterUserList).getView(), 600, 540), StyleConfig.ACTIONABLE);
+        var box = new HBox(coordinatorsText, spacer, add);
+        var coordinatorsBox = new VBox(box, coordinators);
+
+
+        var ticketsText = Labels.styledLabel("Tickets", Styles.TITLE_3);
+        var ticketsBox = new VBox(ticketsText, ticketView());
+
+//        NodeUtils.bindVisibility(coordinatorsBox, Bindings.isEmpty(coordinators.getChildren()).not());
+
+        results.getChildren().addAll(top(), coordinatorsBox, ticketsBox);
+
+        return results;
+    }
+
+    private Node top() {
+        var results = new HBox(StyleConfig.STANDARD_SPACING * 2);
+        results.getStyleClass().addAll(Styles.BG_DEFAULT, StyleConfig.ROUNDING_DEFAULT, StyleConfig.PADDING_DEFAULT);
+
+        results.getChildren().addAll(image, eventInfo(), new Spacer(), actionIcons());
+        return results;
+    }
+
+    private Node actionIcons() {
+        var results = new HBox(StyleConfig.STANDARD_SPACING);
+
         var deleteBtn = new Button(null, new FontIcon(Material2AL.DELETE));
         deleteBtn.getStyleClass().addAll(Styles.BUTTON_CIRCLE, StyleConfig.ACTIONABLE, Styles.FLAT);
 
@@ -144,13 +173,18 @@ public class ShowEventView implements View {
 
         editBtn.setOnAction(e -> ViewHandler.changeView(ViewType.EDIT_EVENT, eventModelToShow));
 
-        var titleBox = new HBox(title, editBtn, deleteBtn);
+        results.getChildren().addAll(editBtn, deleteBtn);
+
+        return results;
+    }
+
+    private Node eventInfo() {
+        var results = new VBox(StyleConfig.STANDARD_SPACING);
+        var title = Labels.styledLabel(eventModelToShow.title(), Styles.TITLE_1);
 
         var location = Labels.styledLabel(eventModelToShow.location(), Styles.TITLE_4);
         var startDateTime = Labels.styledLabel(BindingsUtils.dateTimeBinding(eventModelToShow.startDate(), eventModelToShow.startTime(), "Starts", formatter));
         var endDateTime = Labels.styledLabel(BindingsUtils.dateTimeBinding(eventModelToShow.endDate(), eventModelToShow.endTime(), "Ends", formatter));
-
-        var headerBox = new VBox(image, titleBox, location, startDateTime, endDateTime);
 
         var locationGuidanceText = Labels.styledLabel("Location guidance", Styles.TEXT_BOLD);
         var locationGuidance = Labels.styledLabel(eventModelToShow.locationGuidance());
@@ -160,22 +194,10 @@ public class ShowEventView implements View {
         var note = Labels.styledLabel(eventModelToShow.extraInfo());
         var noteBox = new VBox(noteText, note);
 
-        var coordinatorsText = Labels.styledLabel("Event coordinators", Styles.TITLE_3);
-        var spacer = new Region();
-        var add = Buttons.actionIconButton(Material2AL.ADD, e -> ViewHandler.showOverlay("Add coordinator", new AssignCoordinatorView(findModelById(eventModelToShow.id().get()), masterUserList).getView(), 600, 540), StyleConfig.ACTIONABLE);
-        var box = new HBox(coordinatorsText, spacer, add);
-        var coordinatorsBox = new VBox(box, coordinators);
-
-
-        var ticketsText = Labels.styledLabel("Tickets", Styles.TITLE_3);
-        var ticketsBox = new VBox(ticketsText, ticketView());
-
         NodeUtils.bindVisibility(locationGuidanceBox, eventModelToShow.locationGuidance().isNotEmpty());
         NodeUtils.bindVisibility(noteBox, eventModelToShow.extraInfo().isNotEmpty());
-//        NodeUtils.bindVisibility(coordinatorsBox, Bindings.isEmpty(coordinators.getChildren()).not());
 
-        results.getChildren().addAll(headerBox, locationGuidanceBox, noteBox, coordinatorsBox, ticketsBox);
-
+        results.getChildren().addAll(title, location, startDateTime, endDateTime, locationGuidanceBox, noteBox);
         return results;
     }
 
