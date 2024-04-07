@@ -2,6 +2,8 @@ package event.tickets.easv.bar.gui.component.profile;
 
 import atlantafx.base.theme.Styles;
 import event.tickets.easv.bar.gui.common.View;
+import event.tickets.easv.bar.gui.common.ViewHandler;
+import event.tickets.easv.bar.gui.common.ViewType;
 import event.tickets.easv.bar.gui.util.BindingsUtils;
 import event.tickets.easv.bar.gui.util.StyleConfig;
 import event.tickets.easv.bar.gui.widgets.CircularImageView;
@@ -21,11 +23,23 @@ import org.kordamp.ikonli.feather.Feather;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 public class ProfileView implements View {
+    private final ProfileModel model;
+    private final ProfileController controller;
+
+
     private final CircularImageView circularImageView = new CircularImageView(80);
 
     public ProfileView() {
-        circularImageView.imageProperty().bind(SessionManager.getInstance().getUserModel().image());
-        circularImageView.textProperty().bind(BindingsUtils.initialize(SessionManager.getInstance().getUserModel().firstName(), SessionManager.getInstance().getUserModel().lastName()));
+        this.model = new ProfileModel();
+        this.controller = new ProfileController(model);
+        circularImageView.imageProperty().bind(model.image());
+        circularImageView.textProperty().bind(BindingsUtils.initialize(model.firstName(), model.lastName()));
+
+        ViewHandler.activeViewProperty().subscribe((oldView, newView) -> {
+            if (newView == ViewType.PROFILE) {
+                model.set(SessionManager.getInstance().getUserModel());
+            }
+        });
     }
 
     @Override
@@ -35,11 +49,11 @@ public class ProfileView implements View {
 
         userdata.getChildren().addAll(
                 profilePictureBox(),
-                gridPaneField("First name", SessionManager.getInstance().getUserModel().firstName()),
-                gridPaneField("Last name", SessionManager.getInstance().getUserModel().lastName()),
-                gridPaneField("Mail", SessionManager.getInstance().getUserModel().mail()),
-                gridPaneField("Phone number", SessionManager.getInstance().getUserModel().phoneNumber()),
-                gridPaneField("Location", SessionManager.getInstance().getUserModel().location()),
+                gridPaneField("First name", model.firstName()),
+                gridPaneField("Last name", model.lastName()),
+                gridPaneField("Mail", model.mail()),
+                gridPaneField("Phone number", model.phoneNumber()),
+                gridPaneField("Location", model.location()),
                 gridPanePassword("Password")
         );
 
@@ -143,11 +157,11 @@ public class ProfileView implements View {
 
     public Node savePasswordBtn(PasswordField passwordField) {
         var changePasswordButton = new Button("", new FontIcon(Feather.KEY));
-        changePasswordButton.getStyleClass().addAll(Styles.BUTTON_CIRCLE, StyleConfig.ACTIONABLE, Styles.FLAT);
+        changePasswordButton.getStyleClass().addAll(Styles.BUTTON_CIRCLE, StyleConfig.ACTIONABLE, Styles.FLAT, Styles.ACCENT);
         changePasswordButton.setVisible(true);
 
         var savePasswordButton = new Button("", new FontIcon(Feather.CHECK_CIRCLE));
-        savePasswordButton.getStyleClass().addAll(Styles.BUTTON_CIRCLE, StyleConfig.ACTIONABLE, Styles.FLAT);
+        savePasswordButton.getStyleClass().addAll(Styles.BUTTON_CIRCLE, StyleConfig.ACTIONABLE, Styles.FLAT, Styles.ACCENT);
         savePasswordButton.setVisible(false);
 
         changePasswordButton.setOnAction(event -> {
