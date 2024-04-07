@@ -21,9 +21,13 @@ public class TimeFilter implements UnaryOperator<Change> {
             }
         }
 
-        if (change.isDeleted() && caretPos == colonPos + 1 && colonPos != 1) {
-            change.setRange(caretPos - 1, caretPos);
-            return change;
+        if (change.isDeleted()) {
+            int start = Math.max(0, caretPos - 1);
+            int end = Math.min(change.getControlText().length(), caretPos);
+            if (caretPos == colonPos + 1 && colonPos != 1) {
+                change.setRange(start, end);
+                return change;
+            }
         }
 
         if (change.getText().equals("-")) {
