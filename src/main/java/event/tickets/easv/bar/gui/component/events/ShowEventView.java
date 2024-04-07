@@ -69,7 +69,6 @@ public class ShowEventView implements View {
                 ticketsListView.setItems(eventModelToShow.tickets());
             }
         });
-
     }
 
     private TicketModel findTicketById(int id) {

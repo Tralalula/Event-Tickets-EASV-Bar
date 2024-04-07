@@ -146,6 +146,7 @@ public class CreateUserController {
         if (result.isFailure()) return result.failAs();
 
         var updated = UserModel.fromEntity(editedUser);
+        updated.setEvents(userModel.events());
 
         return Success.of(updated);
     }

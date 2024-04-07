@@ -70,10 +70,10 @@ public class EventModel {
         this.endTime.set(eventModel.endTime.get());
         this.locationGuidance.set(eventModel.locationGuidance.get());
         this.extraInfo.set(eventModel.extraInfo.get());
+        this.image.set(eventModel.image.get());
+
         this.users = eventModel.users;
         this.tickets = eventModel.tickets;
-
-        this.image.set(eventModel.image.get());
     }
 
     public Event toEntity() {
