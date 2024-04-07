@@ -62,6 +62,16 @@ public class ProfileView implements View {
         saveBtn.setPrefHeight(40);
         saveBtn.setPrefWidth(80);
 
+        saveBtn.disableProperty().bind(model.okToSaveProfile().not());
+        saveBtn.setOnAction(evt -> {
+            saveBtn.disableProperty().unbind();
+            saveBtn.setDisable(true);
+
+            controller.onSave(() -> {
+                saveBtn.disableProperty().bind(model.okToSaveProfile().not());
+            });
+        });
+
         var btnContainer = new HBox(saveBtn);
         btnContainer.setAlignment(Pos.BOTTOM_RIGHT);
         btnContainer.setPadding(new Insets(StyleConfig.STANDARD_SPACING));

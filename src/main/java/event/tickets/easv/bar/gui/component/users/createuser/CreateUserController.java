@@ -159,7 +159,7 @@ public class CreateUserController {
         // Location (optional)
         // Phone number (optional)
 
-        return model.rankProperty().get() != null &
+        return model.rankProperty().get() != null &&
                 !model.firstNameProperty().get().isEmpty() &&
                 !model.usernameProperty().get().isEmpty() &&
                 !model.mailProperty().get().isEmpty();
