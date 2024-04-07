@@ -156,7 +156,7 @@ public class ProfileView implements View {
         results.add(Labels.styledLabel(prompt, Styles.TEXT_BOLD), 0, 0);
 
         var passwordField = new PasswordField();
-        passwordField.setText("password");
+        passwordField.textProperty().bindBidirectional(model.password());
         passwordField.setEditable(false);
 
         results.add(passwordField, 1, 0);
@@ -168,25 +168,36 @@ public class ProfileView implements View {
     public Node savePasswordBtn(PasswordField passwordField) {
         var changePasswordButton = new Button("", new FontIcon(Feather.KEY));
         changePasswordButton.getStyleClass().addAll(Styles.BUTTON_CIRCLE, StyleConfig.ACTIONABLE, Styles.FLAT, Styles.ACCENT);
-        changePasswordButton.setVisible(true);
 
         var savePasswordButton = new Button("", new FontIcon(Feather.CHECK_CIRCLE));
         savePasswordButton.getStyleClass().addAll(Styles.BUTTON_CIRCLE, StyleConfig.ACTIONABLE, Styles.FLAT, Styles.ACCENT);
+
+        changePasswordButton.setVisible(true);
         savePasswordButton.setVisible(false);
 
         changePasswordButton.setOnAction(event -> {
             passwordField.setEditable(true);
-            passwordField.setText("");
             passwordField.requestFocus();
+            model.password().set("");
             savePasswordButton.setVisible(true);
             changePasswordButton.setVisible(false);
+
         });
 
-        savePasswordButton.setOnAction(event -> {
-            passwordField.setEditable(false);
-            passwordField.setText("password");
-            savePasswordButton.setVisible(false);
-            changePasswordButton.setVisible(true);
+        savePasswordButton.disableProperty().bind(model.okToSavePsw().not());
+        savePasswordButton.setOnAction(evt -> {
+            savePasswordButton.disableProperty().unbind();
+            savePasswordButton.setDisable(true);
+
+            controller.onChangePassword(() -> {
+                savePasswordButton.setVisible(false);
+                changePasswordButton.setVisible(true);
+
+                savePasswordButton.disableProperty().bind(model.okToSavePsw().not());
+
+                passwordField.setText("password");
+                passwordField.setEditable(false);
+            });
         });
 
         return new StackPane(changePasswordButton, savePasswordButton);

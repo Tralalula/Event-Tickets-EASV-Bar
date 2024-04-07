@@ -14,12 +14,16 @@ public class ProfileModel {
     private final StringProperty mail = new SimpleStringProperty("");
     private final StringProperty phoneNumber = new SimpleStringProperty("");
     private final StringProperty location = new SimpleStringProperty("");
-    private final StringProperty password = new SimpleStringProperty("");
+    private final StringProperty password = new SimpleStringProperty("password");
 
     private final BooleanProperty okToSavePsw = new SimpleBooleanProperty(false);
     private final BooleanProperty okToSaveProfile = new SimpleBooleanProperty(false);
 
+    private UserModel userModel = null;
+
     public void set(UserModel userModel) {
+        this.userModel = userModel;
+
         imagePath.set("");
         image.set(ImageUtils.getProfileImage(userModel.id().get() + "/" + userModel.imageName().get()));
         firstName.set(userModel.firstName().get());
@@ -27,7 +31,7 @@ public class ProfileModel {
         mail.set(userModel.mail().get());
         phoneNumber.set(userModel.phoneNumber().get());
         location.set(userModel.location().get());
-        password.set("");
+        password.set("password");
     }
 
     public void reset() {
@@ -38,7 +42,7 @@ public class ProfileModel {
         mail.set("");
         phoneNumber.set("");
         location.set("");
-        password.set("");
+        password.set("password");
     }
 
     public StringProperty imagePath() {
@@ -79,5 +83,9 @@ public class ProfileModel {
 
     public BooleanProperty okToSaveProfile() {
         return okToSaveProfile;
+    }
+
+    public UserModel userModel() {
+        return userModel;
     }
 }
