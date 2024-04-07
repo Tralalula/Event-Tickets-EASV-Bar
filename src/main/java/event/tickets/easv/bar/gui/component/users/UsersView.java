@@ -1,5 +1,7 @@
 package event.tickets.easv.bar.gui.component.users;
 
+import atlantafx.base.controls.CustomTextField;
+import atlantafx.base.controls.Spacer;
 import atlantafx.base.theme.Styles;
 import atlantafx.base.theme.Tweaks;
 import event.tickets.easv.bar.gui.common.*;
@@ -40,9 +42,9 @@ public class UsersView implements View {
         var placeholder = new Label("No users found");
         placeholder.getStyleClass().add(Styles.TITLE_4);
 
-        var addUserButton = new Button("", new FontIcon(Feather.USER_PLUS));
-        addUserButton.getStyleClass().addAll(StyleConfig.ACTIONABLE, Styles.BUTTON_OUTLINED, Styles.FLAT);
-        addUserButton.setOnAction(e -> ViewHandler.changeView(ViewType.CREATE_USER));
+        var top = topBar();
+        top.setPadding(new Insets(0, 0, 0, StyleConfig.STANDARD_SPACING));
+
 
         var userList = new ListView<UserModel>();
         userList.setItems(model);
@@ -58,8 +60,27 @@ public class UsersView implements View {
 
         VBox.setVgrow(userList, Priority.ALWAYS);
 
-        return new VBox(StyleConfig.STANDARD_SPACING, addUserButton, userList);
+        return new VBox(StyleConfig.STANDARD_SPACING, top, userList);
     }
+
+    public HBox topBar() {
+        HBox top = new HBox();
+        top.setPadding(new Insets(0 ,StyleConfig.STANDARD_SPACING * 3 ,0 ,StyleConfig.STANDARD_SPACING));
+
+        var search = new CustomTextField();
+        search.setPromptText("Search");
+        search.setLeft(new FontIcon(Feather.SEARCH));
+        search.setPrefWidth(250);
+
+        var addUser = new Button("", new FontIcon(Feather.USER_PLUS));
+        addUser.getStyleClass().addAll(Styles.BUTTON_ICON, Styles.FLAT, Styles.ACCENT, Styles.TITLE_4, StyleConfig.ACTIONABLE);
+        addUser.setOnAction(e -> ViewHandler.changeView(ViewType.CREATE_USER));
+
+
+        top.getChildren().addAll(search, new Spacer(), addUser);
+        return top;
+    }
+
 
     private ListCell<UserModel> userCell() {
         return new ListCell<>() {

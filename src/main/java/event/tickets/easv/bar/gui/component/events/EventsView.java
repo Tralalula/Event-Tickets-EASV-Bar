@@ -43,13 +43,13 @@ public class EventsView implements View {
         search.setLeft(new FontIcon(Feather.SEARCH));
         search.setPrefWidth(250);
 
-        var addTicket = new Button(null, new FontIcon(Feather.PLUS));
-        addTicket.getStyleClass().addAll(
+        var addEvent = new Button(null, new FontIcon(Feather.PLUS));
+        addEvent.getStyleClass().addAll(
                 Styles.BUTTON_ICON, Styles.FLAT, Styles.ACCENT, Styles.TITLE_4, StyleConfig.ACTIONABLE
         );
-        addTicket.setOnAction(e -> ViewHandler.changeView(ViewType.CREATE_EVENT));
+        addEvent.setOnAction(e -> ViewHandler.changeView(ViewType.CREATE_EVENT));
 
-        top.getChildren().addAll(search, new Spacer(), addTicket);
+        top.getChildren().addAll(search, new Spacer(), addEvent);
         return top;
     }
 
