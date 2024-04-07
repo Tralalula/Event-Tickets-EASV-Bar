@@ -7,6 +7,7 @@ import event.tickets.easv.bar.gui.component.events.assigncoordinator.AssignCoord
 import event.tickets.easv.bar.gui.component.tickets.TicketEventModel;
 import event.tickets.easv.bar.gui.util.*;
 import event.tickets.easv.bar.gui.widgets.*;
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.collections.ListChangeListener;
@@ -53,7 +54,6 @@ public class ShowEventView implements View {
 
         ViewHandler.currentViewDataProperty().subscribe((oldData, newData) -> {
             if (newData instanceof EventModel) {
-                System.out.println("tickets lol: " + ((EventModel) newData).tickets().size());
                 eventModelToShow.update((EventModel) newData);
                 image.imageProperty().bind(eventModelToShow.image());
 
@@ -64,14 +64,6 @@ public class ShowEventView implements View {
                 });
 
                 ticketsListView.setItems(eventModelToShow.tickets());
-                System.out.println("Tickets: " + eventModelToShow.tickets().size());
-
-                eventModelToShow.tickets().addListener((ListChangeListener<? super TicketEventModel>) c -> {
-                    ticketsListView.setItems(eventModelToShow.tickets());
-                    System.out.println("Tickets changed");
-                });
-
-                Listeners.addOnceChangeListener(eventsTicketsSynchronized, () -> ticketsListView.setItems(eventModelToShow.tickets()));
             }
         });
 
