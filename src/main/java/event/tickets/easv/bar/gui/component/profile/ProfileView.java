@@ -90,6 +90,8 @@ public class ProfileView implements View {
         var changePictureBtn = new Button("Change profile picture", new FontIcon(Feather.CAMERA));
         changePictureBtn.getStyleClass().addAll(StyleConfig.ACTIONABLE, Styles.TEXT_BOLD);
 
+        changePictureBtn.setOnAction(evt -> controller.onChangePicture());
+
         var changePictureLbl = Labels.styledLabel("Must be JPEG or PNG and cannot exceed 10MB.", Styles.TEXT_MUTED);
         changePictureBox.getChildren().addAll(changePictureBtn, changePictureLbl);
 

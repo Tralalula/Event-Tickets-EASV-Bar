@@ -34,6 +34,8 @@ public class ActionHandler {
     }
 
     private static void handleSaveProfile(SaveProfile action) {
+
+        System.out.println(action.updated().imageName().get());
         handleEditUser(new EditUser(action.original(), action.updated()));
         SessionManager.getInstance().getUserModel().update(action.updated());
     }
