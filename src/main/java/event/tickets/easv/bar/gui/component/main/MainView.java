@@ -137,8 +137,9 @@ public class MainView implements View {
         NodeUtils.bindVisibility(usersView, ViewHandler.activeViewProperty().isEqualTo(ViewType.USERS));
         NodeUtils.bindVisibility(showUserView, ViewHandler.activeViewProperty().isEqualTo(ViewType.SHOW_USER));
         NodeUtils.bindVisibility(createUserView, ViewHandler.activeViewProperty().isEqualTo(ViewType.CREATE_USER).or(ViewHandler.activeViewProperty().isEqualTo(ViewType.EDIT_USER)));
+        NodeUtils.bindVisibility(profileView, ViewHandler.activeViewProperty().isEqualTo(ViewType.PROFILE));
 
-        var content = new StackPane(authView, dashboardView, eventsView, createEventView, showEventView, ticketsView, showTicketView, usersView, showUserView, createUserView);
+        var content = new StackPane(authView, dashboardView, eventsView, createEventView, showEventView, ticketsView, showTicketView, usersView, showUserView, createUserView, profileView);
 
         var scrollPane = new ScrollPane(content);
         scrollPane.setFitToHeight(true);

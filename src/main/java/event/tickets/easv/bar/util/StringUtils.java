@@ -30,7 +30,10 @@ public class StringUtils {
      * @return a new string with the initials of the names.
      */
     public static String initialize(String firstName, String lastName) {
+        if (firstName == null || firstName.isEmpty()) return "";
+
         String initials;
+
         if (lastName == null || lastName.isEmpty()) {
             initials = firstName.length() > 1 ? firstName.substring(0, 2) : firstName;
         } else {
