@@ -67,9 +67,7 @@ public class ProfileView implements View {
             saveBtn.disableProperty().unbind();
             saveBtn.setDisable(true);
 
-            controller.onSave(() -> {
-                saveBtn.disableProperty().bind(model.okToSaveProfile().not());
-            });
+            controller.onSave(() -> saveBtn.disableProperty().bind(model.okToSaveProfile().not()));
         });
 
         var btnContainer = new HBox(saveBtn);

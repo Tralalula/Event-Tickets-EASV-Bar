@@ -6,6 +6,7 @@ import javafx.beans.property.*;
 import javafx.scene.image.Image;
 
 public class ProfileModel {
+    private final StringProperty imageName = new SimpleStringProperty("");
     private final StringProperty imagePath = new SimpleStringProperty("");
     private final ObjectProperty<Image> image = new SimpleObjectProperty<>();
 
@@ -24,6 +25,7 @@ public class ProfileModel {
     public void set(UserModel userModel) {
         this.userModel = userModel;
 
+        imageName.set(userModel.imageName().get());
         imagePath.set("");
         image.set(ImageUtils.getProfileImage(userModel.id().get() + "/" + userModel.imageName().get()));
         firstName.set(userModel.firstName().get());
@@ -35,6 +37,7 @@ public class ProfileModel {
     }
 
     public void reset() {
+        imageName.set("");
         imagePath.set("");
         image.set(null);
         firstName.set("");
@@ -43,6 +46,10 @@ public class ProfileModel {
         phoneNumber.set("");
         location.set("");
         password.set("password");
+    }
+
+    public StringProperty imageName() {
+        return imageName;
     }
 
     public StringProperty imagePath() {

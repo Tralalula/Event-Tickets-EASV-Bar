@@ -2,6 +2,7 @@ package event.tickets.easv.bar.gui.common;
 
 import event.tickets.easv.bar.gui.common.Action.*;
 import event.tickets.easv.bar.gui.component.main.MainModel;
+import event.tickets.easv.bar.util.SessionManager;
 import javafx.collections.ObservableList;
 
 import java.util.Optional;
@@ -26,9 +27,15 @@ public class ActionHandler {
             case CreateUser a -> handleCreateUser(a);
             case EditUser a -> handleEditUser(a);
             case DeleteUser a -> handleDeleteUser(a);
+            case SaveProfile a -> handleSaveProfile(a);
             case AssignCoordinator a -> handleAssignCoordinator(a);
             default -> throw new IllegalStateException("Unexpected action type: " + action.getClass());
         }
+    }
+
+    private static void handleSaveProfile(SaveProfile action) {
+        handleEditUser(new EditUser(action.original(), action.updated()));
+        SessionManager.getInstance().getUserModel().update(action.updated());
     }
 
     private static void handleEditUser(EditUser action) {
