@@ -14,6 +14,7 @@ import event.tickets.easv.bar.gui.component.users.UsersView;
 import event.tickets.easv.bar.gui.component.users.createuser.CreateUserView;
 import event.tickets.easv.bar.gui.util.StyleConfig;
 import event.tickets.easv.bar.gui.util.*;
+import event.tickets.easv.bar.gui.widgets.CircularImageView;
 import event.tickets.easv.bar.gui.widgets.MenuItems;
 import event.tickets.easv.bar.util.SessionManager;
 import javafx.application.Application;
@@ -237,6 +238,13 @@ public class MainView implements View {
         settings.getStyleClass().addAll(
                 Styles.FLAT
         );
+
+        var profileImage = new CircularImageView(16);
+        profileImage.imageProperty().bind(SessionManager.getInstance().getUserModel().image());
+        profileImage.textProperty().bind(BindingsUtils.initialize(SessionManager.getInstance().getUserModel().firstName(), SessionManager.getInstance().getUserModel().lastName()));
+
+        settings.setGraphic(profileImage.get());
+
 
         settings.textProperty().bind(SessionManager.getInstance().getUserModel().firstName());
 

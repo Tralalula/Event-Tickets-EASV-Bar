@@ -170,7 +170,7 @@ public class EventGridView implements View {
 
 
 
-                    ticketsSold.textProperty().bind(Bindings.concat("Tickets sold: ", bindTotalTicketsSold(item.tickets())));
+                    ticketsSold.textProperty().bind(Bindings.concat(bindTotalTicketsSold(item.tickets()), " tickets sold"));
 
 
                     card.setOnMouseClicked(e -> {
