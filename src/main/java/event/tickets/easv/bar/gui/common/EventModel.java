@@ -1,6 +1,7 @@
 package event.tickets.easv.bar.gui.common;
 
 import event.tickets.easv.bar.be.Event;
+import event.tickets.easv.bar.gui.component.tickets.TicketEventModel;
 import event.tickets.easv.bar.gui.util.ImageUtils;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
@@ -22,7 +23,7 @@ public class EventModel {
     private final StringProperty locationGuidance = new SimpleStringProperty();
     private final StringProperty extraInfo = new SimpleStringProperty();
     private ObservableList<UserModel> users = FXCollections.observableArrayList();
-    private ObservableList<TestModel> tests = FXCollections.observableArrayList();
+    private ObservableList<TicketEventModel> tickets = FXCollections.observableArrayList();
 
     private final ObjectProperty<Image> image = new SimpleObjectProperty<>();
 
@@ -70,7 +71,7 @@ public class EventModel {
         this.locationGuidance.set(eventModel.locationGuidance.get());
         this.extraInfo.set(eventModel.extraInfo.get());
         this.users = eventModel.users;
-        this.tests = eventModel.tests;
+        this.tickets = eventModel.tickets;
 
         this.image.set(eventModel.image.get());
     }
@@ -138,9 +139,13 @@ public class EventModel {
         return users;
     }
 
-    public void setTests(ObservableList<TestModel> tests) { this.tests = tests; }
+    public void setTickets(ObservableList<TicketEventModel> tickets) {
+        this.tickets = tickets;
+    }
 
-    public ObservableList<TestModel> tests() { return tests; }
+    public ObservableList<TicketEventModel> tickets() {
+        return tickets;
+    }
 
     public ObjectProperty<Image> image() {
         return image;

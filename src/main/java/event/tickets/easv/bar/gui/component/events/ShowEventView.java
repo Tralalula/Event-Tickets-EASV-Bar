@@ -1,18 +1,19 @@
 package event.tickets.easv.bar.gui.component.events;
 
 import atlantafx.base.theme.Styles;
+import atlantafx.base.theme.Tweaks;
 import event.tickets.easv.bar.gui.common.*;
 import event.tickets.easv.bar.gui.component.events.assigncoordinator.AssignCoordinatorView;
-import event.tickets.easv.bar.gui.util.Alerts;
-import event.tickets.easv.bar.gui.util.BindingsUtils;
-import event.tickets.easv.bar.gui.util.NodeUtils;
-import event.tickets.easv.bar.gui.util.StyleConfig;
+import event.tickets.easv.bar.gui.component.tickets.TicketEventModel;
+import event.tickets.easv.bar.gui.util.*;
 import event.tickets.easv.bar.gui.widgets.*;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.BooleanProperty;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
@@ -33,16 +34,16 @@ public class ShowEventView implements View {
     private final ObservableList<UserModel> masterUserList;
     private final ImageView image;
     private final HBox coordinators;
-    private final TableView<TestModel> eventTicketsTableView;
+    private final ListView<TicketEventModel> ticketsListView;
 
-    public ShowEventView(ObservableList<EventModel> masterEventList, ObservableList<UserModel> masterUserList) {
+    public ShowEventView(ObservableList<EventModel> masterEventList, ObservableList<UserModel> masterUserList, BooleanProperty eventsTicketsSynchronized) {
         this.controller = new DeleteEventController();
         this.masterEventList = masterEventList;
         this.masterUserList = masterUserList;
-        coordinators = new HBox(StyleConfig.STANDARD_SPACING * 8);
-        eventTicketsTableView = new TableView<>();
+        this.coordinators = new HBox(StyleConfig.STANDARD_SPACING * 8);
+        this.ticketsListView = new ListView<>();
 
-        initializeTableView();
+        ticketsListView.getStyleClass().add(Tweaks.EDGE_TO_EDGE);
 
         image = new ImageView();
         image.setPreserveRatio(true);
@@ -52,6 +53,7 @@ public class ShowEventView implements View {
 
         ViewHandler.currentViewDataProperty().subscribe((oldData, newData) -> {
             if (newData instanceof EventModel) {
+                System.out.println("tickets lol: " + ((EventModel) newData).tickets().size());
                 eventModelToShow.update((EventModel) newData);
                 image.imageProperty().bind(eventModelToShow.image());
 
@@ -60,9 +62,19 @@ public class ShowEventView implements View {
                 eventModelToShow.users().addListener((ListChangeListener<? super UserModel>) c -> {
                     updateCoordinatorsView(eventModelToShow.users());
                 });
-                eventTicketsTableView.setItems(eventModelToShow.tests());
+
+                ticketsListView.setItems(eventModelToShow.tickets());
+                System.out.println("Tickets: " + eventModelToShow.tickets().size());
+
+                eventModelToShow.tickets().addListener((ListChangeListener<? super TicketEventModel>) c -> {
+                    ticketsListView.setItems(eventModelToShow.tickets());
+                    System.out.println("Tickets changed");
+                });
+
+                Listeners.addOnceChangeListener(eventsTicketsSynchronized, () -> ticketsListView.setItems(eventModelToShow.tickets()));
             }
         });
+
     }
 
     private EventModel findModelById(int id) {
@@ -75,29 +87,6 @@ public class ShowEventView implements View {
         return EventModel.Empty();
     }
 
-    private void initializeTableView() {
-        TableColumn<TestModel, String> titleCol = new TableColumn<>("Title");
-        titleCol.setCellValueFactory(cdf -> cdf.getValue().title);
-        eventTicketsTableView.getColumns().add(titleCol);
-
-        TableColumn<TestModel, String> typeCol = new TableColumn<>("Type");
-        typeCol.setCellValueFactory(cdf -> cdf.getValue().type);
-        eventTicketsTableView.getColumns().add(typeCol);
-
-        TableColumn<TestModel, String> quantityCol = new TableColumn<>("Quantity");
-        quantityCol.setCellValueFactory(cdf -> cdf.getValue().quantity);
-        eventTicketsTableView.getColumns().add(quantityCol);
-
-        TableColumn<TestModel, String> priceCol = new TableColumn<>("Price");
-        priceCol.setCellValueFactory(cdf -> cdf.getValue().price);
-        eventTicketsTableView.getColumns().add(priceCol);
-
-        var placeHolder = new Label("Trying to get data. Please wait.");
-        placeHolder.setAlignment(Pos.CENTER);
-        eventTicketsTableView.setPlaceholder(placeHolder);
-
-        eventTicketsTableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
-    }
 
     private void updateCoordinatorsView(ObservableList<UserModel> users) {
         coordinators.getChildren().clear();
@@ -162,7 +151,7 @@ public class ShowEventView implements View {
 
 
         var ticketsText = Labels.styledLabel("Tickets", Styles.TITLE_3);
-        var ticketsBox = new VBox(ticketsText, eventTicketsTableView);
+        var ticketsBox = new VBox(ticketsText, ticketsListView);
 
         NodeUtils.bindVisibility(locationGuidanceBox, eventModelToShow.locationGuidance().isNotEmpty());
         NodeUtils.bindVisibility(noteBox, eventModelToShow.extraInfo().isNotEmpty());
@@ -172,5 +161,4 @@ public class ShowEventView implements View {
 
         return results;
     }
-
 }
