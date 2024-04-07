@@ -15,6 +15,7 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
@@ -66,6 +67,17 @@ public class DashboardView implements View {
         eventListView.setPadding(new Insets(0));
         eventListView.setMinWidth(300);
 
+        eventsMasterList.addListener((ListChangeListener<EventModel>) c -> attachStartDateListeners());
+    }
+
+    private void attachStartDateListeners() {
+        for (EventModel eventModel : eventsMasterList) {
+            eventModel.startDate().addListener((obs, ov, nv) -> {
+                if (nv.equals(selectedDate.get())) {
+                    updateEventListView();
+                }
+            });
+        }
     }
 
     private ListCell<EventModel> eventCell() {
