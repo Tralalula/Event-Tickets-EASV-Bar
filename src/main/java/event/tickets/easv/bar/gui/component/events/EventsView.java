@@ -24,46 +24,36 @@ import org.kordamp.ikonli.javafx.FontIcon;
 import java.util.function.Predicate;
 
 public class EventsView implements View {
-    private final ObservableList<EventModel> model;
+    private static final StringProperty search = new SimpleStringProperty(""); // didn't work without static, not sure why.
+
+    private final ObservableList<EventModel> masterUserList;
+    private final FilteredList<EventModel> filteredEventModels;
     private final BooleanProperty fetchingData;
     private final BooleanProperty eventsUsersSynchronized;
     private final BooleanProperty eventsTicketsSynchronized;
-    private static final StringProperty search = new SimpleStringProperty("");
-    private final FilteredList<EventModel> filteredEventModels;
-    private EventGridView gridView;
-
-    public StringProperty searchProperty() {
-        return search;
-    }
 
     public EventsView(ObservableList<EventModel> masterEventList, BooleanProperty fetchingData, BooleanProperty eventsUsersSynchronized, BooleanProperty eventsTicketsSynchronized) {
-        this.model = masterEventList;
+        this.masterUserList = masterEventList;
+        this.filteredEventModels = new FilteredList<>(masterEventList);
         this.fetchingData = fetchingData;
         this.eventsUsersSynchronized = eventsUsersSynchronized;
         this.eventsTicketsSynchronized = eventsTicketsSynchronized;
-        this.filteredEventModels = new FilteredList<>(masterEventList);
 
         setupSearchFilter();
     }
 
-    public HBox topBar() {
-        HBox top = new HBox();
-        top.setPadding(new Insets(0 ,StyleConfig.STANDARD_SPACING * 3 ,0 ,StyleConfig.STANDARD_SPACING));
+    @Override
+    public Region getView() {
+        var top = topBar();
+        ProgressIndicator progressIndicator = new ProgressIndicator();
+        NodeUtils.bindVisibility(progressIndicator, fetchingData);
 
-        var searchField = new CustomTextField();
-        searchField.setLeft(new FontIcon(Feather.SEARCH));
-        searchField.setPrefWidth(250);
-        searchField.textProperty().bindBidirectional(searchProperty());
+        EventGridView gridView = new EventGridView(filteredEventModels, eventsUsersSynchronized, eventsTicketsSynchronized);
+        var content = new StackPane(gridView.getView(), progressIndicator);
 
-        var addEvent = new Button(null, new FontIcon(Feather.PLUS));
-        addEvent.getStyleClass().addAll(
-                Styles.BUTTON_ICON, Styles.FLAT, Styles.ACCENT, Styles.TITLE_4, StyleConfig.ACTIONABLE
-        );
-        addEvent.setOnAction(e -> ViewHandler.changeView(ViewType.CREATE_EVENT));
-
-        top.getChildren().addAll(searchField, new Spacer(), addEvent);
-        return top;
+        return new VBox(top, content);
     }
+
 
     private void setupSearchFilter() {
         this.searchProperty().addListener((obs, ov, nv) -> {
@@ -79,15 +69,29 @@ public class EventsView implements View {
         });
     }
 
-    @Override
-    public Region getView() {
-        var top = topBar();
-        ProgressIndicator progressIndicator = new ProgressIndicator();
-        NodeUtils.bindVisibility(progressIndicator, fetchingData);
 
-        gridView = new EventGridView(filteredEventModels, eventsUsersSynchronized, eventsTicketsSynchronized);
-        var content = new StackPane(gridView.getView(), progressIndicator);
+    public HBox topBar() {
+        HBox top = new HBox();
+        top.setPadding(new Insets(0 ,StyleConfig.STANDARD_SPACING * 3 ,0 ,StyleConfig.STANDARD_SPACING));
 
-        return new VBox(top, content);
+        var searchField = new CustomTextField();
+        searchField.setPromptText("By title");
+        searchField.setLeft(new FontIcon(Feather.SEARCH));
+        searchField.setPrefWidth(250);
+        searchField.textProperty().bindBidirectional(searchProperty());
+
+        var addEvent = new Button(null, new FontIcon(Feather.PLUS));
+        addEvent.getStyleClass().addAll(
+                Styles.BUTTON_ICON, Styles.FLAT, Styles.ACCENT, Styles.TITLE_4, StyleConfig.ACTIONABLE
+        );
+        addEvent.setOnAction(e -> ViewHandler.changeView(ViewType.CREATE_EVENT));
+
+        top.getChildren().addAll(searchField, new Spacer(), addEvent);
+        return top;
     }
+
+    private StringProperty searchProperty() {
+        return search;
+    }
+
 }

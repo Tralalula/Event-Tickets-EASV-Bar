@@ -13,7 +13,10 @@ import event.tickets.easv.bar.gui.widgets.CircularImageView;
 import event.tickets.easv.bar.gui.widgets.MenuItems;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.css.PseudoClass;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -23,18 +26,27 @@ import javafx.scene.layout.*;
 import org.kordamp.ikonli.feather.Feather;
 import org.kordamp.ikonli.javafx.FontIcon;
 
+import java.util.function.Predicate;
+
 public class UsersView implements View {
     private static final PseudoClass HOVER_PSEUDO_CLASS = PseudoClass.getPseudoClass("hover");
+    private static final StringProperty search = new SimpleStringProperty(""); // didn't work without static, not sure why.
+
     private final DeleteUserController controller;
-    private final ObservableList<UserModel> model;
+    private final ObservableList<UserModel> masterUserList;
+    private final FilteredList<UserModel> filteredUserModels;
     private final BooleanProperty fetchingData;
     private final BooleanProperty eventsUsersSynchronized;
 
-    public UsersView(ObservableList<UserModel> model, BooleanProperty fetchingData, BooleanProperty eventsUsersSynchronized) {
+
+    public UsersView(ObservableList<UserModel> masterUserList, BooleanProperty fetchingData, BooleanProperty eventsUsersSynchronized) {
         this.controller = new DeleteUserController();
-        this.model = model;
+        this.masterUserList = masterUserList;
+        this.filteredUserModels = new FilteredList<>(masterUserList);
         this.fetchingData = fetchingData;
         this.eventsUsersSynchronized = eventsUsersSynchronized;
+
+        setupSearchFilter();
     }
 
     @Override
@@ -45,7 +57,7 @@ public class UsersView implements View {
         var top = topBar();
 
         var userList = new ListView<UserModel>();
-        userList.setItems(model);
+        userList.setItems(filteredUserModels);
         userList.setPlaceholder(placeholder);
         userList.getStyleClass().addAll(Tweaks.EDGE_TO_EDGE);
         userList.setCellFactory(c -> {
@@ -61,14 +73,32 @@ public class UsersView implements View {
         return new VBox(StyleConfig.STANDARD_SPACING, top, userList);
     }
 
+
+    private void setupSearchFilter() {
+        this.searchProperty().addListener((obs, ov, nv) -> {
+            Predicate<UserModel> searchPredicate = (UserModel userModel) -> {
+                if (nv == null || nv.isEmpty()) {
+                    return true;
+                }
+
+                var lowercase = nv.toLowerCase();
+                return userModel.firstName().get().toLowerCase().contains(lowercase) ||
+                        userModel.lastName().get().toLowerCase().contains(lowercase);
+            };
+
+            filteredUserModels.setPredicate(searchPredicate);
+        });
+    }
+
     public HBox topBar() {
         HBox top = new HBox();
         top.setPadding(new Insets(0 ,StyleConfig.STANDARD_SPACING * 3 ,0 ,StyleConfig.STANDARD_SPACING));
 
         var search = new CustomTextField();
-        search.setPromptText("Search");
+        search.setPromptText("By name");
         search.setLeft(new FontIcon(Feather.SEARCH));
         search.setPrefWidth(250);
+        search.textProperty().bindBidirectional(searchProperty());
 
         var addUser = new Button("", new FontIcon(Feather.USER_PLUS));
         addUser.getStyleClass().addAll(Styles.BUTTON_ICON, Styles.FLAT, Styles.ACCENT, Styles.TITLE_4, StyleConfig.ACTIONABLE);
@@ -79,6 +109,10 @@ public class UsersView implements View {
         return top;
     }
 
+
+    private StringProperty searchProperty() {
+        return search;
+    }
 
     private ListCell<UserModel> userCell() {
         return new ListCell<>() {
