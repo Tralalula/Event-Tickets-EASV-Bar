@@ -170,6 +170,22 @@ public class TicketsModel {
         return tickets;
     }
 
+    private void deleteTicket(TicketModel ticketModel) throws Exception {
+        Result<Ticket> result = entityManager.add(ticketModel.toEntity());
+
+        if (result.isFailure())
+            throw new Exception("Couldn't delete ticket from DB");
+
+        for (TicketEventModel ticketEventModel : ticketModel.ticketEvents()) {
+            model.ticketGeneratedModels().removeAll(ticketEventModel.ticketsGenerated());
+        }
+        model.ticketEventModels().removeAll(ticketModel.ticketEvents());
+
+        model.ticketModels().remove(ticketModel);
+
+
+    }
+
     /** Sorts a TicketModel list to newest from integer list: 1, 2, 3, 4, 5 returns 5, 4, 3, 2, 1
      *
      * @param ObservableList<TicketModel>
@@ -184,5 +200,17 @@ public class TicketsModel {
 
     public MainModel getMain() {
         return model;
+    }
+
+    public void addSpecialTicket(TicketModel model, MainModel main, int ticketId, int total, double price) throws Exception {
+        Result<TicketEvent> result = entityManager.add(new TicketEvent(ticketId, 0, price, total));
+        switch (result) {
+            case Result.Success<TicketEvent> s -> {
+                TicketEventModel created = TicketEventModel.fromEntity(s.result());
+                model.ticketEvents().add(created);
+                main.ticketEventModels().add(created);
+            }
+            case Result.Failure<TicketEvent> f -> throw new Exception("Error occurred while trying to add special ticket");
+        }
     }
 }

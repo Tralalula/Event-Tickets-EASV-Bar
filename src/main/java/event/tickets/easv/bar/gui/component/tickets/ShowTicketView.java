@@ -13,6 +13,8 @@ import event.tickets.easv.bar.gui.util.NodeUtils;
 import event.tickets.easv.bar.gui.util.StyleConfig;
 import event.tickets.easv.bar.gui.widgets.MenuItems;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -45,6 +47,7 @@ public class ShowTicketView implements View {
     private final Label defaultPrice = new Label();
     private final Label eventsCount = new Label();
 
+    private final BooleanProperty isPromotional = new SimpleBooleanProperty();
 
     private ListView<TicketEventModel> ticketEventList = new ListView<TicketEventModel>();
     private TableView<TicketEventModel> table;
@@ -60,11 +63,10 @@ public class ShowTicketView implements View {
             if (newData instanceof TicketModel) {
                 model.update((TicketModel) newData);
                 ticketEventList.setItems(model.ticketEvents());
+                isPromotional.set(model.type().get().equals("Promotional"));
                 updateTexts();
             }
         });
-
-
 
         // For at sørge for den lytter til events ændringer
         checkComboBox = multiCombo();
@@ -123,7 +125,7 @@ public class ShowTicketView implements View {
         addTicketEvent.getStyleClass().addAll(
                 Styles.BUTTON_ICON, Styles.FLAT, Styles.ACCENT, Styles.TITLE_4
         );
-        addTicketEvent.setOnAction(e -> ViewHandler.showOverlay("Add ticket to event", addTickets(), 300, 350));
+        addTicketEvent.setOnAction(e -> ViewHandler.showOverlay(isPromotional.get() ? "Add promotional ticket" : "Add ticket to event", addTickets(), 300, 350));
 
         var controls = new HBox();
         controls.getChildren().addAll(search, new Spacer(), addTicketEvent);
@@ -303,7 +305,7 @@ public class ShowTicketView implements View {
                 } else {
                     //table.getColumns().addAll(title, total, left, bought, price, actionButtons);
 
-                    titleLabel.textProperty().bind(item.event().get().title());
+                    titleLabel.textProperty().bind(item.event().get() != null ? item.event().get().title() : new SimpleStringProperty("Not associated"));
                     totalLabel.textProperty().bind(item.total().asString().concat(" total"));
                     leftLabel.textProperty().bind(item.left().asString().concat(" left"));
                     boughtLabel.textProperty().bind(item.bought().asString().concat(" bought"));
@@ -464,7 +466,7 @@ public class ShowTicketView implements View {
 
         add.setOnAction(e -> {
             List<EventModel> selectedEvents = getSelectedEventModels();
-            if (selectedEvents.size() <= 0) {
+            if (!isPromotional.get() && selectedEvents.size() <= 0) {
                 err.setText("You must select atleast 1 event");
                 return;
             }
@@ -478,6 +480,7 @@ public class ShowTicketView implements View {
         main.getChildren().addAll(tickets,  price, events, addEvent);
         return main;
     }
+
 
     public CheckComboBox<EventModelWrapper> multiCombo() {
         CheckComboBox<EventModelWrapper> checkComboBox = new CheckComboBox<>();
@@ -510,7 +513,15 @@ public class ShowTicketView implements View {
     private void addToEvents(int total, double price, List<EventModel> selectedEvents) {
         int ticketId = model.id().get();
 
-        ticketsModel.addToEvent(model, main, ticketId, total, price, selectedEvents);
+        if (!isPromotional.get())
+            ticketsModel.addToEvent(model, main, ticketId, total, price, selectedEvents);
+        else {
+            try {
+                ticketsModel.addSpecialTicket(model, main, ticketId, total, price);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
 }
