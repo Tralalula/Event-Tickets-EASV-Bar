@@ -3,11 +3,13 @@ package event.tickets.easv.bar.gui.component.events;
 import atlantafx.base.controls.Spacer;
 import atlantafx.base.theme.Styles;
 import atlantafx.base.theme.Tweaks;
+import event.tickets.easv.bar.be.enums.Rank;
 import event.tickets.easv.bar.gui.common.*;
 import event.tickets.easv.bar.gui.component.events.assigncoordinator.AssignCoordinatorView;
 import event.tickets.easv.bar.gui.component.tickets.TicketEventModel;
 import event.tickets.easv.bar.gui.util.*;
 import event.tickets.easv.bar.gui.widgets.*;
+import event.tickets.easv.bar.util.SessionManager;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.collections.ListChangeListener;
@@ -173,6 +175,8 @@ public class ShowEventView implements View {
 
         var editBtn = new Button(null, new FontIcon(Material2AL.EDIT));
         editBtn.getStyleClass().addAll(Styles.BUTTON_CIRCLE, StyleConfig.ACTIONABLE, Styles.FLAT);
+
+        NodeUtils.bindVisibility(editBtn, SessionManager.getInstance().getUserModel().rank().isEqualTo(Rank.EVENT_COORDINATOR));
 
         deleteBtn.setOnAction(e -> Alerts.confirmDeleteEvent(
                 eventModelToShow,

@@ -287,8 +287,8 @@ public class MainView implements View {
                 events,
                 tickets,
                 users,
-                verifyTicket,
-                login
+                verifyTicket
+//                login // Uncomment to show login button
         );
         results.setAlignment(Pos.TOP_CENTER);
 

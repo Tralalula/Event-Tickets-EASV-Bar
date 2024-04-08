@@ -4,13 +4,12 @@ import atlantafx.base.controls.CustomTextField;
 import atlantafx.base.controls.Spacer;
 import atlantafx.base.theme.Styles;
 import atlantafx.base.theme.Tweaks;
+import event.tickets.easv.bar.be.enums.Rank;
 import event.tickets.easv.bar.gui.common.*;
-import event.tickets.easv.bar.gui.util.Alerts;
-import event.tickets.easv.bar.gui.util.BindingsUtils;
-import event.tickets.easv.bar.gui.util.Listeners;
-import event.tickets.easv.bar.gui.util.StyleConfig;
+import event.tickets.easv.bar.gui.util.*;
 import event.tickets.easv.bar.gui.widgets.CircularImageView;
 import event.tickets.easv.bar.gui.widgets.MenuItems;
+import event.tickets.easv.bar.util.SessionManager;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -104,6 +103,7 @@ public class UsersView implements View {
         addUser.getStyleClass().addAll(Styles.BUTTON_ICON, Styles.FLAT, Styles.ACCENT, Styles.TITLE_4, StyleConfig.ACTIONABLE);
         addUser.setOnAction(e -> ViewHandler.changeView(ViewType.CREATE_USER));
 
+        NodeUtils.bindVisibility(addUser, SessionManager.getInstance().getUserModel().rank().isEqualTo(Rank.ADMIN));
 
         top.getChildren().addAll(search, new Spacer(), addUser);
         return top;
@@ -151,7 +151,14 @@ public class UsersView implements View {
                 deleteItem.setMnemonicParsing(true);
 
                 contextMenu.getItems().addAll(editItem, deleteItem);
-                setContextMenu(contextMenu);
+
+                SessionManager.getInstance().getUserModel().rank().subscribe(rank -> {
+                    if (rank == Rank.ADMIN) {
+                        setContextMenu(contextMenu);
+                    } else {
+                        setContextMenu(null);
+                    }
+                });
 
                 spacer.setPrefHeight(StyleConfig.STANDARD_SPACING);
                 spacer.setMinHeight(StyleConfig.STANDARD_SPACING);

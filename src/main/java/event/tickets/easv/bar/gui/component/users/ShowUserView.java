@@ -2,6 +2,7 @@ package event.tickets.easv.bar.gui.component.users;
 
 import atlantafx.base.controls.Spacer;
 import atlantafx.base.theme.Styles;
+import event.tickets.easv.bar.be.enums.Rank;
 import event.tickets.easv.bar.gui.common.*;
 import event.tickets.easv.bar.gui.component.events.EventGridView;
 import event.tickets.easv.bar.gui.component.events.EventsView;
@@ -10,6 +11,7 @@ import event.tickets.easv.bar.gui.util.BindingsUtils;
 import event.tickets.easv.bar.gui.util.NodeUtils;
 import event.tickets.easv.bar.gui.util.StyleConfig;
 import event.tickets.easv.bar.gui.widgets.CircularImageView;
+import event.tickets.easv.bar.util.SessionManager;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.collections.ListChangeListener;
@@ -113,6 +115,9 @@ public class ShowUserView implements View {
                 model,
                 userModel -> controller.onDeleteUser(ViewHandler::previousView, model))
         );
+
+        NodeUtils.bindVisibility(editBtn, SessionManager.getInstance().getUserModel().rank().isEqualTo(Rank.ADMIN));
+        NodeUtils.bindVisibility(deleteBtn, SessionManager.getInstance().getUserModel().rank().isEqualTo(Rank.ADMIN));
 
         results.getChildren().addAll(editBtn, deleteBtn);
 

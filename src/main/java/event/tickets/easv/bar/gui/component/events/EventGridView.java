@@ -2,12 +2,14 @@ package event.tickets.easv.bar.gui.component.events;
 
 import atlantafx.base.controls.Card;
 import atlantafx.base.theme.Styles;
+import event.tickets.easv.bar.be.enums.Rank;
 import event.tickets.easv.bar.gui.common.*;
 import event.tickets.easv.bar.gui.component.tickets.TicketEventModel;
 import event.tickets.easv.bar.gui.util.*;
 import event.tickets.easv.bar.gui.widgets.CircularImageView;
 import event.tickets.easv.bar.gui.widgets.Images;
 import event.tickets.easv.bar.gui.widgets.MenuItems;
+import event.tickets.easv.bar.util.SessionManager;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.NumberBinding;
 import javafx.beans.property.BooleanProperty;
@@ -183,6 +185,8 @@ public class EventGridView implements View {
                         ViewHandler.changeView(ViewType.EDIT_EVENT, item);
                     });
 
+
+                    NodeUtils.bindVisibility(editItem, SessionManager.getInstance().getUserModel().rank().isEqualTo(Rank.EVENT_COORDINATOR));
 
                     deleteItem.setOnAction(e -> Alerts.confirmDeleteEvent(
                             item,
