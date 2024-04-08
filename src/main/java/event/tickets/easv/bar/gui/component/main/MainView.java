@@ -7,12 +7,15 @@ import event.tickets.easv.bar.gui.component.dashboard.DashboardView;
 import event.tickets.easv.bar.gui.component.events.createevent.CreateEventView;
 import event.tickets.easv.bar.gui.component.events.EventsView;
 import event.tickets.easv.bar.gui.component.events.ShowEventView;
+import event.tickets.easv.bar.gui.component.profile.ProfileView;
 import event.tickets.easv.bar.gui.component.tickets.*;
 import event.tickets.easv.bar.gui.component.users.ShowUserView;
 import event.tickets.easv.bar.gui.component.users.UsersView;
 import event.tickets.easv.bar.gui.component.users.createuser.CreateUserView;
 import event.tickets.easv.bar.gui.util.StyleConfig;
 import event.tickets.easv.bar.gui.util.*;
+import event.tickets.easv.bar.gui.widgets.CircularImageView;
+import event.tickets.easv.bar.gui.widgets.MenuItems;
 import event.tickets.easv.bar.util.SessionManager;
 import javafx.application.Application;
 import javafx.css.PseudoClass;
@@ -52,6 +55,8 @@ public class MainView implements View {
     private final Region showUserView;
     private final Region createUserView;
 
+    private final Region profileView;
+
     private Breadcrumbs<String> crumbs;
 
     public MainView() {
@@ -64,18 +69,19 @@ public class MainView implements View {
             throw new RuntimeException("Fejl opstået");
         }
 
-        this.dashboardView = new DashboardView(model.eventModels(), model.fetchingEventsProperty(), model.eventsUsersSynchronizedProperty()).getView();
-        this.eventsView = new EventsView(model.eventModels(), model.fetchingEventsProperty(), model.eventsUsersSynchronizedProperty()).getView();
+        this.dashboardView = new DashboardView(model.eventModels(), model.fetchingEventsProperty(), model.eventsUsersSynchronizedProperty(), model.eventsTicketsSynchronizedProperty()).getView();
+        this.eventsView = new EventsView(model.eventModels(), model.fetchingEventsProperty(), model.eventsUsersSynchronizedProperty(), model.eventsTicketsSynchronizedProperty()).getView();
         this.createEventView = new CreateEventView().getView();
-        this.showEventView = new ShowEventView(model.eventModels(), model.userModels()).getView();
+        this.showEventView = new ShowEventView(model.eventModels(), model.userModels(), model.ticketModels(), model.eventsTicketsSynchronizedProperty()).getView();
 
         this.ticketsView = new TicketsView(model, model.fetchingTicketsProperty()).getView();
 
         TicketsModel ticketsModel = new TicketsModel(model);
         this.showTicketView = new ShowTicketView(model, ticketsModel).getView();
         this.createUserView = new CreateUserView().getView();
-        this.showUserView = new ShowUserView(model.eventsUsersSynchronizedProperty()).getView();
+        this.showUserView = new ShowUserView(model.eventsUsersSynchronizedProperty(), model.eventsTicketsSynchronizedProperty()).getView();
         this.usersView = new UsersView(model.userModels(), model.fetchingUsersProperty(), model.eventsUsersSynchronizedProperty()).getView();
+        this.profileView = new ProfileView().getView();
     }
 
     @Override
@@ -132,8 +138,9 @@ public class MainView implements View {
         NodeUtils.bindVisibility(usersView, ViewHandler.activeViewProperty().isEqualTo(ViewType.USERS));
         NodeUtils.bindVisibility(showUserView, ViewHandler.activeViewProperty().isEqualTo(ViewType.SHOW_USER));
         NodeUtils.bindVisibility(createUserView, ViewHandler.activeViewProperty().isEqualTo(ViewType.CREATE_USER).or(ViewHandler.activeViewProperty().isEqualTo(ViewType.EDIT_USER)));
+        NodeUtils.bindVisibility(profileView, ViewHandler.activeViewProperty().isEqualTo(ViewType.PROFILE));
 
-        var content = new StackPane(authView, dashboardView, eventsView, createEventView, showEventView, ticketsView, showTicketView, usersView, showUserView, createUserView);
+        var content = new StackPane(authView, dashboardView, eventsView, createEventView, showEventView, ticketsView, showTicketView, usersView, showUserView, createUserView, profileView);
 
         var scrollPane = new ScrollPane(content);
         scrollPane.setFitToHeight(true);
@@ -210,14 +217,20 @@ public class MainView implements View {
             modeSwitch.setGraphic(isDarkTheme[0] ? darkTheme : lightTheme);
         });
 
-        MenuItem logoutMenuItem = new MenuItem("Log out");
+
+        List<MenuItem> settingsItems = new ArrayList<>();
+        var profileMenuItem = MenuItems.createItem("Profile", Feather.USER);
+        profileMenuItem.setOnAction(e -> ViewHandler.changeView(ViewType.PROFILE));
+
+        var settingsMenuItem = MenuItems.createItem("Settings", Feather.SETTINGS);
+
+        var logoutMenuItem = MenuItems.createItem("Logout", Feather.LOG_OUT);
         logoutMenuItem.setOnAction(event -> {
             if (SessionManager.getInstance().logout()) ViewHandler.changeView(ViewType.LOGIN);
         });
 
-        List<MenuItem> settingsItems = new ArrayList<>();
-        settingsItems.add(new MenuItem("Profile"));
-        settingsItems.add(new MenuItem("Settings"));
+        settingsItems.add(profileMenuItem);
+        settingsItems.add(settingsMenuItem);
         settingsItems.add(logoutMenuItem);
 
         var settings = new MenuButton("Username");
@@ -225,6 +238,13 @@ public class MainView implements View {
         settings.getStyleClass().addAll(
                 Styles.FLAT
         );
+
+        var profileImage = new CircularImageView(16);
+        profileImage.imageProperty().bind(SessionManager.getInstance().getUserModel().image());
+        profileImage.textProperty().bind(BindingsUtils.initialize(SessionManager.getInstance().getUserModel().firstName(), SessionManager.getInstance().getUserModel().lastName()));
+
+        settings.setGraphic(profileImage.get());
+
 
         settings.textProperty().bind(SessionManager.getInstance().getUserModel().firstName());
 
@@ -267,8 +287,8 @@ public class MainView implements View {
                 events,
                 tickets,
                 users,
-                verifyTicket,
-                login
+                verifyTicket
+//                login // Uncomment to show login button
         );
         results.setAlignment(Pos.TOP_CENTER);
 

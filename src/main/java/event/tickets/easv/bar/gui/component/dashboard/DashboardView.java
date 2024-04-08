@@ -15,6 +15,8 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
@@ -30,6 +32,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.*;
 
@@ -40,20 +43,31 @@ public class DashboardView implements View {
     private final ObservableList<EventModel> eventsMasterList;
     private final BooleanProperty fetchingData;
     private final BooleanProperty eventsUsersSynchronized;
+    private final BooleanProperty eventTicketsSynchronized;
     private final ListView<EventModel> eventListView;
     private final ObjectProperty<LocalDate> selectedDate = new SimpleObjectProperty<>(TODAY);
     private final FilteredList<EventModel> filteredEventsForDate;
+    private final FilteredList<EventModel> filteredEventsAfterToday;
+    private EventGridView gridView;
 
+    private Map<EventModel, List<ChangeListener<? super LocalDate>>> startDateListeners = new HashMap<>();
+    private Map<EventModel, List<ChangeListener<? super LocalTime>>> startTimeListeners = new HashMap<>();
 
-    public DashboardView(ObservableList<EventModel> eventsMasterList, BooleanProperty fetchingData, BooleanProperty eventsUsersSynchronized) {
+    public DashboardView(ObservableList<EventModel> eventsMasterList, BooleanProperty fetchingData, BooleanProperty eventsUsersSynchronized, BooleanProperty eventTicketsSynchronized) {
         this.eventsMasterList = eventsMasterList;
         this.fetchingData = fetchingData;
         this.eventsUsersSynchronized = eventsUsersSynchronized;
+        this.eventTicketsSynchronized = eventTicketsSynchronized;
         this.eventListView = new ListView<>();
         this.filteredEventsForDate = new FilteredList<>(eventsMasterList);
+        this.filteredEventsAfterToday = new FilteredList<>(eventsMasterList);
 
+        filteredEventsAfterToday.setPredicate(eventModel -> !eventModel.startDate().get().isBefore(TODAY));
         filteredEventsForDate.setPredicate(eventModel -> eventModel.startDate().get().equals(selectedDate.get()));
-        eventListView.setItems(filteredEventsForDate);
+
+        var sortedEventsByTime = new SortedList<>(filteredEventsForDate, Comparator.comparing(eventModel -> eventModel.startTime().get()));
+
+        eventListView.setItems(sortedEventsByTime);
 
         eventListView.getStyleClass().addAll(Tweaks.EDGE_TO_EDGE);
         eventListView.setCellFactory(c -> {
@@ -64,6 +78,119 @@ public class DashboardView implements View {
         eventListView.setPadding(new Insets(0));
         eventListView.setMinWidth(300);
 
+        eventsMasterList.addListener((ListChangeListener<EventModel>) c -> attachStartDateListeners());
+    }
+
+    private void attachStartDateListeners() {
+        removeExistingListeners();
+
+        for (EventModel eventModel : eventsMasterList) {
+            ChangeListener<LocalDate> dateListener = (obs, ov, nv) -> {
+                updateListView();
+                updateGridView();
+            };
+
+            ChangeListener<LocalTime> timeListener = (obs, ov, nv) -> {
+                updateListView();
+                updateGridView();
+            };
+
+            eventModel.startDate().addListener(dateListener);
+            eventModel.startTime().addListener(timeListener);
+
+            startDateListeners.computeIfAbsent(eventModel, k -> new ArrayList<>()).add(dateListener);
+            startTimeListeners.computeIfAbsent(eventModel, k -> new ArrayList<>()).add(timeListener);
+        }
+    }
+
+    private void removeExistingListeners() {
+        startDateListeners.forEach((eventModel, listeners) -> {
+            listeners.forEach(listener -> eventModel.startDate()
+                                                    .removeListener(listener));
+        });
+
+        startTimeListeners.forEach((eventModel, listeners) -> {
+                listeners.forEach(listener -> eventModel.startTime()
+                                                        .removeListener(listener));
+        });
+
+        startDateListeners.clear();
+        startTimeListeners.clear();
+    }
+
+
+    @Override
+    public Region getView() {
+        var results = new GridPane();
+
+        var events = events();
+        var calender = calender();
+
+        var column1 = new ColumnConstraints();
+        column1.setHgrow(Priority.ALWAYS);
+
+        var column2 = new ColumnConstraints();
+        column2.setHgrow(Priority.NEVER);
+        column2.setPrefWidth(Region.USE_COMPUTED_SIZE);
+
+        results.getColumnConstraints().addAll(column1, column2);
+
+        results.add(events, 0, 0);
+        results.add(calender, 1, 0);
+
+        return results;
+    }
+
+    public Node events() {
+        var results = new VBox(StyleConfig.STANDARD_SPACING);
+
+        var eventsTitle = Labels.styledLabel("Upcoming events", Styles.TITLE_2);
+        eventsTitle.setPadding(new Insets(0, 0, 0, 10));
+
+        Comparator<EventModel> byDate = Comparator.comparing(eventModel -> eventModel.startDate().get());
+        Comparator<EventModel> byTime = Comparator.comparing(eventModel -> eventModel.startTime().get(), Comparator.nullsFirst(Comparator.naturalOrder()));
+        var sortedEvents = new SortedList<>(filteredEventsAfterToday, byDate.thenComparing(byTime));
+
+        gridView = new EventGridView(sortedEvents, eventsUsersSynchronized, eventTicketsSynchronized);
+
+
+        results.getChildren().addAll(eventsTitle, gridView.getView());
+        return results;
+    }
+
+    public void updateGridView() {
+        filteredEventsAfterToday.setPredicate(eventModel -> !eventModel.startDate().get().isBefore(TODAY));
+        Comparator<EventModel> byDate = Comparator.comparing(eventModel -> eventModel.startDate().get());
+        Comparator<EventModel> byTime = Comparator.comparing(eventModel -> eventModel.startTime().get(), Comparator.nullsFirst(Comparator.naturalOrder()));
+        var sortedEvents = new SortedList<>(filteredEventsAfterToday, byDate.thenComparing(byTime));
+        gridView.setItems(sortedEvents);
+    }
+
+    public Node calender() {
+        var results = new VBox(StyleConfig.STANDARD_SPACING);
+        results.setPadding(new Insets(0, 10, 0, 0));
+
+        var cal = new Calendar(TODAY);
+        cal.setTopNode(new Clock());
+        cal.setShowWeekNumbers(true);
+
+        cal.valueProperty().addListener((obs, ov, nv) -> {
+            selectedDate.set(nv);
+            updateListView();
+        });
+
+
+        results.setAlignment(Pos.TOP_RIGHT);
+
+        var listViewWrapper = new StackPane(eventListView);
+        listViewWrapper.getStyleClass().add("listview-wrapper");
+
+        results.getChildren().addAll(cal, listViewWrapper);
+        return results;
+    }
+
+    private void updateListView() {
+        filteredEventsForDate.setPredicate(eventModel -> eventModel.startDate().get().equals(selectedDate.get()));
     }
 
     private ListCell<EventModel> eventCell() {
@@ -153,72 +280,5 @@ public class DashboardView implements View {
                 }
             }
         };
-    }
-
-    @Override
-    public Region getView() {
-        var results = new GridPane();
-
-        var events = events();
-        var calender = calender();
-
-        var column1 = new ColumnConstraints();
-        column1.setHgrow(Priority.ALWAYS);
-
-        var column2 = new ColumnConstraints();
-        column2.setHgrow(Priority.NEVER);
-        column2.setPrefWidth(Region.USE_COMPUTED_SIZE);
-
-        results.getColumnConstraints().addAll(column1, column2);
-
-        results.add(events, 0, 0);
-        results.add(calender, 1, 0);
-
-        return results;
-    }
-
-    public Node events() {
-        var results = new VBox(StyleConfig.STANDARD_SPACING);
-
-        var eventsTitle = Labels.styledLabel("Upcoming events", Styles.TITLE_2);
-        eventsTitle.setPadding(new Insets(0, 0, 0, 10));
-
-        var filteredEvents = new FilteredList<>(eventsMasterList,
-                eventModel -> !eventModel.startDate().get().isBefore(TODAY));
-
-        var sortedEvents = new SortedList<>(filteredEvents,
-                Comparator.comparing(eventModel -> eventModel.startDate().get()));
-
-        var gridView = new EventGridView(sortedEvents, eventsUsersSynchronized);
-
-        results.getChildren().addAll(eventsTitle, gridView.getView());
-        return results;
-    }
-
-    public Node calender() {
-        var results = new VBox(StyleConfig.STANDARD_SPACING);
-        results.setPadding(new Insets(0, 10, 0, 0));
-
-        var cal = new Calendar(TODAY);
-        cal.setTopNode(new Clock());
-        cal.setShowWeekNumbers(true);
-
-        cal.valueProperty().addListener((obs, ov, nv) -> {
-            selectedDate.set(nv);
-            updateEventListView();
-        });
-
-
-        results.setAlignment(Pos.TOP_RIGHT);
-
-        var listViewWrapper = new StackPane(eventListView);
-        listViewWrapper.getStyleClass().add("listview-wrapper");
-
-        results.getChildren().addAll(cal, listViewWrapper);
-        return results;
-    }
-
-    private void updateEventListView() {
-        filteredEventsForDate.setPredicate(eventModel -> eventModel.startDate().get().equals(selectedDate.get()));
     }
 }

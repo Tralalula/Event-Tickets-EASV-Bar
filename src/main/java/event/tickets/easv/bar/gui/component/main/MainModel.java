@@ -30,6 +30,7 @@ public class MainModel {
     private final BooleanProperty ticketsGeneratedFetched = new SimpleBooleanProperty(false);
 
     private final BooleanProperty eventsUsersSynchronized = new SimpleBooleanProperty(false);
+    private final BooleanProperty eventsTicketsSynchronized = new SimpleBooleanProperty(false);
 
     private final StringProperty username = new SimpleStringProperty();
 
@@ -100,5 +101,9 @@ public class MainModel {
 
     public BooleanProperty eventsUsersSynchronizedProperty() {
         return eventsUsersSynchronized;
+    }
+
+    public BooleanProperty eventsTicketsSynchronizedProperty() {
+        return eventsTicketsSynchronized;
     }
 }

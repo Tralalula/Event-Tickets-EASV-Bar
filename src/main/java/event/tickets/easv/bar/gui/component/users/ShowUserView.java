@@ -2,6 +2,7 @@ package event.tickets.easv.bar.gui.component.users;
 
 import atlantafx.base.controls.Spacer;
 import atlantafx.base.theme.Styles;
+import event.tickets.easv.bar.be.enums.Rank;
 import event.tickets.easv.bar.gui.common.*;
 import event.tickets.easv.bar.gui.component.events.EventGridView;
 import event.tickets.easv.bar.gui.component.events.EventsView;
@@ -10,8 +11,10 @@ import event.tickets.easv.bar.gui.util.BindingsUtils;
 import event.tickets.easv.bar.gui.util.NodeUtils;
 import event.tickets.easv.bar.gui.util.StyleConfig;
 import event.tickets.easv.bar.gui.widgets.CircularImageView;
+import event.tickets.easv.bar.util.SessionManager;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
@@ -24,16 +27,14 @@ import org.kordamp.ikonli.javafx.FontIcon;
 import org.kordamp.ikonli.material2.Material2OutlinedAL;
 
 public class ShowUserView implements View {
-    private UserModel model = UserModel.Empty();
+    private final UserModel model = UserModel.Empty();
     private final DeleteUserController controller;
     private final CircularImageView circularImageView = new CircularImageView(80);
     private final EventGridView eventGridView;
-    private final BooleanProperty eventsUsersSynchronized;
 
-    public ShowUserView(BooleanProperty eventsUsersSynchronized) {
+    public ShowUserView(BooleanProperty eventsUsersSynchronized, BooleanProperty eventsTicketsSynchronized) {
         this.controller = new DeleteUserController();
-        this.eventsUsersSynchronized = eventsUsersSynchronized;
-        this.eventGridView = new EventGridView(model.events(), eventsUsersSynchronized);
+        this.eventGridView = new EventGridView(model.events(), eventsUsersSynchronized, eventsTicketsSynchronized);
 
         ViewHandler.currentViewDataProperty().subscribe((oldData, newData) -> {
             if (newData instanceof UserModel) {
@@ -42,8 +43,16 @@ public class ShowUserView implements View {
                 circularImageView.imageProperty().bind(model.image());
                 circularImageView.textProperty().bind(BindingsUtils.initialize(model.firstName(), model.lastName()));
                 eventGridView.setItems(model.events());
+
+                model.events().addListener((ListChangeListener<? super EventModel>) c -> {
+                    System.out.println("Events changed: " + c);
+                    eventGridView.setItems(model.events());
+                });
+
+
             }
         });
+
     }
 
     @Override
@@ -106,6 +115,9 @@ public class ShowUserView implements View {
                 model,
                 userModel -> controller.onDeleteUser(ViewHandler::previousView, model))
         );
+
+        NodeUtils.bindVisibility(editBtn, SessionManager.getInstance().getUserModel().rank().isEqualTo(Rank.ADMIN));
+        NodeUtils.bindVisibility(deleteBtn, SessionManager.getInstance().getUserModel().rank().isEqualTo(Rank.ADMIN));
 
         results.getChildren().addAll(editBtn, deleteBtn);
 

@@ -104,12 +104,20 @@ public class MainController {
                 ticketEventModel.setTicketsGenerated(list);
             }
 
+            for (EventModel eventModel : model.eventModels()) {
+                ObservableList<TicketEventModel> associatedTicketEvents = FXCollections.observableArrayList(
+                        model.ticketEventModels().stream()
+                                .filter(ticketEventModel -> ticketEventModel.eventId().get() == eventModel.id().get())
+                                .collect(Collectors.toList())
+                );
+                eventModel.setTickets(associatedTicketEvents);
+            }
+
+            model.eventsTicketsSynchronizedProperty().set(true);
 
             // Clear temp storage association maps; otherwise they take up a shit ton of memory
             eventToUsersMap.clear();
             userToEventsMap.clear();
-
-            System.out.println(model.userModels().getFirst().events());
         }
     }
 
@@ -165,18 +173,6 @@ public class MainController {
         }
     }
 
-    /*
-    private void processTicketEventResult(Result<List<TicketEvent>> result) {
-        model.fetchingEventsProperty().set(false);
-        switch (result) {
-            case Success<List<TicketEvent>> s -> {
-                model.eventModels().setAll(convertToTicketModels(s.result()));
-                model.eventsFetchedProperty().set(true);
-            }
-            case Failure<List<TicketEvent>> f -> System.out.println("Error: " + f.cause());
-        }
-    }*/
-
     private void processEvents(Result<List<Event>> result) {
         model.fetchingEventsProperty().set(false);
         switch (result) {
@@ -226,16 +222,7 @@ public class MainController {
         List<EventModel> eventModels = new ArrayList<>();
 
         for (Event event : events) {
-            var eventModel = EventModel.fromEntity(event);
-            eventModel.setTests(FXCollections.observableArrayList(
-                    new TestModel("VIP", "Paid", "250", "DKK 250,-"),
-                    new TestModel("1st row", "Paid", "100", "DKK 150,-"),
-                    new TestModel("1 free beer", "Promotional", "1500 printed", ""),
-                    new TestModel("1 free cocio", "Promotional", "2750 printed", ""))
-            );
-
-            eventModels.add(eventModel);
-//            System.out.println("MainController.convertToEventModels() - event.tickets(): " + event.tickets());
+            eventModels.add(EventModel.fromEntity(event));
             List<Integer> userIds = event.users().stream().map(User::id).toList();
             eventToUsersMap.put(event.id(), userIds);
         }

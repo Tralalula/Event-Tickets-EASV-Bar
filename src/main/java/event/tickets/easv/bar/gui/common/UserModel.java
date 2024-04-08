@@ -10,6 +10,8 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.image.Image;
 
+import java.util.Objects;
+
 public class UserModel {
     private final IntegerProperty id = new SimpleIntegerProperty();
     private final StringProperty username = new SimpleStringProperty();
@@ -151,5 +153,18 @@ public class UserModel {
 
     public ObjectProperty<Image> image() {
         return image;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        UserModel that = (UserModel) obj;
+        return Objects.equals(id.get(), that.id.get());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id.get());
     }
 }

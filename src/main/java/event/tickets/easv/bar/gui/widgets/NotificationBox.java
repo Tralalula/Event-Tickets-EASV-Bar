@@ -3,6 +3,7 @@ package event.tickets.easv.bar.gui.widgets;
 import atlantafx.base.controls.Notification;
 import atlantafx.base.util.Animations;
 import event.tickets.easv.bar.gui.util.StyleConfig;
+import javafx.animation.PauseTransition;
 import javafx.animation.TranslateTransition;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -12,6 +13,7 @@ import javafx.util.Duration;
 
 public class NotificationBox {
     private final static Duration DEFAULT_ANIMATION_DURATION = Duration.millis(250);
+    private final static Duration DEFAULT_DELAY = Duration.seconds(5);
     private final static int MAX_NOTIFICATIONS = 5;
 
     private final VBox notificationBox = new VBox(StyleConfig.STANDARD_SPACING);
@@ -46,11 +48,17 @@ public class NotificationBox {
             slideIn.play();
         });
 
-        notification.setOnClose(e -> {
-            var out = Animations.slideOutRight(notification, DEFAULT_ANIMATION_DURATION);
-            out.setOnFinished(f -> notificationBox.getChildren().remove(notification));
-            out.playFromStart();
-        });
+        notification.setOnClose(e -> dismissNotification(notification));
+
+        var delay = new PauseTransition(DEFAULT_DELAY);
+        delay.setOnFinished(e -> dismissNotification(notification));
+        delay.play();
+    }
+
+    private void dismissNotification(Notification notification) {
+        var out = Animations.slideOutRight(notification, DEFAULT_ANIMATION_DURATION);
+        out.setOnFinished(f -> notificationBox.getChildren().remove(notification));
+        out.playFromStart();
     }
 
     public StackPane getNotificationArea() {

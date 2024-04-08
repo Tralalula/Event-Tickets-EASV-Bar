@@ -91,6 +91,8 @@ public class CreateEventController {
 
 
         var updated = EventModel.fromEntity(editedEvent);
+        updated.setUsers(eventModel.users());
+        updated.setTickets(eventModel.tickets());
 
         return Success.of(updated);
     }
