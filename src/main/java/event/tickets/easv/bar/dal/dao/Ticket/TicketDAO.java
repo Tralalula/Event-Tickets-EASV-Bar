@@ -84,12 +84,19 @@ class TicketSQLTemplate implements SQLTemplate<Ticket> {
 
     @Override
     public String updateSQL() {
-        throw new UnsupportedOperationException("Er ikke implementeret. TicketDAO: TicketSQLTemplate.updateSQL()");
+        return """
+                UPDATE dbo.Ticket
+                SET Title = ?
+                WHERE id = ?
+                """;
     }
 
     @Override
     public String deleteSQL() {
-        throw new UnsupportedOperationException("Er ikke implementeret. TicketDAO: TicketSQLTemplate.deleteSQL()");
+        return """
+                DELETE FROM dbo.Ticket
+                WHERE id = ?
+                """;
     }
 }
 
@@ -115,7 +122,8 @@ class TicketInsertParameterSetter implements InsertParameterSetter<Ticket> {
 class TicketUpdateParameterSetter implements UpdateParameterSetter<Ticket> {
     @Override
     public void setParameters(PreparedStatement stmt, Ticket original, Ticket updatedData) throws SQLException {
-        throw new UnsupportedOperationException("Er ikke implementeret. TicketDAO: TicketUpdateParameterSetter.setParameters()");
+        stmt.setString(1, updatedData.getTitle());
+        stmt.setInt(2, original.getId());
     }
 }
 

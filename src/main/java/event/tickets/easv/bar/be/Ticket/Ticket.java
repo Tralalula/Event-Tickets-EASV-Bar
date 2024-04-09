@@ -84,10 +84,7 @@ public class Ticket implements Entity<Ticket> {
 
     @Override
     public void update(Ticket updatedData) {
-        throw new UnsupportedOperationException("Er ikke implementeret. Ticket.update()");
-/*        setTitle(updatedData.title);
-        setPrice(updatedData.price);
-        */
+        setTitle(updatedData.title);
     }
 
     @Override

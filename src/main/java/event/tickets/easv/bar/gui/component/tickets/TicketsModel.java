@@ -170,8 +170,8 @@ public class TicketsModel {
         return tickets;
     }
 
-    private void deleteTicket(TicketModel ticketModel) throws Exception {
-        Result<Ticket> result = entityManager.add(ticketModel.toEntity());
+    public void deleteTicket(TicketModel ticketModel) throws Exception {
+        Result<Boolean> result = entityManager.delete(ticketModel.toEntity());
 
         if (result.isFailure())
             throw new Exception("Couldn't delete ticket from DB");
@@ -179,11 +179,9 @@ public class TicketsModel {
         for (TicketEventModel ticketEventModel : ticketModel.ticketEvents()) {
             model.ticketGeneratedModels().removeAll(ticketEventModel.ticketsGenerated());
         }
+
         model.ticketEventModels().removeAll(ticketModel.ticketEvents());
-
         model.ticketModels().remove(ticketModel);
-
-
     }
 
     /** Sorts a TicketModel list to newest from integer list: 1, 2, 3, 4, 5 returns 5, 4, 3, 2, 1
@@ -212,5 +210,22 @@ public class TicketsModel {
             }
             case Result.Failure<TicketEvent> f -> throw new Exception("Error occurred while trying to add special ticket");
         }
+    }
+
+    public boolean editTicket(TicketModel ticket, TicketModel updated) throws Exception {
+        if (isEmpty(updated.title().get()))
+            throw new Exception("Title cannot be empty");
+
+        if (ticketExists(updated.toEntity()))
+            throw new Exception("Ticket already exists");
+
+        Result<Boolean> result = entityManager.update(ticket.toEntity(), updated.toEntity());
+
+        if (result.isFailure())
+            throw new Exception("Error occurred while trying to add special ticket");
+
+        ticket.title().set(updated.title().get());
+
+        return true;
     }
 }

@@ -92,7 +92,7 @@ CREATE TABLE TicketEvent (
      eventId  INT NULL,
      price    DECIMAL(10, 2) NULL,
      quantity INT,
-     FOREIGN KEY (ticketId) REFERENCES Ticket(id),
+     FOREIGN KEY (ticketId) REFERENCES Ticket(id) ON DELETE CASCADE,
      FOREIGN KEY (eventId) REFERENCES Event(id)
 );
 GO
@@ -105,7 +105,7 @@ CREATE TABLE TicketGenerated (
     used       BIT DEFAULT 0,
     barcode    NVARCHAR(255),
     qrcode     NVARCHAR(255),
-    FOREIGN KEY (eventId) REFERENCES TicketEvent(id),
+    FOREIGN KEY (eventId) REFERENCES TicketEvent(id) ON DELETE CASCADE
     -- FOREIGN KEY (customerId) REFERENCES Customer(id)
 );
 GO

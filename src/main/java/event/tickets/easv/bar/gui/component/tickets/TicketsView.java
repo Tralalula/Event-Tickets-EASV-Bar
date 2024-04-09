@@ -43,6 +43,8 @@ public class TicketsView implements View {
     private TicketsModel ticketsModel;
     private TableView<TicketModel> table;
 
+    private boolean isEditing = false;
+
     private final static int PREF_OVERLAY_WIDTH = 200;
 
     public TicketsView(MainModel main, BooleanProperty fetchingData) {
@@ -90,19 +92,20 @@ public class TicketsView implements View {
         addTicket.getStyleClass().addAll(
                 Styles.BUTTON_ICON, Styles.FLAT, Styles.ACCENT, Styles.TITLE_4
         );
-        addTicket.setOnAction(e -> ViewHandler.showOverlay("Add new Ticket", addTicket(), 300, 350));
+        addTicket.setOnAction(e -> ViewHandler.showOverlay("Add new Ticket", addTicket(null), 300, 350));
 
         top.getChildren().addAll(search, new Spacer(), addTicket);
         return top;
     }
 
-    private VBox addTicket() {
+    private VBox addTicket(TicketModel ticketModel) {
         VBox main = new VBox(10);
 
         var title = new Label("Title");
         var tf = new TextField();
         tf.setPromptText("Title");
         title.setPrefWidth(PREF_OVERLAY_WIDTH);
+
 
         var typeTitle = new Label("Type");
         var type = new ComboBox<String>();
@@ -113,10 +116,20 @@ public class TicketsView implements View {
         ));
         type.getSelectionModel().selectFirst();
 
-        var button = new Button("Add ticket");
+        if (ticketModel != null) {
+            tf.setText(ticketModel.title().get());
+            type.getSelectionModel().select(ticketModel.type().get());
+            type.setDisable(true);
+        }
+
+        var button = new Button(ticketModel != null ? "Confirm edit" : "Add ticket");
         button.setOnAction(e -> {
             try {
-                ticketsModel.addTicket(new Ticket(tf.getText(), type.getValue()));
+                if (ticketModel != null) {
+                    Ticket edited = new Ticket(tf.getText(), ticketModel.type().get());
+                    ticketsModel.editTicket(ticketModel, TicketModel.fromEntity(edited));
+                } else
+                    ticketsModel.addTicket(new Ticket(tf.getText(), type.getValue()));
             } catch (Exception ex) {
                 ViewHandler.notify(NotificationType.FAILURE, ex.getMessage());
             }
@@ -208,7 +221,9 @@ public class TicketsView implements View {
                     );
 
                     editButton.setOnAction(event -> {
-                        ViewHandler.changeView(ViewType.SHOW_TICKET, item);
+                        isEditing = true;
+                        ViewHandler.showOverlay("Edit ticket", addTicket(item), 300, 350);
+                        //ViewHandler.changeView(ViewType.ADD_TICKET, item);
                     });
 
                     deleteButton.getStyleClass().addAll(
@@ -216,7 +231,11 @@ public class TicketsView implements View {
                     );
 
                     deleteButton.setOnAction(event -> {
-                        // intet endnu
+                        try {
+                            ticketsModel.deleteTicket(item);
+                        } catch (Exception e) {
+                            throw new RuntimeException(e);
+                        }
                     });
 
                     HBox buttons = new HBox(editButton, deleteButton);
