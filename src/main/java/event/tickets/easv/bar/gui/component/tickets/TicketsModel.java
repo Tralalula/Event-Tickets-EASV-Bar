@@ -184,6 +184,17 @@ public class TicketsModel {
         model.ticketModels().remove(ticketModel);
     }
 
+    public void deleteTicketEvent(TicketEventModel ticketEventModel, TicketModel ticket) throws Exception {
+        Result<Boolean> result = entityManager.delete(ticketEventModel.toEntity());
+
+        if (result.isFailure())
+            throw new Exception("Couldn't delete ticket event from DB");
+
+        model.ticketGeneratedModels().removeAll(ticketEventModel.ticketsGenerated());
+        model.ticketEventModels().remove(ticketEventModel);
+        ticket.ticketEvents().remove(ticketEventModel);
+    }
+
     /** Sorts a TicketModel list to newest from integer list: 1, 2, 3, 4, 5 returns 5, 4, 3, 2, 1
      *
      * @param ObservableList<TicketModel>

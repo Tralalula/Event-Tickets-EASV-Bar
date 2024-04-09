@@ -90,7 +90,10 @@ class TicketEventSQLTemplate implements SQLTemplate<TicketEvent> {
 
     @Override
     public String deleteSQL() {
-        throw new UnsupportedOperationException("Er ikke implementeret. TicketEventDAO: TicketEventSQLTemplate.deleteSQL()");
+        return """
+                DELETE FROM dbo.TicketEvent
+                WHERE id = ?
+                """;
     }
 }
 

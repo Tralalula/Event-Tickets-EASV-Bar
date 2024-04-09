@@ -1,13 +1,17 @@
 package event.tickets.easv.bar.gui.component.tickets;
 
 import event.tickets.easv.bar.be.Event;
+import event.tickets.easv.bar.be.Ticket.Ticket;
 import event.tickets.easv.bar.be.Ticket.TicketEvent;
 import event.tickets.easv.bar.gui.common.EventModel;
 import event.tickets.easv.bar.gui.common.TestModel;
+import event.tickets.easv.bar.gui.common.TicketModel;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+
+import java.util.ArrayList;
 
 public class TicketEventModel {
     private final IntegerProperty id = new SimpleIntegerProperty();
@@ -33,6 +37,16 @@ public class TicketEventModel {
         left.set(ticketEvent.getLeft());
         bought.set(ticketEvent.getBought());
         price.set(ticketEvent.getPrice());
+    }
+
+    public TicketEvent toEntity() {
+        return new TicketEvent(
+                id.get(),
+                ticketId.get(),
+                event.get().id().get(),
+                price.get(),
+                total.get()
+        );
     }
 
     public static TicketEventModel fromEntity(TicketEvent ticket) {

@@ -93,7 +93,7 @@ CREATE TABLE TicketEvent (
      price    DECIMAL(10, 2) NULL,
      quantity INT,
      FOREIGN KEY (ticketId) REFERENCES Ticket(id) ON DELETE CASCADE,
-     FOREIGN KEY (eventId) REFERENCES Event(id)
+     FOREIGN KEY (eventId) REFERENCES Event(id) ON DELETE CASCADE
 );
 GO
 

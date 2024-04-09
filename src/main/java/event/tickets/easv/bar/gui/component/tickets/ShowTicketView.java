@@ -338,7 +338,11 @@ public class ShowTicketView implements View {
                     );
 
                     deleteButton.setOnAction(event -> {
-                        // intet endnu
+                        try {
+                            ticketsModel.deleteTicketEvent(item, model);
+                        } catch (Exception e) {
+                            throw new RuntimeException(e);
+                        }
                     });
 
                     HBox buttons = new HBox(assignButton, editButton, deleteButton);
