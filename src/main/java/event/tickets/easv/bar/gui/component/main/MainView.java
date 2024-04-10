@@ -264,9 +264,9 @@ public class MainView implements View {
 
     private void setTheme(boolean isDark) {
         if (isDark) {
-            Application.setUserAgentStylesheet(new CupertinoDark().getUserAgentStylesheet());
+            Application.setUserAgentStylesheet(new PrimerDark().getUserAgentStylesheet());
         } else {
-            Application.setUserAgentStylesheet(new CupertinoLight().getUserAgentStylesheet());
+            Application.setUserAgentStylesheet(new PrimerLight().getUserAgentStylesheet());
         }
     }
 
