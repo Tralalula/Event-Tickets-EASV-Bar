@@ -3,6 +3,7 @@ package event.tickets.easv.bar.gui.component.events;
 import atlantafx.base.controls.CustomTextField;
 import atlantafx.base.controls.Spacer;
 import atlantafx.base.theme.Styles;
+import event.tickets.easv.bar.Main;
 import event.tickets.easv.bar.be.enums.Rank;
 import event.tickets.easv.bar.gui.common.*;
 import event.tickets.easv.bar.gui.util.Listeners;

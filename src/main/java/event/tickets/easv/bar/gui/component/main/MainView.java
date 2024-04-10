@@ -24,6 +24,8 @@ import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import org.kordamp.ikonli.Ikon;
 import org.kordamp.ikonli.feather.Feather;
@@ -174,6 +176,7 @@ public class MainView implements View {
 
         var minimizeMaximize = new FontIcon(Material2MZ.MENU);
         minimizeMaximize.getStyleClass().add("outer-icon");
+        minimizeMaximize.setVisible(false);
 
         var title = new Label("Event Manager");
         title.getStyleClass().addAll(Styles.ACCENT, Styles.TEXT_BOLD, Styles.TITLE_4);
@@ -230,7 +233,7 @@ public class MainView implements View {
         });
 
         settingsItems.add(profileMenuItem);
-        settingsItems.add(settingsMenuItem);
+//        settingsItems.add(settingsMenuItem);
         settingsItems.add(logoutMenuItem);
 
         var settings = new MenuButton("Username");
@@ -248,17 +251,22 @@ public class MainView implements View {
 
         settings.textProperty().bind(SessionManager.getInstance().getUserModel().firstName());
 
+        var logo = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icons/easv.png")));
+        var easvLogo = new ImageView(logo);
+        easvLogo.setFitHeight(50);
+        easvLogo.setFitWidth(50);
+        easvLogo.setPreserveRatio(true);
 
-        results.getChildren().addAll(minimizeMaximize, title, search, spacer, languageSelect, modeSwitch, settings);
+        results.getChildren().addAll(easvLogo, title, spacer, modeSwitch, settings);
 
         return results;
     }
 
     private void setTheme(boolean isDark) {
         if (isDark) {
-            Application.setUserAgentStylesheet(new PrimerDark().getUserAgentStylesheet());
+            Application.setUserAgentStylesheet(new CupertinoDark().getUserAgentStylesheet());
         } else {
-            Application.setUserAgentStylesheet(new PrimerLight().getUserAgentStylesheet());
+            Application.setUserAgentStylesheet(new CupertinoLight().getUserAgentStylesheet());
         }
     }
 

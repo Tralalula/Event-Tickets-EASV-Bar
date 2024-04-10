@@ -12,11 +12,14 @@ import event.tickets.easv.bar.util.Result;
 import event.tickets.easv.bar.util.SessionManager;
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
+import java.util.Objects;
 import java.util.Optional;
 
 public class Main extends Application {
+
     public static void main(String[] args) {
         Application.launch();
     }
@@ -25,9 +28,12 @@ public class Main extends Application {
     public void start(Stage stage) {
         Application.setUserAgentStylesheet(new PrimerLight().getUserAgentStylesheet());
 
+        var icon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icons/easv.png")));
+        stage.getIcons().add(icon);
 
+        stage.setTitle("EASV - Event Manager");
         stage.setScene(new Scene(new MainView().getView(), 1340, 940));
-//        loginOnStart(); // for testing
+        loginOnStart(); // for testing
         ViewHandler.changeView(ViewType.DASHBOARD);
 //
 //        stage.setMinHeight(980);
