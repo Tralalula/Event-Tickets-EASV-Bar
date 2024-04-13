@@ -79,7 +79,7 @@ public class EventGridView implements View {
 
     private GridCell<EventModel> eventCell() {
         return new GridCell<>() {
-            private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE dd. MMMM HHmm", Locale.ENGLISH);
+            private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE dd. MMMM HH:mm", Locale.ENGLISH);
 
             private final Card card = new Card();
             private final ImageView imageView;

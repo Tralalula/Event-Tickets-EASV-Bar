@@ -32,7 +32,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
 public class ShowEventView implements View {
-    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE dd. MMMM HHmm", Locale.ENGLISH);
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE dd. MMMM HH:mm", Locale.ENGLISH);
     private final DeleteEventController controller;
 
     private final EventModel eventModelToShow = EventModel.Empty();
