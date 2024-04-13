@@ -282,7 +282,7 @@ public class MainView implements View {
         var users = createButton("Users", FontAwesomeSolid.USERS, ViewType.USERS);
 
         var verifyTicket = new Button("Verify ticket", new FontIcon(Feather.CHECK));
-        verifyTicket.getStyleClass().addAll(Styles.BUTTON_OUTLINED);
+        verifyTicket.getStyleClass().addAll(Styles.BUTTON_OUTLINED, Styles.ACCENT, Styles.INTERACTIVE, StyleConfig.ACTIONABLE);
         verifyTicket.setMinWidth(200);
         verifyTicket.setMaxWidth(Double.MAX_VALUE);
         verifyTicket.setMinHeight(38);
