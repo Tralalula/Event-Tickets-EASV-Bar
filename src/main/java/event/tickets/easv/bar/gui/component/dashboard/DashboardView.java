@@ -10,6 +10,7 @@ import event.tickets.easv.bar.gui.util.BindingsUtils;
 import event.tickets.easv.bar.gui.util.StyleConfig;
 import event.tickets.easv.bar.gui.widgets.CircularImageView;
 import event.tickets.easv.bar.gui.widgets.Clock;
+import event.tickets.easv.bar.gui.widgets.EnglishCalendarSkin;
 import event.tickets.easv.bar.gui.widgets.Labels;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
@@ -23,17 +24,17 @@ import javafx.collections.transformation.SortedList;
 import javafx.css.PseudoClass;
 import javafx.geometry.*;
 import javafx.scene.Node;
-import javafx.scene.control.Control;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
+import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
+import javafx.util.Callback;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneId;
+import java.time.chrono.Chronology;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 
@@ -179,7 +180,7 @@ public class DashboardView implements View {
             updateListView();
         });
 
-
+        cal.setSkin(new EnglishCalendarSkin(cal));
         results.setAlignment(Pos.TOP_RIGHT);
 
         var listViewWrapper = new StackPane(eventListView);

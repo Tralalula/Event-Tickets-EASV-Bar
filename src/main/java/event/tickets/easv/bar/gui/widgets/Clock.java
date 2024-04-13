@@ -11,10 +11,11 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
 public class Clock extends VBox {
-    static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("EEEE, LLLL dd, yyyy");
-    static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
+    static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("EEEE, LLLL dd, yyyy").withLocale(Locale.ENGLISH);
+    static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm").withLocale(Locale.ENGLISH);
 
     public Clock() {
         var clockLbl = Labels.styledLabel(TIME_FORMATTER.format(LocalTime.now(ZoneId.systemDefault())), Styles.TITLE_2);
