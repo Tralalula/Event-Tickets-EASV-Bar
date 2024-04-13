@@ -181,7 +181,7 @@ public class UsersView implements View {
                 userFullNameLabel.getStyleClass().add(Styles.TEXT_BOLD);
                 numEventsLabel.getStyleClass().add(Styles.TEXT_BOLD);
                 numFinishedEventsLabel.getStyleClass().add(Styles.TEXT_BOLD);
-                numTicketsSoldLabel.getStyleClass().addAll(Styles.TEXT_BOLD, Styles.ACCENT);
+                numTicketsSoldLabel.getStyleClass().addAll(Styles.TEXT_BOLD);
 
                 userRankLabel.getStyleClass().add(Styles.TEXT_MUTED);
                 numEventsDescription.getStyleClass().add(Styles.TEXT_MUTED);
