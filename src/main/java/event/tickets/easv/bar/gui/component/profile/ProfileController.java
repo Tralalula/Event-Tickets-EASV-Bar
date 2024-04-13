@@ -33,6 +33,31 @@ public class ProfileController {
                 this::canSavePassword,
                 model.password()
         ));
+
+        model.firstNameValid().bind(Bindings.createBooleanBinding(
+                () -> model.firstName().get() != null && model.firstName().get().length() > 1,
+                model.firstName()
+        ));
+
+        model.lastNameValid().bind(Bindings.createBooleanBinding(
+                () -> model.lastName().get() != null && model.lastName().get().length() > 1,
+                model.lastName()
+        ));
+
+        model.mailValid().bind(Bindings.createBooleanBinding(
+                () -> model.mail().get() != null && model.mail().get().length() > 1,
+                model.mail()
+        ));
+
+        model.phoneNumberValid().bind(Bindings.createBooleanBinding(
+                () -> model.phoneNumber().get() != null && model.phoneNumber().get().length() > 1,
+                model.phoneNumber()
+        ));
+
+        model.locationValid().bind(Bindings.createBooleanBinding(
+                () -> model.location().get() != null && model.location().get().length() > 1,
+                model.location()
+        ));
     }
 
     void onChangePicture() {

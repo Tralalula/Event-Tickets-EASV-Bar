@@ -10,8 +10,10 @@ import event.tickets.easv.bar.gui.widgets.CircularImageView;
 import event.tickets.easv.bar.gui.widgets.Labels;
 import event.tickets.easv.bar.gui.widgets.TextFields;
 import event.tickets.easv.bar.util.SessionManager;
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.BooleanBinding;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.StringProperty;
-import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -49,11 +51,11 @@ public class ProfileView implements View {
 
         userdata.getChildren().addAll(
                 profilePictureBox(),
-                gridPaneField("First name", model.firstName()),
-                gridPaneField("Last name", model.lastName()),
-                gridPaneField("Mail", model.mail()),
-                gridPaneField("Phone number", model.phoneNumber()),
-                gridPaneField("Location", model.location()),
+                gridPaneField("First name", model.firstName(), model.firstNameValid()),
+                gridPaneField("Last name", model.lastName(), model.lastNameValid()),
+                gridPaneField("Mail", model.mail(), model.mailValid()),
+                gridPaneField("Phone number", model.phoneNumber(), model.phoneNumberValid()),
+                gridPaneField("Location", model.location(), model.locationValid()),
                 gridPanePassword("Password")
         );
 
@@ -104,7 +106,7 @@ public class ProfileView implements View {
         return results;
     }
 
-    public Node gridPaneField(String prompt, StringProperty boundProperty) {
+    public Node gridPaneField(String prompt, StringProperty boundProperty, BooleanProperty validationProperty) {
         var results = new GridPane();
         results.getStyleClass().addAll(Styles.BG_DEFAULT, StyleConfig.PADDING_DEFAULT, StyleConfig.ROUNDING_DEFAULT);
 
@@ -124,7 +126,7 @@ public class ProfileView implements View {
         results.getColumnConstraints().addAll(column1, column2, column3);
 
         results.add(Labels.styledLabel(prompt, Styles.TEXT_BOLD), 0, 0);
-        results.add(TextFields.boundTextField(boundProperty), 1, 0);
+        results.add(TextFields.boundValidatedTextField(boundProperty, validationProperty), 1, 0);
 
         return results;
     }

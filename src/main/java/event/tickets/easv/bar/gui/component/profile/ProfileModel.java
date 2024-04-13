@@ -20,6 +20,12 @@ public class ProfileModel {
     private final BooleanProperty okToSavePsw = new SimpleBooleanProperty(false);
     private final BooleanProperty okToSaveProfile = new SimpleBooleanProperty(false);
 
+    private final BooleanProperty firstNameValid = new SimpleBooleanProperty(false);
+    private final BooleanProperty lastNameValid = new SimpleBooleanProperty(false);
+    private final BooleanProperty mailValid = new SimpleBooleanProperty(false);
+    private final BooleanProperty phoneNumberValid = new SimpleBooleanProperty(false);
+    private final BooleanProperty locationValid = new SimpleBooleanProperty(false);
+
     private UserModel userModel = null;
 
     public void set(UserModel userModel) {
@@ -91,6 +97,28 @@ public class ProfileModel {
     public BooleanProperty okToSaveProfile() {
         return okToSaveProfile;
     }
+
+    public BooleanProperty firstNameValid() {
+        return firstNameValid;
+    }
+
+    public BooleanProperty lastNameValid() {
+        return lastNameValid;
+    }
+
+    public BooleanProperty mailValid() {
+        return mailValid;
+    }
+
+    public BooleanProperty phoneNumberValid() {
+        return phoneNumberValid;
+    }
+
+    public BooleanProperty locationValid() {
+        return locationValid;
+    }
+
+
 
     public UserModel userModel() {
         return userModel;
