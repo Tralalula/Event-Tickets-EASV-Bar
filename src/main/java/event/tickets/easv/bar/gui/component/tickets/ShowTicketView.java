@@ -428,6 +428,63 @@ public class ShowTicketView implements View {
         return vBox;
     }
 
+    private VBox editEventTicket() {
+        VBox main = new VBox(10);
+
+        VBox tickets = new VBox(0);
+        var totalLabel = new Label("Ticket quantity");
+
+        var totalValue = new Spinner<Integer>(1, 500, 1);
+        IntegerStringConverter.createFor(totalValue);
+        totalValue.getStyleClass().add(Spinner.STYLE_CLASS_SPLIT_ARROWS_HORIZONTAL);
+        totalValue.setPrefWidth(PREF_TEXTFIELD_WIDTH + 200);
+        totalValue.setEditable(true);
+
+        tickets.getChildren().addAll(totalLabel, totalValue);
+
+        VBox price = new VBox(0);
+        var priceLabel = new Label("Price (DKK)");
+
+        var priceValue = new Spinner<Double>(1.00, 500.00, 1.00);
+        DoubleStringConverter.createFor(priceValue);
+        priceValue.getStyleClass().add(Spinner.STYLE_CLASS_SPLIT_ARROWS_HORIZONTAL);
+        priceValue.setPrefWidth(PREF_TEXTFIELD_WIDTH + 200);
+        priceValue.setEditable(true);
+
+        price.getChildren().addAll(priceLabel, priceValue);
+
+        VBox events = new VBox(0);
+        var selectEventsLabel = new Label("Select events");
+        selectEventsLabel.setAlignment(Pos.CENTER);
+
+        events.getChildren().addAll(selectEventsLabel, checkComboBox);
+
+        checkComboBox.setPrefWidth(PREF_TEXTFIELD_WIDTH + 100);
+
+        VBox addEvent = new VBox(0);
+        HBox addBox = new HBox(5);
+
+        var add = new Button("Add");
+        var err = new Label();
+        err.getStyleClass().add(Styles.DANGER);
+
+        add.setOnAction(e -> {
+            List<EventModel> selectedEvents = getSelectedEventModels();
+            if (!isPromotional.get() && selectedEvents.size() <= 0) {
+                err.setText("You must select atleast 1 event");
+                return;
+            }
+
+            addToEvents(totalValue.getValue(), priceValue.getValue(), selectedEvents);
+        });
+
+        addBox.getChildren().addAll(add, err);
+        addEvent.getChildren().add(addBox);
+
+        main.getChildren().addAll(tickets,  price, events, addEvent);
+        return main;
+    }
+
     private VBox addTickets() {
         VBox main = new VBox(10);
 

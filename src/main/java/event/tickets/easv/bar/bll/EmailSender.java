@@ -2,6 +2,7 @@ package event.tickets.easv.bar.bll;
 
 import com.resend.*;
 import com.resend.core.exception.ResendException;
+import com.resend.services.emails.model.Attachment;
 import com.resend.services.emails.model.SendEmailRequest;
 import com.resend.services.emails.model.SendEmailResponse;
 import event.tickets.easv.bar.util.AppConfig;
@@ -12,6 +13,8 @@ import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.util.Base64;
 import java.util.Properties;
 
 public class EmailSender {
@@ -69,6 +72,22 @@ public class EmailSender {
         }
     }
 
+    private boolean sendEmailWithAttachment(String recipient, String subject, String content, Attachment attachment) throws ResendException {
+        SendEmailRequest sendEmailRequest = SendEmailRequest.builder()
+                .from("EASV Event <EASV@leet.dk>")
+                .to(recipient)
+                .subject(subject)
+                .addAttachment(attachment)
+                .html(content)
+                .build();
+        try {
+            SendEmailResponse data = resend.emails().send(sendEmailRequest);
+            return true;
+        } catch (ResendException e) {
+            throw new ResendException("Error occurred trying to send email:\n" + e);
+        }
+    }
+
     public void sendResetCode(String recipient, String name, String code) throws ResendException {
         Context context = new Context();
         context.setVariable("name", name);
@@ -77,6 +96,26 @@ public class EmailSender {
 
         String emailContent = templateEngine().process("resetCode", context);
         sendEmail(recipient, "EASV Password Reset Request", emailContent);
+    }
+
+    public Attachment addImageAttachment(File file) throws IOException {
+        byte[] fileContent = Files.readAllBytes(file.toPath());
+        String encodedContent = Base64.getEncoder().encodeToString(fileContent);
+        return Attachment.builder()
+                .fileName(file.getName())
+                .content(encodedContent)
+                .build();
+    }
+
+    public void sendTicket(String recipient, String eventName, String name, File ticketFile) throws Exception {
+        Context context = new Context();
+        context.setVariable("name", name);
+        context.setVariable("event", eventName);
+
+        String emailContent = templateEngine().process("ticketDetails", context);
+
+        sendEmailWithAttachment(recipient, "Ticket for event: " + eventName, emailContent, addImageAttachment(ticketFile));
+
     }
 
     public void sendPassword(String recipient, String name, String username, String temporaryPassword) throws ResendException {
