@@ -49,7 +49,7 @@ public class TicketsModel {
         return str == null || str.trim().isEmpty();
     }
 
-    private boolean ticketExists(Ticket ticket) {
+    public boolean ticketExists(Ticket ticket) {
         for (TicketModel t : model.ticketModels())
             if (t.title().get().equals(ticket.getTitle()) && t.type().get().equals(ticket.getType()))
                 return true;
@@ -133,7 +133,7 @@ public class TicketsModel {
     private static final String EMAIL_REGEX = "^[\\w.-]+@[a-zA-Z\\d.-]+\\.[a-zA-Z]{2,}$";
     private static final Pattern pattern = Pattern.compile(EMAIL_REGEX);
 
-    public static boolean isValidEmail(String email) {
+    public boolean isValidEmail(String email) {
         Matcher matcher = pattern.matcher(email);
         return matcher.matches();
     }
@@ -261,6 +261,8 @@ public class TicketsModel {
 
         if (ticketExists(updated.toEntity()))
             throw new Exception("Ticket already exists");
+
+        System.out.println(updated.title().get());
 
         Result<Boolean> result = entityManager.update(ticket.toEntity(), updated.toEntity());
 

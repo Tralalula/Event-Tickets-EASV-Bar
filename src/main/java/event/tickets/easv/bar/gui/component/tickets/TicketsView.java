@@ -128,9 +128,13 @@ public class TicketsView implements View {
                 if (ticketModel != null) {
                     Ticket edited = new Ticket(tf.getText(), ticketModel.type().get());
                     ticketsModel.editTicket(ticketModel, TicketModel.fromEntity(edited));
-                } else
+                    tf.pseudoClassStateChanged(Styles.STATE_DANGER, false);
+                } else {
                     ticketsModel.addTicket(new Ticket(tf.getText(), type.getValue()));
-            } catch (Exception ex) {
+                    tf.pseudoClassStateChanged(Styles.STATE_DANGER, false);
+                }
+            } catch (Exception ex) { // enten en fejl på navn eller eksisterer, så vi sætter bare rød felt ved titel
+                tf.pseudoClassStateChanged(Styles.STATE_DANGER, true);
                 ViewHandler.notify(NotificationType.FAILURE, ex.getMessage());
             }
 
@@ -223,7 +227,6 @@ public class TicketsView implements View {
                     editButton.setOnAction(event -> {
                         isEditing = true;
                         ViewHandler.showOverlay("Edit ticket", addTicket(item), 300, 350);
-                        //ViewHandler.changeView(ViewType.ADD_TICKET, item);
                     });
 
                     deleteButton.getStyleClass().addAll(
@@ -267,8 +270,6 @@ public class TicketsView implements View {
                         }
                     });
 
-
-                    editItem.setOnAction(e -> System.out.println("Edit ticket: " + item.title().get()));
                     // deleteItem.setOnAction(e -> Alerts.confirmDeleteUser(
                     //         item,
                     //         userModel -> controller.onDeleteUser(() -> {}, item))

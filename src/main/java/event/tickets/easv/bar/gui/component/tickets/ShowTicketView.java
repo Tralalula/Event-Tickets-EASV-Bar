@@ -345,9 +345,14 @@ public class ShowTicketView implements View {
 
         add.setOnAction(e -> {
             try {
+                if (!ticketsModel.isValidEmail(emailValue.getText()))
+                    emailValue.pseudoClassStateChanged(Styles.STATE_DANGER, true);
+
                 boolean generateTickets = ticketsModel.generateTickets(model, ticketEventModel, amountValue.getValue(), emailValue.getText());
-                if (generateTickets)
+                if (generateTickets) {
                     ViewHandler.notify(NotificationType.SUCCESS, "Ticket(s) sent to " + emailValue.getText());
+                    emailValue.pseudoClassStateChanged(Styles.STATE_DANGER, false);
+                }
 
             } catch (Exception ex) {
                 ViewHandler.notify(NotificationType.FAILURE, ex.getMessage());
