@@ -45,7 +45,6 @@ public class TicketsView implements View {
 
     private static final StringProperty search = new SimpleStringProperty("");
     private FilteredList<TicketModel> filteredTicketModels;
-    private Predicate<TicketModel> excludeNonAssociatedTickets;
 
     private MainModel main;
     private final BooleanProperty fetchingData;
@@ -67,7 +66,6 @@ public class TicketsView implements View {
         this.eventsTicketsSynchronizedProperty = eventsTicketsSynchronizedProperty;
 
         setupSearchFilter();
-
     }
 
     private void setupSearchFilter() {
@@ -100,6 +98,8 @@ public class TicketsView implements View {
             cell.getStyleClass().add("bg-subtle-list");
             return cell;
         });
+
+        Listeners.addOnceChangeListener(eventsTicketsSynchronizedProperty, ticketList::refresh);
 
         ProgressIndicator progressIndicator = new ProgressIndicator();
         NodeUtils.bindVisibility(progressIndicator, fetchingData);

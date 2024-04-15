@@ -11,6 +11,7 @@ import event.tickets.easv.bar.be.Ticket.Ticket;
 import event.tickets.easv.bar.be.Ticket.TicketEvent;
 import event.tickets.easv.bar.gui.common.*;
 import event.tickets.easv.bar.gui.component.main.MainModel;
+import event.tickets.easv.bar.gui.util.Listeners;
 import event.tickets.easv.bar.gui.util.NodeUtils;
 import event.tickets.easv.bar.gui.util.StyleConfig;
 import event.tickets.easv.bar.gui.widgets.MenuItems;
@@ -18,8 +19,10 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.css.PseudoClass;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -34,6 +37,7 @@ import org.kordamp.ikonli.material2.Material2MZ;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 
 public class ShowTicketView implements View {
     private TicketModel model = TicketModel.Empty();
@@ -57,19 +61,29 @@ public class ShowTicketView implements View {
     private final static int PREF_TEXTFIELD_WIDTH = 200;
     private CheckComboBox<EventModelWrapper> checkComboBox = new CheckComboBox<>();
 
-    public ShowTicketView(MainModel main, TicketsModel ticketsModel) {
+    private BooleanProperty eventsTicketsSynchronizedProperty;
+    private FilteredList<TicketEventModel> filteredTicketEventModels;
+    private static final StringProperty search = new SimpleStringProperty("");
+
+
+    public ShowTicketView(MainModel main, TicketsModel ticketsModel, BooleanProperty eventsTicketsSynchronizedProperty) {
         this.main = main;
         this.ticketsModel = ticketsModel;
+
+        this.eventsTicketsSynchronizedProperty = eventsTicketsSynchronizedProperty;
 
         ViewHandler.currentViewDataProperty().subscribe((oldData, newData) -> {
             if (newData instanceof TicketModel) {
                 model.update((TicketModel) newData);
-                ticketEventList.setItems(model.ticketEvents());
+                this.filteredTicketEventModels = new FilteredList<>(model.ticketEvents());
+                ticketEventList.setItems(filteredTicketEventModels);
                 isPromotional.set(model.type().get().equals("Promotional"));
                 updateTexts();
                 updateListCell();
             }
         });
+
+        setupSearchFilter();
 
         // For at sørge for den lytter til events ændringer
         checkComboBox = multiCombo();
@@ -78,6 +92,24 @@ public class ShowTicketView implements View {
     @Override
     public Region getView() {
         return topSection();
+    }
+
+    private void setupSearchFilter() {
+        this.searchProperty().addListener((obs, ov, nv) -> {
+            Predicate<TicketEventModel> searchPredicate = (TicketEventModel ticketEventModel) -> {
+                if (nv == null || nv.isEmpty()) {
+                    return true;
+                }
+
+                var lowercase = nv.toLowerCase();
+                if (ticketEventModel.event().get() != null)
+                    return ticketEventModel.event().get().title().get().toLowerCase().contains(lowercase);
+
+                return false;
+            };
+
+            filteredTicketEventModels.setPredicate(searchPredicate);
+        });
     }
 
     private void updateListCell() {
@@ -96,6 +128,9 @@ public class ShowTicketView implements View {
         ticketEventList.setPlaceholder(placeholder);
         ticketEventList.getStyleClass().addAll(Tweaks.EDGE_TO_EDGE);
         updateListCell();
+
+        Listeners.addOnceChangeListener(eventsTicketsSynchronizedProperty, ticketEventList::refresh);
+
 
         StackPane stackPane = new StackPane(ticketEventList);
         VBox.setVgrow(stackPane, Priority.ALWAYS);
@@ -122,11 +157,11 @@ public class ShowTicketView implements View {
 
         defaultPrice.setText("Default price: 250 DKK,-");
 
-        var search = new CustomTextField();
-        search.setPromptText("Search");
-        search.setLeft(new FontIcon(Feather.SEARCH));
-        search.setPrefWidth(250);
-        search.setFocusTraversable(false);
+        var searchField = new CustomTextField();
+        searchField.setPromptText("By title");
+        searchField.setLeft(new FontIcon(Feather.SEARCH));
+        searchField.setPrefWidth(250);
+        searchField.textProperty().bindBidirectional(search);
 
         var addTicketEvent = new Button(null, new FontIcon(Feather.PLUS));
         addTicketEvent.getStyleClass().addAll(
@@ -136,7 +171,7 @@ public class ShowTicketView implements View {
         addTicketEvent.setOnAction(e -> ViewHandler.showOverlay(isPromotional.get() ? "Add promotional ticket" : "Add ticket to event", addTickets(), 300, 350));
 
         var controls = new HBox();
-        controls.getChildren().addAll(search, new Spacer(), addTicketEvent);
+        controls.getChildren().addAll(searchField, new Spacer(), addTicketEvent);
 
         var details = new VBox(StyleConfig.STANDARD_SPACING);
         details.getChildren().addAll(top, defaultPrice, eventsCount, controls);
@@ -525,4 +560,7 @@ public class ShowTicketView implements View {
         }
     }
 
+    public StringProperty searchProperty() {
+        return search;
+    }
 }
