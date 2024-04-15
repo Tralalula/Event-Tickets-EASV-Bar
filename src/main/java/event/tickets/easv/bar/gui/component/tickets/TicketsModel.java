@@ -76,10 +76,16 @@ public class TicketsModel {
     }
 
     public List<TicketEvent> addToEvent(TicketModel ticketModel, MainModel main, int ticketId, int total, double price, List<EventModel> events) {
-        // Laver om til ticketevent list for hver eventid.
-        List<TicketEvent> newEntries = events.stream()
-                .map(event -> new TicketEvent(ticketId, event.id().get(), price, total))
-                .collect(Collectors.toList());
+        List<TicketEvent> newEntries = new ArrayList();
+
+        if (events.size() > 0) {
+            // Laver om til ticketevent list for hver eventid.
+            newEntries = events.stream()
+                    .map(event -> new TicketEvent(ticketId, event.id().get(), price, total))
+                    .collect(Collectors.toList());
+        } else { // må være en promotional
+            newEntries.add(new TicketEvent(ticketId, 0, 0, total));
+        }
 
         // Tilføj alle i listen til DB
         Result<List<TicketEvent>> result = entityManager.addAll(newEntries);
@@ -132,16 +138,6 @@ public class TicketsModel {
         return matcher.matches();
     }
 
-    private void generateTicket(TicketGenerated ticketGenerated, TicketEventModel ticketEvent) {
-        String eventTitle = ticketEvent.event().get().title().get();
-
-        try {
-         //   File created = QRCodeManager.getQrCodeFilePath(uniqueUUID, "Tickets for: " + eventTitle);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     //TODO: Refactor
     public List<TicketGenerated> generateTickets(TicketModel ticketModel, TicketEventModel ticketEvent, int amount, String email) throws Exception {
         if (ticketEvent.left().get() < amount)
@@ -154,7 +150,8 @@ public class TicketsModel {
         Customer customer = getCustomer(email);
 
         for (int i = 0; i < amount; i++) {
-            String unique = Integer.toString(ticketEvent.id().get()) + ticketEvent.event().get().title().get() + customer.id() + UUID.randomUUID().toString();
+
+            String unique = Integer.toString(ticketEvent.id().get()) + customer.id() + UUID.randomUUID().toString();
             UUID uniqueUUID = QRCodeManager.generateUniqueUUID(unique);
 
             newEntries.add(new TicketGenerated(ticketEvent.id().get(), customer.id(), uniqueUUID.toString()));
@@ -180,7 +177,8 @@ public class TicketsModel {
         switch (result) {
             case Result.Success<List<TicketGenerated>> s -> {
                 List<File> emailAttachment = new ArrayList();
-                String title = ticketEvent.event().get().title().get();
+
+                String title = ticketEvent.event().get() != null ? ticketEvent.event().get().title().get() : "Available for all events";
 
                 for (TicketGenerated ticketGenerated : s.result()) {
                     File generate = QRCodeManager.getQrCodeFilePath(UUID.fromString(ticketGenerated.getUniqueCode()), title);
@@ -195,7 +193,7 @@ public class TicketsModel {
                     ticketEvent.ticketsGenerated().add(ticketGeneratedModel);
                 }
 
-                emailSender.sendMultipleTickets(email, title, ticketModel.title().get(), emailAttachment);
+                emailSender.sendMultipleTickets(email, title, ticketModel.title().get(), ticketModel.type().get(), emailAttachment);
             }
             case Result.Failure<List<TicketGenerated>> f -> throw new Exception("Error occurred while trying to add generated to main models");
         }
@@ -245,8 +243,8 @@ public class TicketsModel {
         return model;
     }
 
-    public void addSpecialTicket(TicketModel model, MainModel main, int ticketId, int total, double price) throws Exception {
-        Result<TicketEvent> result = entityManager.add(new TicketEvent(ticketId, 0, price, total));
+    public void addSpecialTicket(TicketModel model, MainModel main, int ticketId, int total, List<EventModel> events) throws Exception {
+        Result<TicketEvent> result = entityManager.add(new TicketEvent(ticketId, 0, 0, total));
         switch (result) {
             case Result.Success<TicketEvent> s -> {
                 TicketEventModel created = TicketEventModel.fromEntity(s.result());

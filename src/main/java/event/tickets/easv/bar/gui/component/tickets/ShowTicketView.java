@@ -137,95 +137,6 @@ public class ShowTicketView implements View {
         return details;
     }
 
-    public TableView<TicketEventModel> createTicketTableView() {
-        TableColumn<TicketEventModel, String> title = new TableColumn<>("Title");
-
-        title.setCellValueFactory(cellData -> {
-            if (cellData.getValue().event() != null && cellData.getValue().event().get() != null)
-                return cellData.getValue().event().get().title();
-
-                return new SimpleStringProperty("suckadoi");
-        });
-
-        TableColumn<TicketEventModel, String> total = new TableColumn<>("Total");
-        total.setCellValueFactory(cellData -> {
-            Integer totalint = cellData.getValue().total().get();
-            return new SimpleStringProperty(totalint + " Total");
-        });
-
-        TableColumn<TicketEventModel, String> left = new TableColumn<>("Left");
-        left.setCellValueFactory(cellData -> {
-            Integer leftint = cellData.getValue().left().get();
-            return new SimpleStringProperty(leftint + " left");
-        });
-
-        TableColumn<TicketEventModel, String> bought = new TableColumn<>("Bought");
-        bought.setCellValueFactory(cellData -> {
-            Integer boughtint = cellData.getValue().bought().get();
-            return new SimpleStringProperty(boughtint + " Bought");
-        });
-
-        TableColumn<TicketEventModel, String> price = new TableColumn<>("Price");
-        price.setCellValueFactory(cellData -> {
-            Double pricedouble = cellData.getValue().price().get();
-            String formattedPrice = String.format("DKK %.2f,-", pricedouble);
-            return new SimpleStringProperty(formattedPrice);
-        });
-
-        TableColumn<TicketEventModel, Void> actionButtons = new TableColumn<>("");
-        actionButtons.setCellFactory(param -> new TableCell<>() {
-            private final Button editButton = new Button(null, new FontIcon(Feather.EDIT));
-            private final Button assignButton = new Button(null, new FontIcon(Material2MZ.PERSON_ADD));
-
-            {
-                editButton.getStyleClass().addAll(
-                        Styles.BUTTON_ICON, Styles.FLAT, Styles.ACCENT, Styles.TITLE_4
-                );
-
-                editButton.setOnAction(event -> {
-                    TicketEventModel rowData = getTableView().getItems().get(getIndex());
-                    ViewHandler.changeView(ViewType.SHOW_TICKET, rowData);
-                });
-
-                assignButton.getStyleClass().addAll(
-                        Styles.BUTTON_ICON, Styles.FLAT, Styles.ACCENT, Styles.TITLE_4
-                );
-
-                assignButton.setOnAction(event -> {
-                    TicketEventModel rowData = getTableView().getItems().get(getIndex());
-                    if (rowData.left().get() > 0)
-                        ViewHandler.showOverlay("Assign ticket", assignCustomer(rowData), 300, 350);
-                });
-            }
-
-            @Override
-            protected void updateItem(Void item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty) {
-                    setGraphic(null);
-                } else {
-                    HBox buttons = new HBox(editButton, assignButton);
-                    buttons.setSpacing(20);
-                    setGraphic(buttons);
-                }
-            }
-        });
-
-        table = new TableView<>();
-
-        table.setTableMenuButtonVisible(false);
-        table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-
-        table.getStyleClass().addAll(Tweaks.NO_HEADER, Styles.STRIPED);
-
-        table.setItems(model.ticketEvents());
-        table.getColumns().addAll(title, total, left, bought, price, actionButtons);
-
-        table.getStyleClass().add(StyleConfig.ACTIONABLE);
-
-        return table;
-    }
-
     private ListCell<TicketEventModel> ticketCell() {
         return new ListCell<>() {
             private final Label titleLabel = new Label();
@@ -322,7 +233,10 @@ public class ShowTicketView implements View {
                     );
 
                     assignButton.setOnAction(event -> {
-                        ViewHandler.showOverlay("Assign ticket", assignCustomer(item), 300, 350);
+                        if (item.left().get() > 0)
+                            ViewHandler.showOverlay("Assign ticket", assignCustomer(item), 300, 350);
+                        else
+                            ViewHandler.notify(NotificationType.WARNING, "Not enough tickets left!");
                     });
 
                     editButton.getStyleClass().addAll(
@@ -578,7 +492,7 @@ public class ShowTicketView implements View {
             ticketsModel.addToEvent(model, main, ticketId, total, price, selectedEvents);
         else {
             try {
-                ticketsModel.addSpecialTicket(model, main, ticketId, total, price);
+                ticketsModel.addToEvent(model, main, ticketId, total, 0, selectedEvents);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }

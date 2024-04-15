@@ -128,7 +128,7 @@ public class QRCodeManager {
         System.out.println(file.getAbsolutePath());
 
         EmailSender emailSender = new EmailSender();
-        emailSender.sendTicket("patrickrefsing@hotmail.dk", "event", "Patrick", file);
+        //emailSender.sendTicket("patrickrefsing@hotmail.dk", "event", "Patrick", file);
     }
 
 }

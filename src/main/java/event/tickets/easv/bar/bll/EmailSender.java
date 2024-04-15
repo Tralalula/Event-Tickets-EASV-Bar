@@ -141,23 +141,39 @@ public class EmailSender {
                 .build();
     }
 
-    public void sendMultipleTickets(String recipient, String eventName, String ticketName, List<File> ticketFiles) throws ResendException {
+    public void sendMultipleTickets(String recipient, String eventName, String ticketName, String type, List<File> ticketFiles) throws ResendException {
         Context context = new Context();
         context.setVariable("event", eventName);
         context.setVariable("ticketName", ticketName);
 
-        String emailContent = templateEngine().process("ticketDetails", context);
+        Boolean isEvent = type.equals("Paid");
+        
+        if (!isEvent) {
+            context.setVariable("ticketValidation", eventName.equals("Unassigned") ? "Can be used for all events." : "For event: " + eventName);
+            context.setVariable("ticketName", ticketName);
+        } else {
+            context.setVariable("event", eventName);
+            context.setVariable("ticketName", ticketName);
+        }
+
+        String emailContent = templateEngine().process(isEvent ? "ticketDetails" : "ticketPromotional", context);
         sendEmailWithAttachments(recipient, "Ticket for event: " + eventName, emailContent, ticketFiles);
     }
 
-    public void sendTicket(String recipient, String eventName, String name, File ticketFile) throws Exception {
+    public void sendTicket(String recipient, String eventName, String name, File ticketFile, String type) throws Exception {
         Context context = new Context();
-        context.setVariable("name", name);
-        context.setVariable("event", eventName);
+        Boolean isEvent = type.equals("Paid");
 
-        String emailContent = templateEngine().process("ticketDetails", context);
+        if (!isEvent) {
+            context.setVariable("ticketValidation", eventName.equals("Unassigned") ? "Can be used for all events." : "For event: " + eventName);
+            context.setVariable("ticketName", name);
+        } else {
+            context.setVariable("name", eventName);
+            context.setVariable("ticketName", name);
+        }
 
-        sendEmailWithAttachment(recipient, "Ticket for event: " + eventName, emailContent, addImageAttachment(ticketFile));
+        String emailContent = templateEngine().process(isEvent ? "ticketDetails" : "ticketPromotional", context);
+        sendEmailWithAttachment(recipient, "Ticket(s) for event: " + eventName, emailContent, addImageAttachment(ticketFile));
     }
 
     public void sendPassword(String recipient, String name, String username, String temporaryPassword) throws ResendException {
