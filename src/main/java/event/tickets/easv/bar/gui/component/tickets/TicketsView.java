@@ -6,14 +6,17 @@ import atlantafx.base.controls.Tile;
 import atlantafx.base.theme.Styles;
 import atlantafx.base.theme.Tweaks;
 import event.tickets.easv.bar.be.Ticket.Ticket;
+import event.tickets.easv.bar.be.enums.Rank;
 import event.tickets.easv.bar.gui.common.*;
 import event.tickets.easv.bar.gui.component.events.EventsView;
 import event.tickets.easv.bar.gui.component.main.MainModel;
 import event.tickets.easv.bar.gui.util.Alerts;
+import event.tickets.easv.bar.gui.util.Listeners;
 import event.tickets.easv.bar.gui.util.NodeUtils;
 import event.tickets.easv.bar.gui.util.StyleConfig;
 import event.tickets.easv.bar.gui.widgets.CircularImageView;
 import event.tickets.easv.bar.gui.widgets.MenuItems;
+import event.tickets.easv.bar.util.SessionManager;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -21,6 +24,7 @@ import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.css.PseudoClass;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -32,10 +36,16 @@ import javafx.scene.layout.*;
 import org.kordamp.ikonli.feather.Feather;
 import org.kordamp.ikonli.javafx.FontIcon;
 
+import java.util.function.Predicate;
+
 public class TicketsView implements View {
     private static final PseudoClass HOVER_PSEUDO_CLASS = PseudoClass.getPseudoClass("hover");
     private static final int CELL_PADDING = 10;
     private static final int CELL_HEIGHT = 50;
+
+    private static final StringProperty search = new SimpleStringProperty("");
+    private FilteredList<TicketModel> filteredTicketModels;
+    private Predicate<TicketModel> excludeNonAssociatedTickets;
 
     private MainModel main;
     private final BooleanProperty fetchingData;
@@ -46,13 +56,34 @@ public class TicketsView implements View {
     private boolean isEditing = false;
 
     private final static int PREF_OVERLAY_WIDTH = 200;
+    private BooleanProperty eventsTicketsSynchronizedProperty;
 
-    public TicketsView(MainModel main, BooleanProperty fetchingData) {
+    public TicketsView(MainModel main, BooleanProperty fetchingData, BooleanProperty eventsTicketsSynchronizedProperty) {
         this.main = main;
         this.ticketsModel = new TicketsModel(main);
         this.fetchingData = fetchingData;
+
+        this.filteredTicketModels = new FilteredList<>(main.ticketModels());
+        this.eventsTicketsSynchronizedProperty = eventsTicketsSynchronizedProperty;
+
+        setupSearchFilter();
+
     }
 
+    private void setupSearchFilter() {
+        this.searchProperty().addListener((obs, ov, nv) -> {
+            Predicate<TicketModel> searchPredicate = (TicketModel ticketModel) -> {
+                if (nv == null || nv.isEmpty()) {
+                    return true;
+                }
+
+                var lowercase = nv.toLowerCase();
+                return ticketModel.title().get().toLowerCase().contains(lowercase);
+            };
+
+            filteredTicketModels.setPredicate(searchPredicate);
+        });
+    }
     @Override
     public Region getView() {
         HBox top = topBar();
@@ -61,7 +92,7 @@ public class TicketsView implements View {
         placeholder.getStyleClass().add(Styles.TITLE_4);
 
         var ticketList = new ListView<TicketModel>();
-        ticketList.setItems(main.ticketModels());
+        ticketList.setItems(filteredTicketModels);
         ticketList.setPlaceholder(placeholder);
         ticketList.getStyleClass().addAll(Tweaks.EDGE_TO_EDGE);
         ticketList.setCellFactory(c -> {
@@ -83,10 +114,11 @@ public class TicketsView implements View {
         HBox top = new HBox();
         top.setPadding(new Insets(0 ,StyleConfig.STANDARD_SPACING * 3 ,0 ,StyleConfig.STANDARD_SPACING));
 
-        var search = new CustomTextField();
-        search.setPromptText("Search");
-        search.setLeft(new FontIcon(Feather.SEARCH));
-        search.setPrefWidth(250);
+        var searchField = new CustomTextField();
+        searchField.setPromptText("By title");
+        searchField.setLeft(new FontIcon(Feather.SEARCH));
+        searchField.setPrefWidth(250);
+        searchField.textProperty().bindBidirectional(search);
 
         var addTicket = new Button(null, new FontIcon(Feather.PLUS));
         addTicket.getStyleClass().addAll(
@@ -94,7 +126,7 @@ public class TicketsView implements View {
         );
         addTicket.setOnAction(e -> ViewHandler.showOverlay("Add new Ticket", addTicket(null), 300, 350));
 
-        top.getChildren().addAll(search, new Spacer(), addTicket);
+        top.getChildren().addAll(searchField, new Spacer(), addTicket);
         return top;
     }
 
@@ -279,5 +311,9 @@ public class TicketsView implements View {
                 }
             }
         };
+    }
+
+    public StringProperty searchProperty() {
+        return search;
     }
 }
