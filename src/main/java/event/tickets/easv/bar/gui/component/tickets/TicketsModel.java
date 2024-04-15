@@ -139,7 +139,7 @@ public class TicketsModel {
     }
 
     //TODO: Refactor
-    public List<TicketGenerated> generateTickets(TicketModel ticketModel, TicketEventModel ticketEvent, int amount, String email) throws Exception {
+    public boolean generateTickets(TicketModel ticketModel, TicketEventModel ticketEvent, int amount, String email) throws Exception {
         if (ticketEvent.left().get() < amount)
             throw new Exception("Not enough tickets left");
 
@@ -160,7 +160,7 @@ public class TicketsModel {
         Result<List<TicketGenerated>> result = entityManager.addAll(newEntries);
         handleAddGenerated(result, ticketEvent, email, ticketModel);
 
-        return newEntries;
+        return true;
     }
 
     private Customer handleCustomer(Result<Customer> result) throws Exception {
@@ -268,6 +268,18 @@ public class TicketsModel {
             throw new Exception("Error occurred while trying to add special ticket");
 
         ticket.title().set(updated.title().get());
+
+        return true;
+    }
+
+    public boolean editEventTicket(TicketEventModel ticket, TicketEventModel updated) throws Exception {
+        Result<Boolean> result = entityManager.update(ticket.toEntity(), updated.toEntity());
+
+        if (result.isFailure())
+            throw new Exception("Error occurred while trying to add special ticket");
+
+        ticket.price().set(updated.price().get());
+        ticket.total().set(updated.total().get());
 
         return true;
     }

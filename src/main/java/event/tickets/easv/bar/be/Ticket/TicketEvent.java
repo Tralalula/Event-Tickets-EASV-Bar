@@ -65,7 +65,7 @@ public class TicketEvent implements Entity<TicketEvent> {
         return price;
     }
 
-    public void setPrice(float price) {
+    public void setPrice(double price) {
         this.price = price;
     }
 
@@ -111,7 +111,8 @@ public class TicketEvent implements Entity<TicketEvent> {
 
     @Override
     public void update(TicketEvent updatedData) {
-        throw new UnsupportedOperationException("Er ikke implementeret. TicketEvent.update()");
+        setQuantity(updatedData.getQuantity());
+        setPrice(updatedData.getPrice());
     }
 
     @Override

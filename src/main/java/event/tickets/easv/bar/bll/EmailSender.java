@@ -147,7 +147,7 @@ public class EmailSender {
         context.setVariable("ticketName", ticketName);
 
         Boolean isEvent = type.equals("Paid");
-        
+
         if (!isEvent) {
             context.setVariable("ticketValidation", eventName.equals("Unassigned") ? "Can be used for all events." : "For event: " + eventName);
             context.setVariable("ticketName", ticketName);
