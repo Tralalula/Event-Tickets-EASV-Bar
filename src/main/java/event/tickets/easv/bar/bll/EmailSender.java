@@ -14,7 +14,9 @@ import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 
 import java.io.*;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.Base64;
+import java.util.List;
 import java.util.Properties;
 
 public class EmailSender {
@@ -88,6 +90,38 @@ public class EmailSender {
         }
     }
 
+    private boolean sendEmailWithAttachments(String recipient, String subject, String content, List<File> files) throws ResendException {
+        List<Attachment> attachments = new ArrayList<>();
+        for (File file : files) {
+            try {
+                attachments.add(addImageAttachment(file));
+            } catch (IOException e) {
+                // Handle IOException if needed
+                e.printStackTrace();
+            }
+        }
+
+        SendEmailRequest.Builder emailRequestBuilder = SendEmailRequest.builder()
+                .from("EASV Event <EASV@leet.dk>")
+                .to(recipient)
+                .subject(subject)
+                .html(content);
+
+        for (Attachment attachment : attachments) {
+            emailRequestBuilder.addAttachment(attachment);
+        }
+
+        SendEmailRequest sendEmailRequest = emailRequestBuilder.build();
+
+        try {
+            SendEmailResponse data = resend.emails().send(sendEmailRequest);
+            return true;
+        } catch (ResendException e) {
+            throw new ResendException("Error occurred trying to send email:\n" + e);
+        }
+    }
+
+
     public void sendResetCode(String recipient, String name, String code) throws ResendException {
         Context context = new Context();
         context.setVariable("name", name);
@@ -107,6 +141,15 @@ public class EmailSender {
                 .build();
     }
 
+    public void sendMultipleTickets(String recipient, String eventName, String ticketName, List<File> ticketFiles) throws ResendException {
+        Context context = new Context();
+        context.setVariable("event", eventName);
+        context.setVariable("ticketName", ticketName);
+
+        String emailContent = templateEngine().process("ticketDetails", context);
+        sendEmailWithAttachments(recipient, "Ticket for event: " + eventName, emailContent, ticketFiles);
+    }
+
     public void sendTicket(String recipient, String eventName, String name, File ticketFile) throws Exception {
         Context context = new Context();
         context.setVariable("name", name);
@@ -115,7 +158,6 @@ public class EmailSender {
         String emailContent = templateEngine().process("ticketDetails", context);
 
         sendEmailWithAttachment(recipient, "Ticket for event: " + eventName, emailContent, addImageAttachment(ticketFile));
-
     }
 
     public void sendPassword(String recipient, String name, String username, String temporaryPassword) throws ResendException {

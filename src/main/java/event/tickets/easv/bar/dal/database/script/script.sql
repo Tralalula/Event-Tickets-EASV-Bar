@@ -103,8 +103,7 @@ CREATE TABLE TicketGenerated (
     customerId INT NULL,
     assigned   BIT DEFAULT 0,
     used       BIT DEFAULT 0,
-    barcode    NVARCHAR(255),
-    qrcode     NVARCHAR(255),
+    uniqueCode    NVARCHAR(255),
     FOREIGN KEY (eventId) REFERENCES TicketEvent(id) ON DELETE CASCADE
     -- FOREIGN KEY (customerId) REFERENCES Customer(id)
 );

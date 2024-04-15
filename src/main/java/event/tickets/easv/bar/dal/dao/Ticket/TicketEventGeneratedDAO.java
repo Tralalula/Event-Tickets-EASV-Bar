@@ -82,7 +82,7 @@ class TicketEventGeneratedSQLTemplate implements AssociationSQLTemplate<TicketEv
     @Override
     public String selectBForASQL() {
         return """
-                SELECT ticketGenerated.id, ticketGenerated.eventId, customerId, assigned, used, barcode, qrcode
+                SELECT ticketGenerated.id, ticketGenerated.eventId, customerId, assigned, used, uniqueCode
                 FROM dbo.TicketGenerated ticketGenerated
                 JOIN dbo.ticketEvent ticketEvent ON ticketEvent.id = ticketGenerated.eventId
                 WHERE ticketEvent.id = ?;

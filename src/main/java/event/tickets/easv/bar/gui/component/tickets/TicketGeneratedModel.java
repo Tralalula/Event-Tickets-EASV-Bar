@@ -14,8 +14,7 @@ public class TicketGeneratedModel {
     private final IntegerProperty customerId = new SimpleIntegerProperty();
     private final BooleanProperty assigned = new SimpleBooleanProperty();
     private final BooleanProperty used = new SimpleBooleanProperty();
-    private final StringProperty barcode = new SimpleStringProperty();
-    private final StringProperty qrcode = new SimpleStringProperty();
+    private final StringProperty uniqueCode = new SimpleStringProperty();
 
     public TicketGeneratedModel() {
 
@@ -27,8 +26,7 @@ public class TicketGeneratedModel {
         customerId.set(ticket.getCustomerId());
         assigned.set(ticket.isAssigned());
         used.set(ticket.isUsed());
-        barcode.set(ticket.getBarcode());
-        qrcode.set(ticket.getQrcode());
+        uniqueCode.set(ticket.getUniqueCode());
     }
 
     public static TicketGeneratedModel fromEntity(TicketGenerated ticket) {
@@ -45,8 +43,7 @@ public class TicketGeneratedModel {
         this.customerId.set(ticketModel.customerId.get());
         this.assigned.set(ticketModel.assigned.get());
         this.used.set(ticketModel.used.get());
-        this.barcode.set(ticketModel.barcode.get());
-        this.qrcode.set(ticketModel.qrcode.get());
+        this.uniqueCode.set(ticketModel.uniqueCode.get());
     }
 
     public TicketGenerated toEntity() {
@@ -56,8 +53,7 @@ public class TicketGeneratedModel {
                 customerId.get(),
                 assigned.get(),
                 used.get(),
-                barcode.get(),
-                qrcode.get()
+                uniqueCode.get()
         );
     }
 
@@ -81,11 +77,8 @@ public class TicketGeneratedModel {
         return used;
     }
 
-    public StringProperty barcode() {
-        return barcode;
+    public StringProperty uniqueCode() {
+        return uniqueCode;
     }
 
-    public StringProperty qrcode() {
-        return qrcode;
-    }
 }

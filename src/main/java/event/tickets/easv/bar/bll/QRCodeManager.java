@@ -8,19 +8,22 @@ import com.google.zxing.oned.Code128Writer;
 import com.google.zxing.oned.EAN13Writer;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.resend.services.emails.model.Email;
+import event.tickets.easv.bar.be.Ticket.TicketGenerated;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.util.ArrayList;
 import java.util.UUID;
 
 public class QRCodeManager {
 
     private static final int CODE1D_WIDTH = 400;
-    private static final int CODE1D_HEIGHT = 400;
+    private static final int CODE1D_HEIGHT = 100;
 
     private static final int CODE2D_SIZE = 200;
+    private static final String TICKETS_FOLDER = "tickets";
 
     public QRCodeManager() {
 
@@ -82,7 +85,14 @@ public class QRCodeManager {
     }
 
     public static File saveImageToFile(BufferedImage image, String format, String filePath) {
-        File outputFile = new File(filePath);
+        File folder = new File(TICKETS_FOLDER);
+        if (!folder.exists())
+            folder.mkdirs();
+
+        File outputFile = new File(folder, filePath);
+        if (!folder.exists()) {
+            folder.mkdirs(); // Create the folder if it doesn't exist
+        }
 
         try {
             ImageIO.write(image, format, outputFile);
@@ -91,6 +101,10 @@ public class QRCodeManager {
         }
 
         return outputFile;
+    }
+
+    public static BufferedImage combinedImages(BufferedImage imageOne, BufferedImage imageTwo, String title) {
+        return combineImagesVertically(imageOne, imageTwo, title);
     }
 
     public static File getQrCodeFilePath(UUID uuid, String title) throws Exception {
@@ -103,11 +117,18 @@ public class QRCodeManager {
         return saveImageToFile(combined, "PNG", unique + ".png");
     }
 
+    public static String getFileFolder() {
+        return TICKETS_FOLDER;
+    }
+
     public static void main(String[] args) throws Exception {
         UUID unique = generateUniqueUUID("ticket2");
         File file = getQrCodeFilePath(unique, "Ticket til event");
 
+        System.out.println(file.getAbsolutePath());
+
         EmailSender emailSender = new EmailSender();
         emailSender.sendTicket("patrickrefsing@hotmail.dk", "event", "Patrick", file);
     }
+
 }

@@ -1,11 +1,14 @@
 package event.tickets.easv.bar.gui.component.tickets;
 
+import com.resend.services.emails.model.Attachment;
 import event.tickets.easv.bar.be.Customer;
 import event.tickets.easv.bar.be.Event;
 import event.tickets.easv.bar.be.Ticket.Ticket;
 import event.tickets.easv.bar.be.Ticket.TicketEvent;
 import event.tickets.easv.bar.be.Ticket.TicketGenerated;
+import event.tickets.easv.bar.bll.EmailSender;
 import event.tickets.easv.bar.bll.EntityManager;
+import event.tickets.easv.bar.bll.QRCodeManager;
 import event.tickets.easv.bar.gui.common.EventModel;
 import event.tickets.easv.bar.gui.common.TicketModel;
 import event.tickets.easv.bar.gui.component.main.MainModel;
@@ -15,9 +18,12 @@ import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -26,9 +32,17 @@ public class TicketsModel {
     private final MainModel model;
     private final EntityManager entityManager;
 
+    private EmailSender emailSender;
+
     public TicketsModel(MainModel model) {
         this.model = model;
         this.entityManager = new EntityManager();
+
+        try {
+            this.emailSender = new EmailSender();
+        } catch (IOException e) {
+            System.out.println("Error occurred...\n" + e.getMessage());
+        }
     }
 
     private boolean isEmpty(String str) {
@@ -118,8 +132,18 @@ public class TicketsModel {
         return matcher.matches();
     }
 
+    private void generateTicket(TicketGenerated ticketGenerated, TicketEventModel ticketEvent) {
+        String eventTitle = ticketEvent.event().get().title().get();
+
+        try {
+         //   File created = QRCodeManager.getQrCodeFilePath(uniqueUUID, "Tickets for: " + eventTitle);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     //TODO: Refactor
-    public List<TicketGenerated> generateTickets(TicketEventModel ticketEvent, int amount, String email) throws Exception {
+    public List<TicketGenerated> generateTickets(TicketModel ticketModel, TicketEventModel ticketEvent, int amount, String email) throws Exception {
         if (ticketEvent.left().get() < amount)
             throw new Exception("Not enough tickets left");
 
@@ -130,11 +154,14 @@ public class TicketsModel {
         Customer customer = getCustomer(email);
 
         for (int i = 0; i < amount; i++) {
-            newEntries.add(new TicketGenerated(ticketEvent.id().get(), customer.id()));
+            String unique = Integer.toString(ticketEvent.id().get()) + ticketEvent.event().get().title().get() + customer.id() + UUID.randomUUID().toString();
+            UUID uniqueUUID = QRCodeManager.generateUniqueUUID(unique);
+
+            newEntries.add(new TicketGenerated(ticketEvent.id().get(), customer.id(), uniqueUUID.toString()));
         }
 
         Result<List<TicketGenerated>> result = entityManager.addAll(newEntries);
-        handleAddGenerated(result, ticketEvent);
+        handleAddGenerated(result, ticketEvent, email, ticketModel);
 
         return newEntries;
     }
@@ -148,11 +175,17 @@ public class TicketsModel {
         }
     }
 
-    private List<TicketGenerated> handleAddGenerated(Result<List<TicketGenerated>> result, TicketEventModel ticketEvent) throws Exception {
+    private List<TicketGenerated> handleAddGenerated(Result<List<TicketGenerated>> result, TicketEventModel ticketEvent, String email, TicketModel ticketModel) throws Exception {
         ObservableList<TicketGenerated> tickets = FXCollections.observableArrayList();
         switch (result) {
             case Result.Success<List<TicketGenerated>> s -> {
+                List<File> emailAttachment = new ArrayList();
+                String title = ticketEvent.event().get().title().get();
+
                 for (TicketGenerated ticketGenerated : s.result()) {
+                    File generate = QRCodeManager.getQrCodeFilePath(UUID.fromString(ticketGenerated.getUniqueCode()), title);
+                    emailAttachment.add(generate);
+
                     TicketGeneratedModel ticketGeneratedModel = TicketGeneratedModel.fromEntity(ticketGenerated);
 
                     //Opdater hovedeliste
@@ -162,6 +195,7 @@ public class TicketsModel {
                     ticketEvent.ticketsGenerated().add(ticketGeneratedModel);
                 }
 
+                emailSender.sendMultipleTickets(email, title, ticketModel.title().get(), emailAttachment);
             }
             case Result.Failure<List<TicketGenerated>> f -> throw new Exception("Error occurred while trying to add generated to main models");
         }

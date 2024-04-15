@@ -11,35 +11,32 @@ public class TicketGenerated implements Entity<TicketGenerated> {
     private int customerId;
     private boolean assigned;
     private boolean used;
-    String barcode;
-    String qrcode;
+    String uniqueCode;
 
     private List<TicketEvent> ticketEvents;
 
     public TicketGenerated(int id, int eventId, int customerId,
-                           boolean assigned, boolean used, String barcode, String qrcode)
+                           boolean assigned, boolean used, String uniqueCode)
     {
         this.id = id;
         this.eventId = eventId;
         this.customerId = customerId;
         this.assigned = assigned;
         this.used = used;
-        this.barcode = barcode;
-        this.qrcode = qrcode;
+        this.uniqueCode = uniqueCode;
     }
 
     public TicketGenerated(int id, TicketGenerated ticketGenerated) {
         this(id, ticketGenerated.getEventId(), ticketGenerated.getCustomerId(), ticketGenerated.isAssigned(),
-                ticketGenerated.isUsed(), ticketGenerated.getBarcode(), ticketGenerated.getQrcode());
+                ticketGenerated.isUsed(), ticketGenerated.getUniqueCode());
     }
 
-    public TicketGenerated(int eventId, int customerId) {
+    public TicketGenerated(int eventId, int customerId, String uniqueCode) {
         this.eventId = eventId;
         this.customerId = customerId;
         this.assigned = false;
         this.used = false;
-        this.barcode = "ASD";
-        this.qrcode = "ASD";
+        this.uniqueCode = uniqueCode;
     }
 
     public int getId() {
@@ -82,20 +79,12 @@ public class TicketGenerated implements Entity<TicketGenerated> {
         this.used = used;
     }
 
-    public String getBarcode() {
-        return barcode;
+    public String getUniqueCode() {
+        return uniqueCode;
     }
 
-    public void setBarcode(String barcode) {
-        this.barcode = barcode;
-    }
-
-    public String getQrcode() {
-        return qrcode;
-    }
-
-    public void setQrcode(String qrcode) {
-        this.qrcode = qrcode;
+    public void setUniqueCode(String uniqueCode) {
+        this.uniqueCode = uniqueCode;
     }
 
     @Override
@@ -106,8 +95,7 @@ public class TicketGenerated implements Entity<TicketGenerated> {
                 ", customerId=" + customerId +
                 ", assigned=" + assigned +
                 ", used=" + used +
-                ", barcode='" + barcode + '\'' +
-                ", qrcode='" + qrcode + '\'' +
+                ", uniqueCode='" + uniqueCode + '\'' +
                 '}';
     }
 

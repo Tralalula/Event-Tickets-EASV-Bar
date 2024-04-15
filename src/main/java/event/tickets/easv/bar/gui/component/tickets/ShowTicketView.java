@@ -416,7 +416,7 @@ public class ShowTicketView implements View {
 
         add.setOnAction(e -> {
             try {
-                ticketsModel.generateTickets(ticketEventModel, amountValue.getValue(), emailValue.getText());
+                ticketsModel.generateTickets(model, ticketEventModel, amountValue.getValue(), emailValue.getText());
             } catch (Exception ex) {
                 ViewHandler.notify(NotificationType.FAILURE, ex.getMessage());
             }
