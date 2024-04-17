@@ -84,8 +84,11 @@ class TicketEventSQLTemplate implements SQLTemplate<TicketEvent> {
 
     @Override
     public String updateSQL() {
-        throw new UnsupportedOperationException("Er ikke implementeret. TicketEventDAO: TicketEventSQLTemplate.updateSQL()");
-
+        return """
+                UPDATE dbo.TicketEvent
+                SET price = ?, quantity = ?
+                WHERE id = ?
+                """;
     }
 
     @Override
@@ -128,7 +131,9 @@ class TicketEventUpdateParameterSetter implements UpdateParameterSetter<TicketEv
 
     @Override
     public void setParameters(PreparedStatement stmt, TicketEvent original, TicketEvent updatedData) throws SQLException {
-        throw new UnsupportedOperationException("Er ikke implementeret. TicketEventDAO: TicketEventUpdateParameterSetter.setParameters()");
+        stmt.setDouble(1, updatedData.getPrice());
+        stmt.setInt(2, updatedData.getQuantity());
+        stmt.setInt(3, original.getId());
     }
 }
 

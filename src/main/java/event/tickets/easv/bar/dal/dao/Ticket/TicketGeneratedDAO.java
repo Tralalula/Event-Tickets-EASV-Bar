@@ -76,8 +76,8 @@ class TicketGeneratedSQLTemplate implements SQLTemplate<TicketGenerated> {
     @Override
     public String insertSQL() {
         return """
-        INSERT INTO dbo.TicketGenerated (eventId, customerId, assigned, used, barcode, qrcode)
-        VALUES (?, ?, ?, ?, ?, ?);
+        INSERT INTO dbo.TicketGenerated (eventId, customerId, assigned, used, uniqueCode)
+        VALUES (?, ?, ?, ?, ?);
         """;
     }
 
@@ -100,10 +100,9 @@ class TicketGeneratedResultSetMapper implements ResultSetMapper<TicketGenerated>
         int customerId = rs.getInt("customerId");
         boolean assigned = rs.getBoolean("assigned");
         boolean used = rs.getBoolean("used");
-        String barcode = rs.getString("barcode");
-        String qrcode = rs.getString("qrcode");
+        String uniqueCode = rs.getString("uniqueCode");
 
-        return new TicketGenerated(id, eventId, customerId, assigned, used, barcode, qrcode);
+        return new TicketGenerated(id, eventId, customerId, assigned, used, uniqueCode);
     }
 }
 
@@ -114,8 +113,7 @@ class TicketGeneratedInsertParameterSetter implements InsertParameterSetter<Tick
         stmt.setInt(2, entity.getCustomerId());
         stmt.setBoolean(3, entity.isAssigned());
         stmt.setBoolean(4, entity.isUsed());
-        stmt.setString(5, entity.getBarcode());
-        stmt.setString(6, entity.getQrcode());
+        stmt.setString(5, entity.getUniqueCode());
     }
 }
 

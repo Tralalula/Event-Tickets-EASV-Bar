@@ -43,7 +43,7 @@ public class TicketEventModel {
         return new TicketEvent(
                 id.get(),
                 ticketId.get(),
-                event.get().id().get(),
+                eventId.get(),
                 price.get(),
                 total.get()
         );
@@ -65,7 +65,6 @@ public class TicketEventModel {
         this.left.set(ticketEventModel.left.get());
         this.bought.set(ticketEventModel.bought.get());
         this.price.set(ticketEventModel.price.get());
-        this.event.set(ticketEventModel.event.get());
         this.ticketsGenerated = ticketEventModel.ticketsGenerated;
     }
 
@@ -85,7 +84,6 @@ public class TicketEventModel {
         left.bind(Bindings.subtract(total, bought));
         return left;
     }
-
 
     public IntegerProperty bought() {
         bought.bind(Bindings.size(ticketsGenerated));

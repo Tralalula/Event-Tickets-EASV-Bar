@@ -7,8 +7,11 @@ import atlantafx.base.theme.Styles;
 import atlantafx.base.theme.Tweaks;
 import atlantafx.base.util.DoubleStringConverter;
 import atlantafx.base.util.IntegerStringConverter;
+import event.tickets.easv.bar.be.Ticket.Ticket;
+import event.tickets.easv.bar.be.Ticket.TicketEvent;
 import event.tickets.easv.bar.gui.common.*;
 import event.tickets.easv.bar.gui.component.main.MainModel;
+import event.tickets.easv.bar.gui.util.Listeners;
 import event.tickets.easv.bar.gui.util.NodeUtils;
 import event.tickets.easv.bar.gui.util.StyleConfig;
 import event.tickets.easv.bar.gui.widgets.MenuItems;
@@ -16,8 +19,10 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.css.PseudoClass;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -32,6 +37,7 @@ import org.kordamp.ikonli.material2.Material2MZ;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 
 public class ShowTicketView implements View {
     private TicketModel model = TicketModel.Empty();
@@ -55,18 +61,29 @@ public class ShowTicketView implements View {
     private final static int PREF_TEXTFIELD_WIDTH = 200;
     private CheckComboBox<EventModelWrapper> checkComboBox = new CheckComboBox<>();
 
-    public ShowTicketView(MainModel main, TicketsModel ticketsModel) {
+    private BooleanProperty eventsTicketsSynchronizedProperty;
+    private FilteredList<TicketEventModel> filteredTicketEventModels;
+    private static final StringProperty search = new SimpleStringProperty("");
+
+
+    public ShowTicketView(MainModel main, TicketsModel ticketsModel, BooleanProperty eventsTicketsSynchronizedProperty) {
         this.main = main;
         this.ticketsModel = ticketsModel;
+
+        this.eventsTicketsSynchronizedProperty = eventsTicketsSynchronizedProperty;
 
         ViewHandler.currentViewDataProperty().subscribe((oldData, newData) -> {
             if (newData instanceof TicketModel) {
                 model.update((TicketModel) newData);
-                ticketEventList.setItems(model.ticketEvents());
+                this.filteredTicketEventModels = new FilteredList<>(model.ticketEvents());
+                ticketEventList.setItems(filteredTicketEventModels);
                 isPromotional.set(model.type().get().equals("Promotional"));
                 updateTexts();
+                updateListCell();
             }
         });
+
+        setupSearchFilter();
 
         // For at sørge for den lytter til events ændringer
         checkComboBox = multiCombo();
@@ -77,6 +94,32 @@ public class ShowTicketView implements View {
         return topSection();
     }
 
+    private void setupSearchFilter() {
+        this.searchProperty().addListener((obs, ov, nv) -> {
+            Predicate<TicketEventModel> searchPredicate = (TicketEventModel ticketEventModel) -> {
+                if (nv == null || nv.isEmpty()) {
+                    return true;
+                }
+
+                var lowercase = nv.toLowerCase();
+                if (ticketEventModel.event().get() != null)
+                    return ticketEventModel.event().get().title().get().toLowerCase().contains(lowercase);
+
+                return false;
+            };
+
+            filteredTicketEventModels.setPredicate(searchPredicate);
+        });
+    }
+
+    private void updateListCell() {
+        ticketEventList.setCellFactory(c -> {
+            var cell = ticketCell();
+            cell.getStyleClass().add("bg-subtle-list");
+            return cell;
+        });
+    }
+
     public VBox topSection() {
         var placeholder = new Label("No tickets found");
         placeholder.getStyleClass().add(Styles.TITLE_4);
@@ -84,11 +127,10 @@ public class ShowTicketView implements View {
         ticketEventList.setItems(model.ticketEvents());
         ticketEventList.setPlaceholder(placeholder);
         ticketEventList.getStyleClass().addAll(Tweaks.EDGE_TO_EDGE);
-        ticketEventList.setCellFactory(c -> {
-            var cell = ticketCell();
-            cell.getStyleClass().add("bg-subtle-list");
-            return cell;
-        });
+        updateListCell();
+
+        Listeners.addOnceChangeListener(eventsTicketsSynchronizedProperty, ticketEventList::refresh);
+
 
         StackPane stackPane = new StackPane(ticketEventList);
         VBox.setVgrow(stackPane, Priority.ALWAYS);
@@ -115,115 +157,27 @@ public class ShowTicketView implements View {
 
         defaultPrice.setText("Default price: 250 DKK,-");
 
-        var search = new CustomTextField();
-        search.setPromptText("Search");
-        search.setLeft(new FontIcon(Feather.SEARCH));
-        search.setPrefWidth(250);
-        search.setFocusTraversable(false);
+        var searchField = new CustomTextField();
+        searchField.setPromptText("By title");
+        searchField.setLeft(new FontIcon(Feather.SEARCH));
+        searchField.setPrefWidth(250);
+        searchField.textProperty().bindBidirectional(search);
 
         var addTicketEvent = new Button(null, new FontIcon(Feather.PLUS));
         addTicketEvent.getStyleClass().addAll(
                 Styles.BUTTON_ICON, Styles.FLAT, Styles.ACCENT, Styles.TITLE_4
         );
+
         addTicketEvent.setOnAction(e -> ViewHandler.showOverlay(isPromotional.get() ? "Add promotional ticket" : "Add ticket to event", addTickets(), 300, 350));
 
         var controls = new HBox();
-        controls.getChildren().addAll(search, new Spacer(), addTicketEvent);
+        controls.getChildren().addAll(searchField, new Spacer(), addTicketEvent);
 
         var details = new VBox(StyleConfig.STANDARD_SPACING);
         details.getChildren().addAll(top, defaultPrice, eventsCount, controls);
         details.setPadding(new Insets(0, StyleConfig.STANDARD_SPACING * 2, 0, StyleConfig.STANDARD_SPACING));
 
         return details;
-    }
-
-    public TableView<TicketEventModel> createTicketTableView() {
-        TableColumn<TicketEventModel, String> title = new TableColumn<>("Title");
-
-        title.setCellValueFactory(cellData -> {
-            if (cellData.getValue().event() != null && cellData.getValue().event().get() != null)
-                return cellData.getValue().event().get().title();
-
-                return new SimpleStringProperty("suckadoi");
-        });
-
-        TableColumn<TicketEventModel, String> total = new TableColumn<>("Total");
-        total.setCellValueFactory(cellData -> {
-            Integer totalint = cellData.getValue().total().get();
-            return new SimpleStringProperty(totalint + " Total");
-        });
-
-        TableColumn<TicketEventModel, String> left = new TableColumn<>("Left");
-        left.setCellValueFactory(cellData -> {
-            Integer leftint = cellData.getValue().left().get();
-            return new SimpleStringProperty(leftint + " left");
-        });
-
-        TableColumn<TicketEventModel, String> bought = new TableColumn<>("Bought");
-        bought.setCellValueFactory(cellData -> {
-            Integer boughtint = cellData.getValue().bought().get();
-            return new SimpleStringProperty(boughtint + " Bought");
-        });
-
-        TableColumn<TicketEventModel, String> price = new TableColumn<>("Price");
-        price.setCellValueFactory(cellData -> {
-            Double pricedouble = cellData.getValue().price().get();
-            String formattedPrice = String.format("DKK %.2f,-", pricedouble);
-            return new SimpleStringProperty(formattedPrice);
-        });
-
-        TableColumn<TicketEventModel, Void> actionButtons = new TableColumn<>("");
-        actionButtons.setCellFactory(param -> new TableCell<>() {
-            private final Button editButton = new Button(null, new FontIcon(Feather.EDIT));
-            private final Button assignButton = new Button(null, new FontIcon(Material2MZ.PERSON_ADD));
-
-            {
-                editButton.getStyleClass().addAll(
-                        Styles.BUTTON_ICON, Styles.FLAT, Styles.ACCENT, Styles.TITLE_4
-                );
-
-                editButton.setOnAction(event -> {
-                    TicketEventModel rowData = getTableView().getItems().get(getIndex());
-                    ViewHandler.changeView(ViewType.SHOW_TICKET, rowData);
-                });
-
-                assignButton.getStyleClass().addAll(
-                        Styles.BUTTON_ICON, Styles.FLAT, Styles.ACCENT, Styles.TITLE_4
-                );
-
-                assignButton.setOnAction(event -> {
-                    TicketEventModel rowData = getTableView().getItems().get(getIndex());
-                    if (rowData.left().get() > 0)
-                        ViewHandler.showOverlay("Assign ticket", assignCustomer(rowData), 300, 350);
-                });
-            }
-
-            @Override
-            protected void updateItem(Void item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty) {
-                    setGraphic(null);
-                } else {
-                    HBox buttons = new HBox(editButton, assignButton);
-                    buttons.setSpacing(20);
-                    setGraphic(buttons);
-                }
-            }
-        });
-
-        table = new TableView<>();
-
-        table.setTableMenuButtonVisible(false);
-        table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-
-        table.getStyleClass().addAll(Tweaks.NO_HEADER, Styles.STRIPED);
-
-        table.setItems(model.ticketEvents());
-        table.getColumns().addAll(title, total, left, bought, price, actionButtons);
-
-        table.getStyleClass().add(StyleConfig.ACTIONABLE);
-
-        return table;
     }
 
     private ListCell<TicketEventModel> ticketCell() {
@@ -272,16 +226,23 @@ public class ShowTicketView implements View {
                 column4.setPercentWidth(width);
                 ColumnConstraints column5 = new ColumnConstraints();
                 column5.setPercentWidth(width);
-                ColumnConstraints column6 = new ColumnConstraints();
-                column6.setPercentWidth(width);
 
-                gridPane.getColumnConstraints().addAll(column1, column2, column3, column4, column5, column6);
+                if (!isPromotional.get()) {
+                    ColumnConstraints column6 = new ColumnConstraints();
+                    column6.setPercentWidth(width);
+
+                    gridPane.getColumnConstraints().addAll(column1, column2, column3, column4, column5, column6);
+                } else {
+                    gridPane.getColumnConstraints().addAll(column1, column2, column3, column4, column5);
+                }
 
                 gridPane.add(titleLabel, 0, 0);
                 gridPane.add(totalLabel, 1, 0);
                 gridPane.add(leftLabel, 2, 0);
                 gridPane.add(boughtLabel, 3, 0);
-                gridPane.add(priceLabel, 4, 0);
+
+                if (!isPromotional.get())
+                    gridPane.add(priceLabel, 4, 0);
 
                 gridPane.setMinHeight(CELL_HEIGHT);
                 gridPane.setAlignment(Pos.CENTER_LEFT);
@@ -322,7 +283,10 @@ public class ShowTicketView implements View {
                     );
 
                     assignButton.setOnAction(event -> {
-                        ViewHandler.showOverlay("Assign ticket", assignCustomer(item), 300, 350);
+                        if (item.left().get() > 0)
+                            ViewHandler.showOverlay("Assign ticket", assignCustomer(item), 300, 350);
+                        else
+                            ViewHandler.notify(NotificationType.WARNING, "Not enough tickets left!");
                     });
 
                     editButton.getStyleClass().addAll(
@@ -330,7 +294,7 @@ public class ShowTicketView implements View {
                     );
 
                     editButton.setOnAction(event -> {
-                        //ViewHandler.changeView(ViewType.SHOW_TICKET, item);
+                        ViewHandler.showOverlay("Edit ticket", editTickets(item), 300, 350);
                     });
 
                     deleteButton.getStyleClass().addAll(
@@ -416,7 +380,15 @@ public class ShowTicketView implements View {
 
         add.setOnAction(e -> {
             try {
-                ticketsModel.generateTickets(ticketEventModel, amountValue.getValue(), emailValue.getText());
+                if (!ticketsModel.isValidEmail(emailValue.getText()))
+                    emailValue.pseudoClassStateChanged(Styles.STATE_DANGER, true);
+
+                boolean generateTickets = ticketsModel.generateTickets(model, ticketEventModel, amountValue.getValue(), emailValue.getText());
+                if (generateTickets) {
+                    ViewHandler.notify(NotificationType.SUCCESS, "Ticket(s) sent to " + emailValue.getText());
+                    emailValue.pseudoClassStateChanged(Styles.STATE_DANGER, false);
+                }
+
             } catch (Exception ex) {
                 ViewHandler.notify(NotificationType.FAILURE, ex.getMessage());
             }
@@ -441,6 +413,7 @@ public class ShowTicketView implements View {
         totalValue.setEditable(true);
 
         tickets.getChildren().addAll(totalLabel, totalValue);
+        main.getChildren().add(tickets);
 
         VBox price = new VBox(0);
         var priceLabel = new Label("Price (DKK)");
@@ -450,14 +423,18 @@ public class ShowTicketView implements View {
         priceValue.getStyleClass().add(Spinner.STYLE_CLASS_SPLIT_ARROWS_HORIZONTAL);
         priceValue.setPrefWidth(PREF_TEXTFIELD_WIDTH + 200);
         priceValue.setEditable(true);
-
         price.getChildren().addAll(priceLabel, priceValue);
+
+        if (!isPromotional.get())
+            main.getChildren().add(price);
+
 
         VBox events = new VBox(0);
         var selectEventsLabel = new Label("Select events");
         selectEventsLabel.setAlignment(Pos.CENTER);
 
         events.getChildren().addAll(selectEventsLabel, checkComboBox);
+        main.getChildren().add(events);
 
         checkComboBox.setPrefWidth(PREF_TEXTFIELD_WIDTH + 100);
 
@@ -475,14 +452,69 @@ public class ShowTicketView implements View {
                 return;
             }
 
-            addToEvents(totalValue.getValue(), priceValue.getValue(), selectedEvents);
+            addToEvents(totalValue.getValue(), isPromotional.get() ? 0 : priceValue.getValue(), selectedEvents);
         });
 
         addBox.getChildren().addAll(add, err);
         addEvent.getChildren().add(addBox);
 
-        main.getChildren().addAll(tickets,  price, events, addEvent);
+        main.getChildren().addAll(addEvent);
         return main;
+    }
+
+    private VBox editTickets(TicketEventModel ticketEvent) {
+        VBox mainBox = new VBox(10);
+
+        VBox tickets = new VBox(0);
+        var totalLabel = new Label("Ticket quantity");
+
+        var totalValue = new Spinner<Integer>(ticketEvent.bought().get(), 500, 1);
+        IntegerStringConverter.createFor(totalValue);
+        totalValue.getStyleClass().add(Spinner.STYLE_CLASS_SPLIT_ARROWS_HORIZONTAL);
+        totalValue.setPrefWidth(PREF_TEXTFIELD_WIDTH + 200);
+        totalValue.setEditable(true);
+
+        tickets.getChildren().addAll(totalLabel, totalValue);
+        mainBox.getChildren().add(tickets);
+
+        VBox price = new VBox(0);
+        var priceLabel = new Label("Price (DKK)");
+
+        var priceValue = new Spinner<Double>(1.00, 500.00, ticketEvent.price().getValue());
+        DoubleStringConverter.createFor(priceValue);
+        priceValue.getStyleClass().add(Spinner.STYLE_CLASS_SPLIT_ARROWS_HORIZONTAL);
+        priceValue.setPrefWidth(PREF_TEXTFIELD_WIDTH + 200);
+        priceValue.setEditable(true);
+        price.getChildren().addAll(priceLabel, priceValue);
+
+        if (!isPromotional.get())
+            mainBox.getChildren().add(price);
+
+        VBox addEvent = new VBox(0);
+        HBox addBox = new HBox(5);
+
+        var add = new Button("Add");
+        var err = new Label();
+        err.getStyleClass().add(Styles.DANGER);
+
+        add.setOnAction(e -> {
+            TicketEvent edited = ticketEvent.toEntity();
+            edited.setQuantity(totalValue.getValue());
+            edited.setPrice(priceValue.getValue());
+
+            try {
+                ticketsModel.editEventTicket(ticketEvent, TicketEventModel.fromEntity(edited));
+            } catch (Exception ex) {
+                ViewHandler.notify(NotificationType.FAILURE, "Error occured!\n" + ex.getMessage());
+
+            }
+        });
+
+        addBox.getChildren().addAll(add, err);
+        addEvent.getChildren().add(addBox);
+
+        mainBox.getChildren().addAll(addEvent);
+        return mainBox;
     }
 
 
@@ -521,11 +553,14 @@ public class ShowTicketView implements View {
             ticketsModel.addToEvent(model, main, ticketId, total, price, selectedEvents);
         else {
             try {
-                ticketsModel.addSpecialTicket(model, main, ticketId, total, price);
+                ticketsModel.addToEvent(model, main, ticketId, total, 0, selectedEvents);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         }
     }
 
+    public StringProperty searchProperty() {
+        return search;
+    }
 }
